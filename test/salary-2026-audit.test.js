@@ -59,27 +59,52 @@ salaries.forEach(gross => {
 });
 
 // 3. Children / Pflegeversicherung (PUEG) & Saxony Split
+// A. Explicit function test: getEmployeeCareInsuranceRate({ stateCode, numberOfQualifyingChildren, isChildless })
+const expectedPvRates = {
+  NW: { 0: 0.0240, 1: 0.0180, 2: 0.0155, 3: 0.0130, 4: 0.0105, 5: 0.0080 },
+  SN: { 0: 0.0290, 1: 0.0230, 2: 0.0205, 3: 0.0180, 4: 0.0155, 5: 0.0130 }
+};
+
+['NW', 'SN'].forEach(stateCode => {
+  [0, 1, 2, 3, 4, 5].forEach(kids => {
+    const expected = expectedPvRates[stateCode][kids];
+    const isChildless = (kids === 0);
+
+    const rateCalc = SalaryCalculator.getEmployeeCareInsuranceRate({
+      stateCode,
+      numberOfQualifyingChildren: kids,
+      isChildless
+    });
+
+    const rateCfg = GERMAN_TAX_CONFIG.getEmployeeCareInsuranceRate({
+      stateCode,
+      numberOfQualifyingChildren: kids,
+      isChildless
+    });
+
+    if (Math.abs(rateCalc - expected) > 1e-6) {
+      throw new Error(`SalaryCalculator.getEmployeeCareInsuranceRate mismatch: ${stateCode} kids=${kids}, got ${rateCalc}, expected ${expected}`);
+    }
+    if (Math.abs(rateCfg - expected) > 1e-6) {
+      throw new Error(`GERMAN_TAX_CONFIG.getEmployeeCareInsuranceRate mismatch: ${stateCode} kids=${kids}, got ${rateCfg}, expected ${expected}`);
+    }
+
+    console.log(`[PASS] getEmployeeCareInsuranceRate (${stateCode}, ${kids} children): ${(rateCalc * 100).toFixed(2)}%`);
+  });
+});
+
+// B. Integration with calculateNetSalary
 [0, 1, 2, 3, 4, 5].forEach(k => {
   const nw = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2026, taxClass: "1", stateCode: "NW", numChildren: k });
   const sn = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2026, taxClass: "1", stateCode: "SN", numChildren: k });
-  
-  if (k === 0) {
-    if (Math.abs(nw.pvEmployeeRate - 0.024) > 1e-6) throw new Error("Childless NW must be 2.40%");
-    if (Math.abs(sn.pvEmployeeRate - 0.029) > 1e-6) throw new Error("Childless SN must be 2.90%");
-  } else if (k === 1) {
-    if (Math.abs(nw.pvEmployeeRate - 0.018) > 1e-6) throw new Error("1 child NW must be 1.80%");
-    if (Math.abs(sn.pvEmployeeRate - 0.023) > 1e-6) throw new Error("1 child SN must be 2.30%");
-  } else if (k === 2) {
-    if (Math.abs(nw.pvEmployeeRate - 0.0155) > 1e-6) throw new Error("2 children NW must be 1.55%");
-    if (Math.abs(sn.pvEmployeeRate - 0.0205) > 1e-6) throw new Error("2 children SN must be 2.05%");
-  } else if (k === 3) {
-    if (Math.abs(nw.pvEmployeeRate - 0.0130) > 1e-6) throw new Error("3 children NW must be 1.30%");
-    if (Math.abs(sn.pvEmployeeRate - 0.0180) > 1e-6) throw new Error("3 children SN must be 1.80%");
-  } else if (k === 5) {
-    if (Math.abs(nw.pvEmployeeRate - 0.0080) > 1e-6) throw new Error("5+ children NW must be 0.80% floor");
-    if (Math.abs(sn.pvEmployeeRate - 0.0130) > 1e-6) throw new Error("5+ children SN must be 1.30% floor");
-  }
-  console.log(`[PASS] PV Children Rate for k=${k}: NW=${(nw.pvEmployeeRate*100).toFixed(2)}%, SN=${(sn.pvEmployeeRate*100).toFixed(2)}%`);
+
+  const expNW = expectedPvRates.NW[k];
+  const expSN = expectedPvRates.SN[k];
+
+  if (Math.abs(nw.pvEmployeeRate - expNW) > 1e-6) throw new Error(`Net salary PV rate mismatch for NW kids=${k}`);
+  if (Math.abs(sn.pvEmployeeRate - expSN) > 1e-6) throw new Error(`Net salary PV rate mismatch for SN kids=${k}`);
+
+  console.log(`[PASS] calculateNetSalary PV Rate for k=${k}: NW=${(nw.pvEmployeeRate*100).toFixed(2)}%, SN=${(sn.pvEmployeeRate*100).toFixed(2)}%`);
 });
 
 // 4. Church Tax Rates: BY (8%) vs NW (9%) vs None (0%)

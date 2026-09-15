@@ -73,6 +73,60 @@ const SalaryCalculator = {
   },
 
   /**
+   * Official Statutory Pflegeversicherung (Long-Term Care Insurance) Employee Rate Scale
+   * Implements exact statutory rates for 2026:
+   * Outside Saxony:
+   * - 0 children (childless): 2.40%
+   * - 1 child: 1.80%
+   * - 2 children: 1.55%
+   * - 3 children: 1.30%
+   * - 4 children: 1.05%
+   * - 5+ children: 0.80%
+   *
+   * Saxony (SN): Add exactly 0.50 percentage points (+0.0050) to the employee share:
+   * - 0 children: 2.90%
+   * - 1 child: 2.30%
+   * - 2 children: 2.05%
+   * - 3 children: 1.80%
+   * - 4 children: 1.55%
+   * - 5+ children: 1.30%
+   *
+   * @param {object} params
+   * @param {string} [params.stateCode] - Two-letter state code (e.g. "SN", "NW", "BE")
+   * @param {number} [params.numberOfQualifyingChildren] - Qualifying children under age 25
+   * @param {boolean} [params.isChildless] - Explicit childless flag
+   * @returns {number} Statutory employee contribution rate (e.g. 0.024 for 2.40%)
+   */
+  getEmployeeCareInsuranceRate({ stateCode, numberOfQualifyingChildren, isChildless } = {}) {
+    const isSaxony = (stateCode === "SN");
+    const kids = Math.max(0, parseInt(numberOfQualifyingChildren || 0, 10));
+    const childless = (typeof isChildless === 'boolean') ? isChildless : (kids === 0);
+
+    let rate;
+    if (childless || kids === 0) {
+      rate = 0.0240;
+    } else if (kids === 1) {
+      rate = 0.0180;
+    } else if (kids === 2) {
+      rate = 0.0155;
+    } else if (kids === 3) {
+      rate = 0.0130;
+    } else if (kids === 4) {
+      rate = 0.0105;
+    } else {
+      // 5 or more qualifying children under age 25 (statutory rate floor reached)
+      rate = 0.0080;
+    }
+
+    if (isSaxony) {
+      // Saxony requires employee to pay +0.50 percentage points more of the statutory rate
+      rate = Number((rate + 0.0050).toFixed(4));
+    }
+
+    return rate;
+  },
+
+  /**
    * Main Gross to Net Calculator
    * Computes social insurances, statutory taxable income, wage tax, SolZ, and church tax.
    *
@@ -145,19 +199,11 @@ const SalaryCalculator = {
     let pvMonthly = 0;
     if (healthType === "gkv") {
       pvAssessmentMonthly = Math.min(grossMonthly, yCfg.care.bbgMonthly);
-      const isSaxony = (stateCode === "SN");
-      const baseEmployeeRate = isSaxony ? yCfg.care.employeeBaseRateSachsen : yCfg.care.employeeBaseRate;
-
-      if (numChildren === 0) {
-        pvEmployeeRate = baseEmployeeRate + yCfg.care.childlessSurcharge;
-      } else if (numChildren === 1) {
-        pvEmployeeRate = baseEmployeeRate;
-      } else {
-        const discountCount = Math.min(numChildren - 1, 4); // max 4 child discounts (from 2nd to 5th)
-        const discount = discountCount * yCfg.care.childDiscountPerChild;
-        const minFloor = isSaxony ? yCfg.care.minEmployeeRateSachsen : yCfg.care.minEmployeeRate;
-        pvEmployeeRate = Math.max(minFloor, baseEmployeeRate - discount);
-      }
+      pvEmployeeRate = this.getEmployeeCareInsuranceRate({
+        stateCode,
+        numberOfQualifyingChildren: numChildren,
+        isChildless: (numChildren === 0)
+      });
       pvMonthly = pvAssessmentMonthly * pvEmployeeRate;
     }
     const pvAnnual = pvMonthly * 12;

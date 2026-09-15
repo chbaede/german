@@ -167,15 +167,28 @@ const GERMAN_TAX_CONFIG = {
       },
       care: {
         baseRate: 0.036,         // 3.6% total statutory base
-        employeeBaseRate: 0.018, // 1.8% employee base (outside Saxony: 3.6% / 2)
-        employeeBaseRateSachsen: 0.023, // 2.3% employee base in Saxony (employer pays 1.3%)
-        childlessSurcharge: 0.006,      // +0.6% for age 23+ without children
-        childDiscountPerChild: 0.0025,  // -0.25% per child from 2nd to 5th child (under 25)
-        maxChildDiscount: 0.010,        // Max 1.0% discount (at 5+ children under 25)
-        minEmployeeRate: 0.008,         // 0.80% statutory employee rate floor (outside Saxony)
-        minEmployeeRateSachsen: 0.013,  // 1.30% statutory employee rate floor in Saxony
+        employeeBaseRate: 0.018, // 1.8% employee base outside Saxony (3.6% / 2)
+        employeeBaseRateSachsen: 0.023, // 2.3% employee base in Saxony (+0.50 percentage points)
+        childlessSurcharge: 0.006,      // +0.6% childless surcharge
         bbgMonthly: 5812.50,            // Pflegeversicherung ceiling matches GKV (€5,812.50/mo)
-        bbgAnnual: 69750
+        bbgAnnual: 69750,
+        // Statutory employee rate mapping (Outside Saxony):
+        // 0 kids (childless): 2.40%
+        // 1 kid: 1.80%
+        // 2 kids: 1.55%
+        // 3 kids: 1.30%
+        // 4 kids: 1.05%
+        // 5+ kids: 0.80%
+        // In Saxony (SN): Add +0.50 percentage points across all tiers
+        ratesOutsideSaxony: {
+          0: 0.0240,
+          1: 0.0180,
+          2: 0.0155,
+          3: 0.0130,
+          4: 0.0105,
+          5: 0.0080
+        },
+        saxonyAdditionalEmployeeShare: 0.0050
       },
       solz: {
         thresholdSingle: 19950,  // Exemption limit 2026: €19,950 income tax
@@ -269,6 +282,54 @@ const GERMAN_TAX_CONFIG = {
     BY: 0.08, // Bayern (8%)
     BW: 0.08, // Baden-Württemberg (8%)
     DEFAULT: 0.09 // All other 14 Bundesländer including Berlin (9%)
+  },
+
+  /**
+   * Official Statutory Pflegeversicherung (Long-Term Care Insurance) Employee Rate Scale
+   * Implements exact statutory rates for 2026:
+   * Outside Saxony:
+   * - 0 children (childless): 2.40%
+   * - 1 child: 1.80%
+   * - 2 children: 1.55%
+   * - 3 children: 1.30%
+   * - 4 children: 1.05%
+   * - 5+ children: 0.80%
+   *
+   * Saxony (SN): Add exactly 0.50 percentage points (+0.0050) to the employee share.
+   *
+   * @param {object} params
+   * @param {string} [params.stateCode] - Two-letter state code (e.g. "SN", "NW", "BE")
+   * @param {number} [params.numberOfQualifyingChildren] - Qualifying children under age 25
+   * @param {boolean} [params.isChildless] - Explicit childless flag
+   * @returns {number} Statutory employee contribution rate (e.g. 0.024 for 2.40%)
+   */
+  getEmployeeCareInsuranceRate({ stateCode, numberOfQualifyingChildren, isChildless } = {}) {
+    const isSaxony = (stateCode === "SN");
+    const kids = Math.max(0, parseInt(numberOfQualifyingChildren || 0, 10));
+    const childless = (typeof isChildless === 'boolean') ? isChildless : (kids === 0);
+
+    let rate;
+    if (childless || kids === 0) {
+      rate = 0.0240;
+    } else if (kids === 1) {
+      rate = 0.0180;
+    } else if (kids === 2) {
+      rate = 0.0155;
+    } else if (kids === 3) {
+      rate = 0.0130;
+    } else if (kids === 4) {
+      rate = 0.0105;
+    } else {
+      // 5 or more qualifying children under age 25 (statutory floor reached)
+      rate = 0.0080;
+    }
+
+    if (isSaxony) {
+      // Saxony requires employee to pay +0.50 percentage points more
+      rate = Number((rate + 0.0050).toFixed(4));
+    }
+
+    return rate;
   },
 
   // Comprehensive Tax Class Guidance
