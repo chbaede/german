@@ -238,15 +238,16 @@ const I18N = {
 
     // Child Benefit (14)
     kindergeldTitle: "German Child Benefit Reference (Kindergeld)",
-    kindergeldDesc: "Understand monthly payments (€250/month per child), age limits, and tax allowance interactions.",
-    kindergeldAmountCard: "€250 per month",
-    perChildMonthly: "Per eligible child, regardless of birth order or parents' income",
+    kindergeldDesc: "Current rate €259/month per child (2026), past rate history, and upcoming 2027 increase.",
+    kindergeldAmountCard: "€259 per month",
+    perChildMonthly: "Current 2026 statutory rate per eligible child (up from €250 in 2023-2024 and €255 in 2025)",
     kindergeldEligibilityTitle: "Eligibility & Age Limits",
     kindergeldEligibilityText: "• <b>Birth to Age 18:</b> All children residing in Germany.<br>• <b>Ages 18 to 21:</b> Eligible if registered as job-seeking.<br>• <b>Ages 18 to 25:</b> Eligible if pursuing university studies, an apprenticeship (Ausbildung), or volunteer service (FSJ/BFD).<br>• <b>Disabled children:</b> Can be eligible beyond age 25 if unable to support themselves.",
     kindergeldVsFreibetrag: "Kindergeld vs Kinderfreibetrag: The tax office automatically performs a check ('Günstigerprüfung') on your annual tax return to determine whether the monthly Kindergeld payout or the income tax deduction (Kinderfreibetrag) provides a greater financial benefit.",
+    kindergeldTimelineTitle: "Kindergeld Rate Evolution (Past, Current & Future)",
     numKidsInput: "Number of Eligible Children",
-    monthlyKindergeldTotal: "Total Monthly Kindergeld",
-    annualKindergeldTotal: "Total Annual Kindergeld Benefit",
+    monthlyKindergeldTotal: "Total Monthly Kindergeld (2026)",
+    annualKindergeldTotal: "Total Annual Kindergeld Benefit (2026)",
 
     // School Holidays (15)
     schoolHolidaysTitle: "German School Holidays Finder (Schulferien)",
@@ -562,15 +563,16 @@ const I18N = {
 
     // Child Benefit (14)
     kindergeldTitle: "독일 아동수당(킨더겔트) 계산 & 가이드",
-    kindergeldDesc: "자녀 1인당 월 250유로의 아동수당 총액, 수급 자격 연령 및 연말정산 공제와의 차이를 안내합니다.",
-    kindergeldAmountCard: "자녀 1인당 월 250 €",
-    perChildMonthly: "부모 소득이나 출생 순서와 무관하게 모든 자녀에게 동일 지급",
+    kindergeldDesc: "2026년 기준 자녀 1인당 월 259유로, 이전 지급액 변천사 및 2027년 인상 예정액 안내.",
+    kindergeldAmountCard: "자녀 1인당 월 259 €",
+    perChildMonthly: "2026년 법정 기준 금액 (2023-2024년 250 € → 2025년 255 € → 2026년 259 €로 인상)",
     kindergeldEligibilityTitle: "지급 대상 및 연령 기준",
     kindergeldEligibilityText: "• <b>출생 ~ 만 18세:</b> 독일 거주 모든 자녀 기본 수급.<br>• <b>만 18세 ~ 21세:</b> 구직 등록 중인 경우 수급 가능.<br>• <b>만 18세 ~ 25세:</b> 대학 재학, 아우스빌둥(직업교육), 자원봉사(FSJ/BFD) 중인 경우 연장 지급.<br>• <b>장애 아동:</b> 자립이 불가능한 경우 25세 이후에도 수급 가능.",
     kindergeldVsFreibetrag: "킨더겔트 vs 자녀소득공제(Kinderfreibetrag): 연말정산(Steuererklärung) 제출 시 국세청이 '유리성 심사(Günstigerprüfung)'를 자동 진행하여, 매월 받은 킨더겔트와 소득공제 세금 절감액 중 세입자에게 더 이득인 방식을 자동 적용해 줍니다.",
+    kindergeldTimelineTitle: "킨더겔트 지급액 변천사 & 2027년 인상 안내",
     numKidsInput: "수급 대상 자녀 수",
-    monthlyKindergeldTotal: "월 아동수당 총 수령액",
-    annualKindergeldTotal: "연간 아동수당 총 지원액",
+    monthlyKindergeldTotal: "월 아동수당 총 수령액 (2026년 기준)",
+    annualKindergeldTotal: "연간 아동수당 총 지원액 (2026년 기준)",
 
     // School Holidays (15)
     schoolHolidaysTitle: "독일 학교 방학 일정 조회기 (Schulferien)",

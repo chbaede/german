@@ -144,25 +144,7 @@ const TOOLS_DATA = [
       ko: ["월세", "칼트미테", "밤미테", "관리비", "방송수신료", "아파트"]
     }
   },
-  // 6. Rental Deposit Calculator
-  {
-    id: "deposit",
-    category: "housing",
-    icon: "🔐",
-    popular: false,
-    title: {
-      en: "Rental Deposit Calculator (Kaution)",
-      ko: "보증금(Kaution) 및 입주 초기비용 계산기"
-    },
-    desc: {
-      en: "Calculate the legal 3-month Kaltmiete deposit cap under BGB § 551 and 3-month statutory installment schedules.",
-      ko: "독일 민법(BGB)상 최대 3개월 기본월세 보증금 한도 및 3회 분할 납부 일정, 첫 달 필요 자금을 계산합니다."
-    },
-    tags: {
-      en: ["Kaution", "Deposit", "Move-in Costs", "Installment", "BGB 551"],
-      ko: ["보증금", "카우치온", "입주비용", "분할납부", "첫달비용"]
-    }
-  },
+
   // 7. Moving Cost Calculator
   {
     id: "moving",
@@ -307,8 +289,8 @@ const TOOLS_DATA = [
       ko: "독일 아동수당(킨더겔트) 계산 & 가이드"
     },
     desc: {
-      en: "Check monthly and annual Kindergeld amounts (€250/month per child), age limits, and tax allowance comparison.",
-      ko: "자녀 1인당 월 250유로의 아동수당 총액, 지급 연령 기준, 그리고 연말정산 아동소득공제와의 차이를 안내합니다."
+      en: "Calculate Kindergeld payments (€259/month per child in 2026), view past historical amounts, and projected 2027 increase.",
+      ko: "2026년 기준 자녀 1인당 월 259유로의 아동수당, 이전 수령액 변천사 및 2027년 인상 예정액을 확인하세요."
     },
     tags: {
       en: ["Kindergeld", "Child Benefit", "Familienkasse", "Children", "Kinderfreibetrag"],

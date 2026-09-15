@@ -19,7 +19,7 @@ Part of the **[yocto.co.kr](https://main.yocto.co.kr)** web ecosystem.
 
 ---
 
-## 🧰 Included Tools (All 21 Working Tools)
+## 🧰 Included Tools (All 20 Working Tools)
 
 ### 💶 Money & Taxes
 1. **Salary Calculator (Brutto → Netto)**: Estimate monthly and annual take-home pay with German tax classes I–VI, Bundesland church tax (8%/9%), children care adjustments, and statutory social insurances.
@@ -29,32 +29,31 @@ Part of the **[yocto.co.kr](https://main.yocto.co.kr)** web ecosystem.
 
 ### 🏠 Housing & Rent
 5. **Rent & Living Cost Calculator**: Kaltmiete, Nebenkosten, heating, electricity, internet, and GEZ / Rundfunkbeitrag breakdown.
-6. **Rental Deposit Calculator (Mietkaution)**: Statutory 3-month Kaltmiete cap under BGB § 551 and 3-month installment schedule.
-7. **Moving Cost Calculator (Umzugskosten)**: Van rental, moving company, boxes, cleaning/renovation, and fitted kitchen (EBK).
+6. **Moving Cost Calculator (Umzugskosten)**: Van rental, moving company, boxes, cleaning/renovation, and fitted kitchen (EBK).
 
 ### 🚗 Transport & Driving
-8. **Car Total Cost of Ownership (TCO)**: Monthly financing, insurance, vehicle tax (Kfz-Steuer), maintenance (TÜV/HU/AU), parking, and tires, with ICE vs Hybrid vs EV comparison.
-9. **Fuel Cost Calculator**: Trip fuel requirements and expenses supporting both `L/100km` and `km/L`.
-10. **EV Charging Cost Calculator**: Home wallbox vs public AC vs DC ultra-fast charging costs, plus per-100km savings vs gasoline.
+7. **Car Total Cost of Ownership (TCO)**: Monthly financing, insurance, vehicle tax (Kfz-Steuer), maintenance (TÜV/HU/AU), parking, and tires, with ICE vs Hybrid vs EV comparison.
+8. **Fuel Cost Calculator**: Trip fuel requirements and expenses supporting both `L/100km` and `km/L`.
+9. **EV Charging Cost Calculator**: Home wallbox vs public AC vs DC ultra-fast charging costs, plus per-100km savings vs gasoline.
 
 ### 📅 Calendar & Work
-11. **German Public Holidays (Feiertage)**: Nationwide vs state-specific holidays across all 16 Bundesländer with dynamic Easter calculation.
-12. **Working Days Calculator (Arbeitstage)**: Net working days between two dates, accurately excluding weekends and state holidays.
-13. **Vacation Days & Bridge Day Planner**: Paid leave tracker and smart "Brückentage" strategy advice.
+10. **German Public Holidays (Feiertage)**: Nationwide vs state-specific holidays across all 16 Bundesländer with dynamic Easter calculation.
+11. **Working Days Calculator (Arbeitstage)**: Net working days between two dates, accurately excluding weekends and state holidays.
+12. **Vacation Days & Bridge Day Planner**: Paid leave tracker and smart "Brückentage" strategy advice.
 
 ### 👨‍👩‍👧 Family & School
-14. **Child Benefit Reference (Kindergeld)**: Current €250/child/month estimator, eligibility age thresholds, and Kinderfreibetrag tax comparison.
-15. **School Holiday Finder (Schulferien)**: Official school vacation schedules (KMK) by federal state and year (2024–2027).
+13. **Child Benefit Reference (Kindergeld)**: Current statutory €259/child/month estimator, historical evolution timeline (2021–2025), and 2027 planned increase (€263).
+14. **School Holiday Finder (Schulferien)**: Official school vacation schedules (KMK) by federal state and year (2024–2027).
 
 ### 🧾 Everyday Utilities
-16. **Date Difference Calculator**: Exact days, weeks, months, and years between any two dates.
-17. **Exact Age Calculator**: International age in years, months, and days, total days lived, and countdown to next birthday.
-18. **Percentage Calculator**: 4 instant modes (X% of Y, proportions, percentage increase/decrease, difference).
-19. **German & Expat Unit Converter**: km ↔ miles, kg ↔ lb, °C ↔ °F, liters ↔ gallons, and m² ↔ sq ft / pyeong (평).
+15. **Date Difference Calculator**: Exact days, weeks, months, and years between any two dates.
+16. **Exact Age Calculator**: International age in years, months, and days, total days lived, and countdown to next birthday.
+17. **Percentage Calculator**: 4 instant modes (X% of Y, proportions, percentage increase/decrease, difference).
+18. **German & Expat Unit Converter**: km ↔ miles, kg ↔ lb, °C ↔ °F, liters ↔ gallons, and m² ↔ sq ft / pyeong (평).
 
 ### 🇩🇪 Germany Reference
-20. **German Address & Postal Code (PLZ) Guide**: 16 federal states directory, capital cities, population, PLZ ranges, and standard mailing address format.
-21. **German Expat Glossary & Abbreviations**: Searchable directory of 40+ crucial German terms (Anmeldung, Schufa, Rundfunkbeitrag, TÜV, Probezeit, etc.).
+19. **German Address & Postal Code (PLZ) Guide**: 16 federal states directory, capital cities, population, PLZ ranges, and standard mailing address format.
+20. **German Expat Glossary & Abbreviations**: Searchable directory of 40+ crucial German terms (Anmeldung, Schufa, Rundfunkbeitrag, TÜV, Probezeit, etc.).
 
 ---
 

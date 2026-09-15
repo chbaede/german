@@ -145,9 +145,6 @@ const App = {
       case 'rent':
         this.renderRentTool(container, tool);
         break;
-      case 'deposit':
-        this.renderDepositTool(container, tool);
-        break;
       case 'moving':
         this.renderMovingTool(container, tool);
         break;
@@ -201,7 +198,7 @@ const App = {
   // Tool 1: Salary Calculator
   renderSalaryTool(container, tool) {
     const statesOptions = GERMAN_STATES.map(s => `
-      <option value="${s.code}" ${s.code === 'NW' ? 'selected' : ''}>${s.nameDe} (${s.code}) - ${s.churchTaxRate * 100}%</option>
+      <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.nameDe} (${s.code}) - ${s.churchTaxRate * 100}%</option>
     `).join('');
 
     container.innerHTML = `
@@ -448,7 +445,7 @@ const App = {
       grossEl.value = "4500";
       grossAnnualEl.value = "54000";
       taxClassEl.value = "1";
-      stateEl.value = "NW";
+      stateEl.value = "BE";
       churchEl.value = "false";
       childrenEl.value = "0";
       healthEl.value = "gkv";
@@ -560,7 +557,7 @@ const App = {
       const gross = SalaryCalculator.calculateNetToGross(netIn.value, {
         taxClass: tcIn.value,
         numChildren: chIn.value,
-        stateCode: "NW"
+        stateCode: "BE"
       });
       document.getElementById('res-rev-gross').textContent = `${GLTUtils.formatEuro(gross)} / mo`;
       document.getElementById('res-rev-annual').textContent = `Annual Gross: ${GLTUtils.formatEuro(gross * 12)} / yr`;
@@ -880,76 +877,6 @@ const App = {
     updateRent();
   },
 
-  // Tool 6: Rental Deposit Calculator (Kaution)
-  renderDepositTool(container, tool) {
-    container.innerHTML = `
-      <div class="tool-topbar">
-        <a href="#" class="btn-back">${t('backToDashboard')}</a>
-      </div>
-      <div class="tool-headline">
-        <h1 class="tool-page-title">${tool.icon} ${tool.title[currentLang]}</h1>
-        <p class="tool-page-subtitle">${tool.desc[currentLang]}</p>
-      </div>
-
-      <div class="tool-layout">
-        <div class="input-panel">
-          <h2 class="panel-title"><span>🔐 Deposit Parameters</span></h2>
-          <div class="form-group">
-            <label class="form-label">${t('kaltmiete')}</label>
-            <div class="input-with-affix">
-              <span class="affix affix-left">€</span>
-              <input type="number" id="dep-kalt" class="form-input input-prefix" value="1200" min="0">
-              <span class="affix affix-right">/mo</span>
-            </div>
-            <div class="form-helper">Important: Deposit is strictly calculated on Kaltmiete, NOT Warmmiete!</div>
-          </div>
-          <div class="notice-box">
-            ⚖️ ${t('kautionLegalNote')}
-          </div>
-        </div>
-
-        <div class="result-panel">
-          <div class="panel-title"><span>📊 ${t('resultsHeading')}</span></div>
-          <div class="result-hero">
-            <div class="result-hero-label">${t('maxKaution')}</div>
-            <div id="res-dep-total" class="result-hero-amount">€ 0,00</div>
-            <div class="result-hero-sub">Exactly 3 × Kaltmiete</div>
-          </div>
-          <div class="breakdown-list">
-            <div class="breakdown-row" style="font-weight:700;">
-              <span class="breakdown-label">${t('firstMonthLiquidity')}</span>
-              <span id="res-dep-first-total" class="breakdown-value positive">€ 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('installment1')}</span>
-              <span id="res-dep-inst1" class="breakdown-value">€ 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('installment2')}</span>
-              <span id="res-dep-inst2" class="breakdown-value">€ 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('installment3')}</span>
-              <span id="res-dep-inst3" class="breakdown-value">€ 0,00</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    const kaltIn = document.getElementById('dep-kalt');
-    const updateDep = () => {
-      const res = RentCalculator.calculateDeposit(kaltIn.value);
-      document.getElementById('res-dep-total').textContent = GLTUtils.formatEuro(res.maxKaution);
-      document.getElementById('res-dep-first-total').textContent = GLTUtils.formatEuro(res.moveInLiquidity);
-      document.getElementById('res-dep-inst1').textContent = GLTUtils.formatEuro(res.installment1);
-      document.getElementById('res-dep-inst2').textContent = GLTUtils.formatEuro(res.installment2);
-      document.getElementById('res-dep-inst3').textContent = GLTUtils.formatEuro(res.installment3);
-    };
-
-    kaltIn.addEventListener('input', updateDep);
-    updateDep();
-  },
 
   // Tool 7: Moving Cost Calculator
   renderMovingTool(container, tool) {
@@ -1407,7 +1334,7 @@ const App = {
   // Tool 11: Public Holidays (Feiertage)
   renderHolidaysTool(container, tool) {
     const statesOpts = GERMAN_STATES.map(s => `
-      <option value="${s.code}" ${s.code === 'BY' ? 'selected' : ''}>${s.flagEmoji} ${s.nameDe} (${s.code})</option>
+      <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.flagEmoji} ${s.nameDe} (${s.code})</option>
     `).join('');
 
     container.innerHTML = `
@@ -1425,8 +1352,8 @@ const App = {
             <label class="form-label">${t('selectYear')}</label>
             <select id="hol-year" class="form-select">
               <option value="2024">2024</option>
-              <option value="2025" selected>2025</option>
-              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
               <option value="2027">2027</option>
             </select>
           </div>
@@ -1490,12 +1417,8 @@ const App = {
 
   // Tool 12: Working Days Calculator
   renderWorkingDaysTool(container, tool) {
-    const today = new Date();
-    const todayStr = GERMAN_HOLIDAYS.formatDate(today);
-    const endOfYear = `${today.getFullYear()}-12-31`;
-
     const statesOpts = GERMAN_STATES.map(s => `
-      <option value="${s.code}" ${s.code === 'NW' ? 'selected' : ''}>${s.nameDe}</option>
+      <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.nameDe}</option>
     `).join('');
 
     container.innerHTML = `
@@ -1513,11 +1436,11 @@ const App = {
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('startDate')}</label>
-              <input type="date" id="work-start" class="form-input" value="${todayStr}">
+              <input type="date" id="work-start" class="form-input" value="2026-01-01">
             </div>
             <div class="form-group">
               <label class="form-label">${t('endDate')}</label>
-              <input type="date" id="work-end" class="form-input" value="${endOfYear}">
+              <input type="date" id="work-end" class="form-input" value="2026-12-31">
             </div>
           </div>
           <div class="form-group">
@@ -1604,11 +1527,11 @@ const App = {
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('plannedLeaveStart')}</label>
-              <input type="date" id="vac-start" class="form-input" value="2025-05-26">
+              <input type="date" id="vac-start" class="form-input" value="2026-05-18">
             </div>
             <div class="form-group">
               <label class="form-label">${t('plannedLeaveEnd')}</label>
-              <input type="date" id="vac-end" class="form-input" value="2025-05-30">
+              <input type="date" id="vac-end" class="form-input" value="2026-05-22">
             </div>
           </div>
         </div>
@@ -1653,7 +1576,7 @@ const App = {
     const endIn = document.getElementById('vac-end');
 
     const updateVac = () => {
-      const res = CalendarTools.calculateVacation(totIn.value, usedIn.value, startIn.value, endIn.value, "NW");
+      const res = CalendarTools.calculateVacation(totIn.value, usedIn.value, startIn.value, endIn.value, "BE");
       document.getElementById('res-vac-rem').textContent = res.remaining;
       document.getElementById('res-vac-total-echo').textContent = res.annualTotal;
       document.getElementById('res-vac-used-echo').textContent = `- ${res.alreadyTaken}`;
@@ -1682,8 +1605,8 @@ const App = {
             <label class="form-label">${t('numKidsInput')}</label>
             <input type="number" id="kg-children" class="form-input" value="2" min="1" max="15">
           </div>
-          <div class="notice-box">
-            💶 <b>Standard Rate:</b> ${t('kindergeldAmountCard')} (${t('perChildMonthly')})
+          <div class="notice-box" style="background-color:var(--accent-light); border-color:var(--accent-primary);">
+            💶 <b>Current 2026 Rate:</b> <span style="font-size:1.125rem; font-weight:800; color:var(--accent-primary);">259 € / month</span> (${t('perChildMonthly')})
           </div>
         </div>
 
@@ -1692,11 +1615,50 @@ const App = {
           <div class="result-hero">
             <div class="result-hero-label">${t('monthlyKindergeldTotal')}</div>
             <div id="res-kg-monthly" class="result-hero-amount">€ 0,00</div>
-            <div id="res-kg-annual" class="result-hero-sub">${t('annualKindergeldTotal')}: € 0,00</div>
+            <div id="res-kg-annual" class="result-hero-sub" style="font-size:1rem; font-weight:600; color:var(--text-primary); margin-top:0.3rem;">${t('annualKindergeldTotal')}: € 0,00</div>
+          </div>
+          <div class="breakdown-list">
+            <div class="breakdown-row" style="color:var(--text-secondary);">
+              <span class="breakdown-label">2023–2024 Past Baseline (250 €/child)</span>
+              <span id="res-kg-past-echo" class="breakdown-value">€ 0,00</span>
+            </div>
+            <div class="breakdown-row" style="color:var(--text-secondary);">
+              <span class="breakdown-label">2025 Past Amount (255 €/child)</span>
+              <span id="res-kg-2025-echo" class="breakdown-value">€ 0,00</span>
+            </div>
+            <div class="breakdown-row" style="font-weight:700; color:var(--success-color);">
+              <span class="breakdown-label">2026 Current Payout (259 €/child)</span>
+              <span id="res-kg-curr-echo" class="breakdown-value positive">€ 0,00</span>
+            </div>
+            <div class="breakdown-row total-row" style="color:var(--accent-primary);">
+              <span class="breakdown-label">From 2027 Projected (263 €/child)</span>
+              <span id="res-kg-2027-echo" class="breakdown-value" style="color:var(--accent-primary);">€ 0,00</span>
+            </div>
           </div>
         </div>
 
+        <!-- Timeline & Historical Rates Section -->
         <div class="info-section">
+          <div class="info-panel" style="margin-bottom:1.5rem;">
+            <h3 class="panel-title">📈 ${t('kindergeldTimelineTitle')}</h3>
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:1rem;">
+              독일 연방정부(Bundeskabinett)의 세법 개정안(Steuerfortentwicklungsgesetz)에 따라 아동수당(Kindergeld)은 2025년 월 255유로, <b>2026년 기준 월 259유로</b>로 인상되었습니다. <b>2027년부터는 월 263유로</b>로 추가 인상될 예정입니다.
+            </p>
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>연도 / 기간 (Period)</th>
+                    <th>자녀 1인당 월 지급액</th>
+                    <th id="th-kg-family-col">우리가구 월 수령액</th>
+                    <th>구분 (Status)</th>
+                  </tr>
+                </thead>
+                <tbody id="kg-timeline-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
           <div class="info-panel">
             <h3 class="panel-title">📖 ${t('kindergeldEligibilityTitle')}</h3>
             <div style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin-bottom:1rem;">
@@ -1713,8 +1675,50 @@ const App = {
     const kidsIn = document.getElementById('kg-children');
     const updateKG = () => {
       const res = FamilyTools.calculateKindergeld(kidsIn.value);
+      const count = res.numChildren;
+      const lang = currentLang;
+
       document.getElementById('res-kg-monthly').textContent = GLTUtils.formatEuro(res.monthlyTotal);
       document.getElementById('res-kg-annual').textContent = `${t('annualKindergeldTotal')}: ${GLTUtils.formatEuro(res.annualTotal)}`;
+
+      document.getElementById('res-kg-past-echo').textContent = `${GLTUtils.formatEuro(count * 250)} / mo`;
+      document.getElementById('res-kg-2025-echo').textContent = `${GLTUtils.formatEuro(count * 255)} / mo`;
+      document.getElementById('res-kg-curr-echo').textContent = `${GLTUtils.formatEuro(res.monthlyTotal)} / mo`;
+      document.getElementById('res-kg-2027-echo').textContent = `${GLTUtils.formatEuro(count * 263)} / mo (+${GLTUtils.formatEuro(count * 4)}/mo)`;
+
+      const thFam = document.getElementById('th-kg-family-col');
+      if (thFam) {
+        thFam.textContent = lang === 'ko' ? `자녀 ${count}명 가구 월 수령액` : `Monthly Payout for ${count} Child${count > 1 ? 'ren' : ''}`;
+      }
+
+      const tbody = document.getElementById('kg-timeline-tbody');
+      if (tbody) {
+        tbody.innerHTML = res.timelineComparison.map(item => {
+          let rowStyle = "";
+          let badge = "";
+
+          if (item.isCurrent) {
+            rowStyle = "background-color: rgba(16, 185, 129, 0.08); font-weight:700;";
+            badge = `<span class="badge" style="background-color:var(--success-light); color:var(--success-color); font-weight:700;">${lang === 'ko' ? '★ 현재 수령액 (2026)' : '★ Current Rate (2026)'}</span>`;
+          } else if (item.isFuture) {
+            rowStyle = "background-color: rgba(99, 102, 241, 0.08); font-weight:600;";
+            badge = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:700;">${lang === 'ko' ? '🚀 2027년 인상 예정' : '🚀 2027 Upcoming Increase'}</span>`;
+          } else {
+            badge = `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${lang === 'ko' ? '이전 (과거)' : 'Past'}</span>`;
+          }
+
+          return `
+            <tr style="${rowStyle}">
+              <td style="font-weight:600;">${lang === 'ko' ? item.periodKo : item.periodEn}</td>
+              <td style="font-family:var(--font-mono);">${lang === 'ko' ? item.rateDescKo : item.rateDescEn}</td>
+              <td style="font-family:var(--font-mono); font-weight:700; ${item.isCurrent ? 'color:var(--success-color);' : item.isFuture ? 'color:var(--accent-primary);' : ''}">
+                ${GLTUtils.formatEuro(item.monthlyFamilyTotal)} / mo (${GLTUtils.formatEuro(item.annualFamilyTotal)} / yr)
+              </td>
+              <td>${badge}</td>
+            </tr>
+          `;
+        }).join('');
+      }
     };
 
     kidsIn.addEventListener('input', updateKG);
@@ -1724,7 +1728,7 @@ const App = {
   // Tool 15: School Holidays
   renderSchoolHolidaysTool(container, tool) {
     const statesOpts = GERMAN_STATES.map(s => `
-      <option value="${s.code}" ${s.code === 'NW' ? 'selected' : ''}>${s.nameDe}</option>
+      <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.nameDe}</option>
     `).join('');
 
     container.innerHTML = `
@@ -1742,8 +1746,8 @@ const App = {
             <label class="form-label">${t('selectYear')}</label>
             <select id="sch-year" class="form-select">
               <option value="2024">2024</option>
-              <option value="2025" selected>2025</option>
-              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
               <option value="2027">2027</option>
             </select>
           </div>
