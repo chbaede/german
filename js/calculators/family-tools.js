@@ -56,9 +56,14 @@ const FamilyTools = {
     }
   ],
 
-  calculateKindergeld(numChildren) {
+  calculateKindergeld(numChildren, year = 2026) {
     const count = Math.max(0, parseInt(numChildren || 1, 10));
-    const monthlyTotal = count * this.KINDERGELD_PER_CHILD;
+    let rate = this.KINDERGELD_PER_CHILD;
+    if (year === 2025) rate = 255;
+    else if (year >= 2027) rate = 263;
+    else if (year <= 2024 && year >= 2023) rate = 250;
+
+    const monthlyTotal = count * rate;
     const annualTotal = monthlyTotal * 12;
 
     const timelineComparison = this.RATES_TIMELINE.map(item => ({
@@ -68,8 +73,9 @@ const FamilyTools = {
     }));
 
     return {
+      year,
       numChildren: count,
-      ratePerChild: this.KINDERGELD_PER_CHILD,
+      ratePerChild: rate,
       monthlyTotal,
       annualTotal,
       timelineComparison

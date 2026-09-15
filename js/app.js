@@ -244,7 +244,7 @@ const App = {
     container.innerHTML = `
       <div class="tool-topbar">
         <a href="#" class="btn-back">${t('backToDashboard')}</a>
-        <div class="badge badge-popular">${t('estimatedNotice')}</div>
+        <div class="badge badge-popular" id="salary-active-year-badge">${t('activeTaxYearBadge')}</div>
       </div>
       <div class="tool-headline">
         <h1 class="tool-page-title">${tool.icon} ${tool.title[currentLang]}</h1>
@@ -278,6 +278,14 @@ const App = {
 
           <div class="form-row">
             <div class="form-group">
+              <label class="form-label">${t('taxYearLabel')}</label>
+              <select id="salary-taxyear" class="form-select">
+                <option value="2026" selected>2026 (${currentLang === 'ko' ? '현재 법정 기준' : 'Current Statutory'})</option>
+                <option value="2025">2025</option>
+                <option value="2027">2027 (${currentLang === 'ko' ? '예정' : 'Projected'})</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label class="form-label">${t('taxClass')}</label>
               <select id="salary-taxclass" class="form-select">
                 <option value="1" selected>Class I (Single)</option>
@@ -288,13 +296,13 @@ const App = {
                 <option value="6">Class VI (Second Job)</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('bundesland')}</label>
               <select id="salary-state" class="form-select">${statesOptions}</select>
             </div>
-          </div>
-
-          <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('churchTax')}</label>
               <select id="salary-church" class="form-select">
@@ -302,18 +310,23 @@ const App = {
                 <option value="true">${t('yes')} (8-9%)</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('numChildren')}</label>
               <input type="number" id="salary-children" class="form-input" value="0" min="0" max="10">
+              <div class="form-helper" style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem; line-height:1.4;">
+                ℹ️ ${t('careChildrenProofNote')}
+              </div>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">${t('healthInsurance')}</label>
-            <select id="salary-health" class="form-select">
-              <option value="gkv" selected>${t('statutoryHealth')}</option>
-              <option value="pkv">${t('privateHealth')}</option>
-            </select>
+            <div class="form-group">
+              <label class="form-label">${t('healthInsurance')}</label>
+              <select id="salary-health" class="form-select">
+                <option value="gkv" selected>${t('statutoryHealth')}</option>
+                <option value="pkv">${t('privateHealth')}</option>
+              </select>
+            </div>
           </div>
 
           <div id="pkv-row" class="form-group" style="display:none;">
@@ -330,7 +343,7 @@ const App = {
           </div>
 
           <div class="notice-box">
-            <strong>⚠️ ${t('estimatedNotice')}:</strong> ${t('taxDisclaimer')}
+            <strong>⚠️ ${t('estimatedNotice')}:</strong> ${t('estimatedDisclaimerText')}
           </div>
         </div>
 
@@ -365,19 +378,19 @@ const App = {
               <span id="res-church" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('pensionContribution')} (9.3%)</span>
+              <span class="breakdown-label">${t('pensionContribution')}</span>
               <span id="res-rv" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('unemploymentContribution')} (1.3%)</span>
+              <span class="breakdown-label">${t('unemploymentContribution')}</span>
               <span id="res-av" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('healthContribution')} (~8.55%)</span>
+              <span class="breakdown-label">${t('healthContribution')}</span>
               <span id="res-gkv" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('careContribution')} (PV)</span>
+              <span class="breakdown-label">${t('careContribution')}</span>
               <span id="res-pv" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row total-row">
@@ -391,20 +404,53 @@ const App = {
           </div>
         </div>
 
-        <!-- Explanatory & FAQ Section -->
+        <!-- Explanatory, 2026 Parameters, and Official Sources Section -->
         <div class="info-section">
-          <div class="info-panel">
-            <h3 class="panel-title">💡 ${t('infoHeading')}</h3>
-            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:1rem;">
-              In Germany, statutory deductions consist of two main components: <b>taxes</b> (Lohnsteuer, Solidaritätszuschlag, Kirchensteuer) and <b>mandatory social security contributions</b> (Rentenversicherung, Arbeitslosenversicherung, Krankenversicherung, Pflegeversicherung). Social contributions are generally split 50/50 between employee and employer up to federal income ceilings (Beitragsbemessungsgrenzen).
-            </p>
-            <div class="faq-item">
-              <div class="faq-question">❓ What is the basic tax-free allowance (Grundfreibetrag)?</div>
-              <div class="faq-answer">For 2025, every single adult has a basic tax allowance of €12,096 per year (€24,192 for married couples filing jointly). Income earned below this threshold incurs 0% income tax.</div>
+          <!-- 2026 Statutory Calculation Parameters Card -->
+          <div class="info-panel" style="margin-bottom:1.5rem; border-left:4px solid var(--accent-primary);">
+            <h3 class="panel-title">⚖️ ${t('statutoryParams2026Title')}</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-top:0.75rem;">
+              <div class="param-mini-card">
+                <span class="param-mini-label">Grundfreibetrag (2026):</span>
+                <strong class="param-mini-val">€ 12.348 / yr</strong>
+              </div>
+              <div class="param-mini-card">
+                <span class="param-mini-label">RV & AV BBG:</span>
+                <strong class="param-mini-val">€ 8.450 / mo (€ 101.400 / yr)</strong>
+              </div>
+              <div class="param-mini-card">
+                <span class="param-mini-label">GKV & PV BBG:</span>
+                <strong class="param-mini-val">€ 5.812,50 / mo (€ 69.750 / yr)</strong>
+              </div>
+              <div class="param-mini-card">
+                <span class="param-mini-label">JAEG (Pflichtgrenze):</span>
+                <strong class="param-mini-val">€ 77.400 / yr (€ 6.450 / mo)</strong>
+              </div>
+              <div class="param-mini-card">
+                <span class="param-mini-label">GKV Employee Rate:</span>
+                <strong class="param-mini-val">8,75% (7,3% + 1,45% Zusatz)</strong>
+              </div>
+              <div class="param-mini-card">
+                <span class="param-mini-label">PV Base Employee:</span>
+                <strong class="param-mini-val">1,80% (SN: 2,30%) + 0,6% childless</strong>
+              </div>
             </div>
-            <div class="faq-item">
-              <div class="faq-question">❓ Who pays the Solidarity Surcharge (Solidaritätszuschlag)?</div>
-              <div class="faq-answer">Around 90% of employees in Germany are exempt from SolZ. It only applies if your annual income tax liability exceeds €18,130 for singles or €36,260 for married couples.</div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem; line-height:1.5;">
+              * Note: JAEG (€77.400/yr) is the statutory private health insurance threshold, while social security contributions cap at the GKV contribution ceiling (€5.812,50/mo).
+            </p>
+          </div>
+
+          <!-- Official Legal Sources & References -->
+          <div class="info-panel">
+            <h3 class="panel-title">🏛️ ${t('officialSourcesTitle')}</h3>
+            <ul style="font-size:0.8125rem; color:var(--text-secondary); line-height:1.6; margin:0.5rem 0 1rem 1.25rem;">
+              <li><b>Bundesfinanzministerium (BMF):</b> Lohnsteuer-Handbuch 2026 & § 32a EStG (Einkommensteuertarif 2026).</li>
+              <li><b>Bundesministerium für Gesundheit (BMG):</b> Sozialversicherungs-Rechengrößen-Verordnung 2026.</li>
+              <li><b>Bundesministerium für Arbeit und Soziales (BMAS):</b> Rechengrößen der Sozialversicherung 2026.</li>
+              <li><b>Deutsche Rentenversicherung:</b> Gesetzliche Beitragssätze und Grenzwerte 2026.</li>
+            </ul>
+            <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--border-subtle); padding-top:0.5rem;">
+              🗓️ <span>${t('lastUpdatedDate')}</span> • <span>Version: 2026.1 Statutory Architecture</span>
             </div>
           </div>
         </div>
@@ -415,6 +461,7 @@ const App = {
     const grossEl = document.getElementById('salary-gross');
     const grossAnnualEl = document.getElementById('salary-gross-annual');
     const syncInfoEl = document.getElementById('salary-sync-info');
+    const taxYearEl = document.getElementById('salary-taxyear');
     const taxClassEl = document.getElementById('salary-taxclass');
     const stateEl = document.getElementById('salary-state');
     const churchEl = document.getElementById('salary-church');
@@ -422,6 +469,7 @@ const App = {
     const healthEl = document.getElementById('salary-health');
     const pkvRow = document.getElementById('pkv-row');
     const pkvValEl = document.getElementById('salary-pkv-val');
+    const yearBadgeEl = document.getElementById('salary-active-year-badge');
 
     const updateSyncInfo = () => {
       const mVal = GLTUtils.parseNumber(grossEl.value, 0);
@@ -439,6 +487,7 @@ const App = {
 
       const res = SalaryCalculator.calculateNetSalary({
         grossMonthly: grossEl.value,
+        taxYear: taxYearEl.value,
         taxClass: taxClassEl.value,
         stateCode: stateEl.value,
         hasChurchTax: churchEl.value === 'true',
@@ -446,6 +495,10 @@ const App = {
         healthType: healthEl.value,
         pkvAmount: pkvValEl.value
       });
+
+      if (yearBadgeEl) {
+        yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.taxYear}`;
+      }
 
       document.getElementById('res-net-monthly').textContent = GLTUtils.formatEuro(res.netMonthly);
       document.getElementById('res-net-annual').textContent = `Annual Net: ${GLTUtils.formatEuro(res.netAnnual)}`;
@@ -475,7 +528,7 @@ const App = {
       updateCalc();
     });
 
-    [taxClassEl, stateEl, churchEl, childrenEl, healthEl, pkvValEl].forEach(el => {
+    [taxYearEl, taxClassEl, stateEl, churchEl, childrenEl, healthEl, pkvValEl].forEach(el => {
       el.addEventListener('input', updateCalc);
       el.addEventListener('change', updateCalc);
     });
@@ -484,6 +537,7 @@ const App = {
     document.getElementById('btn-salary-reset').addEventListener('click', () => {
       grossEl.value = "4500";
       grossAnnualEl.value = "54000";
+      taxYearEl.value = "2026";
       taxClassEl.value = "1";
       stateEl.value = "BE";
       churchEl.value = "false";
@@ -495,7 +549,7 @@ const App = {
     });
 
     document.getElementById('btn-copy-salary').addEventListener('click', function() {
-      const summary = `German Salary Calculation Estimate:\nGross: €${grossEl.value}/mo (€${grossAnnualEl.value}/yr)\nNet: ${document.getElementById('res-net-monthly').textContent} (${document.getElementById('res-net-annual').textContent})\nDeductions: ${document.getElementById('res-total-deductions').textContent} (${document.getElementById('res-effective-rate').textContent})\nhttps://german.yocto.co.kr/#salary`;
+      const summary = `German Salary Calculation (${taxYearEl.value} Estimate):\nGross: €${grossEl.value}/mo (€${grossAnnualEl.value}/yr)\nNet: ${document.getElementById('res-net-monthly').textContent} (${document.getElementById('res-net-annual').textContent})\nDeductions: ${document.getElementById('res-total-deductions').textContent} (${document.getElementById('res-effective-rate').textContent})\nhttps://german.yocto.co.kr/#salary`;
       GLTUtils.copyText(summary, this);
     });
 
@@ -508,7 +562,7 @@ const App = {
     container.innerHTML = `
       <div class="tool-topbar">
         <a href="#" class="btn-back">${t('backToDashboard')}</a>
-        <div class="badge badge-popular">${t('estimatedNotice')}</div>
+        <div class="badge badge-popular" id="rev-active-year-badge">${t('activeTaxYearBadge')}</div>
       </div>
       <div class="tool-headline">
         <h1 class="tool-page-title">${tool.icon} ${tool.title[currentLang]}</h1>
@@ -540,6 +594,14 @@ const App = {
 
           <div class="form-row">
             <div class="form-group">
+              <label class="form-label">${t('taxYearLabel')}</label>
+              <select id="rev-taxyear" class="form-select">
+                <option value="2026" selected>2026 (${currentLang === 'ko' ? '법정 기준' : 'Statutory'})</option>
+                <option value="2025">2025</option>
+                <option value="2027">2027</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label class="form-label">${t('taxClass')}</label>
               <select id="rev-taxclass" class="form-select">
                 <option value="1" selected>Class I</option>
@@ -548,6 +610,9 @@ const App = {
                 <option value="5">Class V</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('numChildren')}</label>
               <input type="number" id="rev-children" class="form-input" value="0" min="0">
@@ -558,7 +623,7 @@ const App = {
             <button id="btn-rev-calc" class="btn-primary">⚡ ${t('calculate')}</button>
           </div>
           <div class="notice-box">
-            <strong>ℹ️ Method:</strong> ${t('reverseExplain')}
+            <strong>⚠️ ${t('estimatedNotice')}:</strong> ${t('estimatedDisclaimerText')}
           </div>
         </div>
 
@@ -579,9 +644,11 @@ const App = {
     const netIn = document.getElementById('rev-net');
     const netAnnualIn = document.getElementById('rev-net-annual');
     const syncInfoEl = document.getElementById('rev-sync-info');
+    const yearIn = document.getElementById('rev-taxyear');
     const tcIn = document.getElementById('rev-taxclass');
     const chIn = document.getElementById('rev-children');
     const explEl = document.getElementById('res-rev-explanation');
+    const revYearBadge = document.getElementById('rev-active-year-badge');
 
     const updateRevSyncInfo = () => {
       const mVal = GLTUtils.parseNumber(netIn.value, 0);
@@ -594,7 +661,12 @@ const App = {
     };
 
     const updateRev = () => {
+      const taxYear = yearIn ? yearIn.value : 2026;
+      if (revYearBadge) {
+        revYearBadge.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${taxYear}`;
+      }
       const gross = SalaryCalculator.calculateNetToGross(netIn.value, {
+        taxYear: taxYear,
         taxClass: tcIn.value,
         numChildren: chIn.value,
         stateCode: "BE"
@@ -609,8 +681,8 @@ const App = {
 
       if (explEl) {
         explEl.innerHTML = currentLang === 'ko'
-          ? `목표 실수령액 <b>${targetM} / 월</b> (연간 <b>${targetA}</b>)을 받으려면, 연봉 협상 시 <b>필요 세전 월급 약 ${reqM}</b>, <b>필요 세전 연봉 약 ${reqA}</b>를 요구해야 합니다.`
-          : `To achieve a monthly take-home pay of <b>${targetM}</b> (annual net <b>${targetA}</b>), you should negotiate a gross salary of approximately <b>${reqM} / month</b> (<b>${reqA} / year</b>) with your employer.`;
+          ? `목표 실수령액 <b>${targetM} / 월</b> (연간 <b>${targetA}</b>)을 받으려면, 연봉 협상 시 <b>필요 세전 월급 약 ${reqM}</b>, <b>필요 세전 연봉 약 ${reqA}</b>를 요구해야 합니다. (세무 연도: ${taxYear}년)`
+          : `To achieve a monthly take-home pay of <b>${targetM}</b> (annual net <b>${targetA}</b>), you should negotiate a gross salary of approximately <b>${reqM} / month</b> (<b>${reqA} / year</b>) with your employer. (Tax year: ${taxYear})`;
       }
     };
 
@@ -628,7 +700,13 @@ const App = {
       updateRev();
     });
 
-    [tcIn, chIn].forEach(el => el.addEventListener('input', updateRev));
+    [yearIn, tcIn, chIn].forEach(el => {
+      if (el) {
+        el.addEventListener('input', updateRev);
+        el.addEventListener('change', updateRev);
+      }
+    });
+
     document.getElementById('btn-rev-calc').addEventListener('click', updateRev);
 
     updateRevSyncInfo();
