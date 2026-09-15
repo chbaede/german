@@ -22,3 +22,4 @@ const FamilyTools = {
     return GERMAN_SCHOOL_HOLIDAYS.getSchoolHolidays(year, stateCode);
   }
 };
+

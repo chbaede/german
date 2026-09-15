@@ -138,3 +138,4 @@ const GERMAN_TAX_CONFIG = {
     }
   ]
 };
+

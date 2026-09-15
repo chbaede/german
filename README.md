@@ -193,3 +193,4 @@ Edit `js/data/tax-config.js`:
 
 - **Privacy**: No tracking cookies, no Google Analytics, no third-party telemetry, and zero server-side transmission. All inputs stay exclusively within local browser memory.
 - **Disclaimer**: Tools are provided for informational and educational purposes only. Calculations are estimates and do not constitute certified tax, legal, or financial advice.
+

@@ -169,3 +169,4 @@ const GERMAN_SCHOOL_HOLIDAYS = {
     return yearData["BW"] || yearData["BY"] || yearData["NW"];
   }
 };
+

@@ -239,3 +239,4 @@ const GERMAN_HOLIDAYS = {
     return allHolidays.filter(h => h.nationwide || h.states.includes(stateCode));
   }
 };
+

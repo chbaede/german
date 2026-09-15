@@ -46,3 +46,4 @@
     applyTheme(getPreferredTheme());
   });
 })();
+

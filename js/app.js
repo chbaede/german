@@ -219,15 +219,25 @@ const App = {
         <div class="input-panel">
           <h2 class="panel-title"><span>⚙️ ${t('calculate')}</span></h2>
           
-          <div class="form-group">
-            <label class="form-label">${t('grossSalaryMonthly')}</label>
-            <div class="input-with-affix">
-              <span class="affix affix-left">€</span>
-              <input type="number" id="salary-gross" class="form-input input-prefix" value="4500" step="50" min="0">
-              <span class="affix affix-right">/mo</span>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">${t('grossSalaryMonthly')}</label>
+              <div class="input-with-affix">
+                <span class="affix affix-left">€</span>
+                <input type="number" id="salary-gross" class="form-input input-prefix" value="4500" step="50" min="0">
+                <span class="affix affix-right">/mo</span>
+              </div>
             </div>
-            <div class="form-helper">${t('monthly')} (e.g. 54,000 €/yr)</div>
+            <div class="form-group">
+              <label class="form-label">${t('grossSalaryAnnual')}</label>
+              <div class="input-with-affix">
+                <span class="affix affix-left">€</span>
+                <input type="number" id="salary-gross-annual" class="form-input input-prefix" value="54000" step="500" min="0">
+                <span class="affix affix-right">/yr</span>
+              </div>
+            </div>
           </div>
+          <div id="salary-sync-info" class="form-helper" style="margin-top:-0.5rem; margin-bottom:1rem; font-weight:500; color:var(--accent-primary);"></div>
 
           <div class="form-row">
             <div class="form-group">
@@ -297,7 +307,7 @@ const App = {
           <div class="result-hero">
             <div class="result-hero-label">${t('netMonthly')}</div>
             <div id="res-net-monthly" class="result-hero-amount">€ 0,00</div>
-            <div id="res-net-annual" class="result-hero-sub">Annual: € 0,00</div>
+            <div id="res-net-annual" class="result-hero-sub" style="font-size:1rem; font-weight:600; color:var(--text-primary); margin-top:0.3rem;">Annual: € 0,00</div>
           </div>
 
           <div class="breakdown-list">
@@ -366,6 +376,8 @@ const App = {
 
     // Elements
     const grossEl = document.getElementById('salary-gross');
+    const grossAnnualEl = document.getElementById('salary-gross-annual');
+    const syncInfoEl = document.getElementById('salary-sync-info');
     const taxClassEl = document.getElementById('salary-taxclass');
     const stateEl = document.getElementById('salary-state');
     const churchEl = document.getElementById('salary-church');
@@ -373,6 +385,16 @@ const App = {
     const healthEl = document.getElementById('salary-health');
     const pkvRow = document.getElementById('pkv-row');
     const pkvValEl = document.getElementById('salary-pkv-val');
+
+    const updateSyncInfo = () => {
+      const mVal = GLTUtils.parseNumber(grossEl.value, 0);
+      const aVal = GLTUtils.parseNumber(grossAnnualEl.value, 0);
+      if (syncInfoEl) {
+        syncInfoEl.innerHTML = currentLang === 'ko'
+          ? `💡 세전 월급 <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ 세전 연봉 <b>${GLTUtils.formatEuro(aVal)}</b> (월급 × 12)`
+          : `💡 Monthly <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Annual <b>${GLTUtils.formatEuro(aVal)}</b> (Monthly × 12)`;
+      }
+    };
 
     const updateCalc = () => {
       const isPkv = healthEl.value === 'pkv';
@@ -390,7 +412,7 @@ const App = {
 
       document.getElementById('res-net-monthly').textContent = GLTUtils.formatEuro(res.netMonthly);
       document.getElementById('res-net-annual').textContent = `Annual Net: ${GLTUtils.formatEuro(res.netAnnual)}`;
-      document.getElementById('res-gross').textContent = GLTUtils.formatEuro(res.grossMonthly);
+      document.getElementById('res-gross').textContent = `${GLTUtils.formatEuro(res.grossMonthly)} / mo (${GLTUtils.formatEuro(res.grossAnnual)} / yr)`;
       document.getElementById('res-incometax').textContent = `- ${GLTUtils.formatEuro(res.incomeTaxMonthly)}`;
       document.getElementById('res-solz').textContent = `- ${GLTUtils.formatEuro(res.solzMonthly)}`;
       document.getElementById('res-church').textContent = `- ${GLTUtils.formatEuro(res.churchTaxMonthly)}`;
@@ -402,7 +424,21 @@ const App = {
       document.getElementById('res-effective-rate').textContent = `${res.effectiveDeductionRate.toFixed(1)} %`;
     };
 
-    [grossEl, taxClassEl, stateEl, churchEl, childrenEl, healthEl, pkvValEl].forEach(el => {
+    grossEl.addEventListener('input', () => {
+      const m = GLTUtils.parseNumber(grossEl.value, 0);
+      grossAnnualEl.value = Math.round(m * 12);
+      updateSyncInfo();
+      updateCalc();
+    });
+
+    grossAnnualEl.addEventListener('input', () => {
+      const a = GLTUtils.parseNumber(grossAnnualEl.value, 0);
+      grossEl.value = Math.round(a / 12);
+      updateSyncInfo();
+      updateCalc();
+    });
+
+    [taxClassEl, stateEl, churchEl, childrenEl, healthEl, pkvValEl].forEach(el => {
       el.addEventListener('input', updateCalc);
       el.addEventListener('change', updateCalc);
     });
@@ -410,20 +446,23 @@ const App = {
     document.getElementById('btn-salary-calc').addEventListener('click', updateCalc);
     document.getElementById('btn-salary-reset').addEventListener('click', () => {
       grossEl.value = "4500";
+      grossAnnualEl.value = "54000";
       taxClassEl.value = "1";
       stateEl.value = "NW";
       churchEl.value = "false";
       childrenEl.value = "0";
       healthEl.value = "gkv";
       pkvValEl.value = "450";
+      updateSyncInfo();
       updateCalc();
     });
 
     document.getElementById('btn-copy-salary').addEventListener('click', function() {
-      const summary = `German Salary Calculation Estimate:\nGross: €${grossEl.value}/mo\nNet: ${document.getElementById('res-net-monthly').textContent}\nDeductions: ${document.getElementById('res-total-deductions').textContent} (${document.getElementById('res-effective-rate').textContent})\nhttps://german.yocto.co.kr/#salary`;
+      const summary = `German Salary Calculation Estimate:\nGross: €${grossEl.value}/mo (€${grossAnnualEl.value}/yr)\nNet: ${document.getElementById('res-net-monthly').textContent} (${document.getElementById('res-net-annual').textContent})\nDeductions: ${document.getElementById('res-total-deductions').textContent} (${document.getElementById('res-effective-rate').textContent})\nhttps://german.yocto.co.kr/#salary`;
       GLTUtils.copyText(summary, this);
     });
 
+    updateSyncInfo();
     updateCalc();
   },
 
@@ -442,14 +481,25 @@ const App = {
       <div class="tool-layout">
         <div class="input-panel">
           <h2 class="panel-title"><span>🎯 ${t('calculate')}</span></h2>
-          <div class="form-group">
-            <label class="form-label">${t('desiredNet')}</label>
-            <div class="input-with-affix">
-              <span class="affix affix-left">€</span>
-              <input type="number" id="rev-net" class="form-input input-prefix" value="3000" step="50" min="0">
-              <span class="affix affix-right">/mo</span>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">${t('desiredNet')}</label>
+              <div class="input-with-affix">
+                <span class="affix affix-left">€</span>
+                <input type="number" id="rev-net" class="form-input input-prefix" value="3000" step="50" min="0">
+                <span class="affix affix-right">/mo</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">${t('desiredNetAnnual')}</label>
+              <div class="input-with-affix">
+                <span class="affix affix-left">€</span>
+                <input type="number" id="rev-net-annual" class="form-input input-prefix" value="36000" step="500" min="0">
+                <span class="affix affix-right">/yr</span>
+              </div>
             </div>
           </div>
+          <div id="rev-sync-info" class="form-helper" style="margin-top:-0.5rem; margin-bottom:1rem; font-weight:500; color:var(--accent-primary);"></div>
 
           <div class="form-row">
             <div class="form-group">
@@ -480,18 +530,31 @@ const App = {
           <div class="result-hero">
             <div class="result-hero-label">${t('requiredGross')}</div>
             <div id="res-rev-gross" class="result-hero-amount">€ 0,00</div>
-            <div id="res-rev-annual" class="result-hero-sub">Annual: € 0,00</div>
+            <div id="res-rev-annual" class="result-hero-sub" style="font-size:1rem; font-weight:600; color:var(--text-primary); margin-top:0.3rem;">Annual: € 0,00</div>
           </div>
-          <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.5;">
-            To achieve a monthly take-home pay of <b id="res-rev-target-echo">€ 3.000</b> in Germany, you should negotiate a base gross salary of approximately <b id="res-rev-bold-gross">€ 4.700</b> with your employer.
+          <p id="res-rev-explanation" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-top:1rem;">
+            To achieve your target net salary, you should negotiate the gross salary shown above with your employer.
           </p>
         </div>
       </div>
     `;
 
     const netIn = document.getElementById('rev-net');
+    const netAnnualIn = document.getElementById('rev-net-annual');
+    const syncInfoEl = document.getElementById('rev-sync-info');
     const tcIn = document.getElementById('rev-taxclass');
     const chIn = document.getElementById('rev-children');
+    const explEl = document.getElementById('res-rev-explanation');
+
+    const updateRevSyncInfo = () => {
+      const mVal = GLTUtils.parseNumber(netIn.value, 0);
+      const aVal = GLTUtils.parseNumber(netAnnualIn.value, 0);
+      if (syncInfoEl) {
+        syncInfoEl.innerHTML = currentLang === 'ko'
+          ? `💡 목표 실수령 월 <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ 연간 <b>${GLTUtils.formatEuro(aVal)}</b> (월 실수령액 × 12)`
+          : `💡 Target Monthly Net <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Annual Net <b>${GLTUtils.formatEuro(aVal)}</b> (Monthly × 12)`;
+      }
+    };
 
     const updateRev = () => {
       const gross = SalaryCalculator.calculateNetToGross(netIn.value, {
@@ -499,14 +562,39 @@ const App = {
         numChildren: chIn.value,
         stateCode: "NW"
       });
-      document.getElementById('res-rev-gross').textContent = GLTUtils.formatEuro(gross);
-      document.getElementById('res-rev-annual').textContent = `Annual Gross: ${GLTUtils.formatEuro(gross * 12)}`;
-      document.getElementById('res-rev-target-echo').textContent = GLTUtils.formatEuro(GLTUtils.parseNumber(netIn.value, 0));
-      document.getElementById('res-rev-bold-gross').textContent = GLTUtils.formatEuro(gross);
+      document.getElementById('res-rev-gross').textContent = `${GLTUtils.formatEuro(gross)} / mo`;
+      document.getElementById('res-rev-annual').textContent = `Annual Gross: ${GLTUtils.formatEuro(gross * 12)} / yr`;
+
+      const targetM = GLTUtils.formatEuro(GLTUtils.parseNumber(netIn.value, 0));
+      const targetA = GLTUtils.formatEuro(GLTUtils.parseNumber(netAnnualIn.value, 0));
+      const reqM = GLTUtils.formatEuro(gross);
+      const reqA = GLTUtils.formatEuro(gross * 12);
+
+      if (explEl) {
+        explEl.innerHTML = currentLang === 'ko'
+          ? `목표 실수령액 <b>${targetM} / 월</b> (연간 <b>${targetA}</b>)을 받으려면, 연봉 협상 시 <b>필요 세전 월급 약 ${reqM}</b>, <b>필요 세전 연봉 약 ${reqA}</b>를 요구해야 합니다.`
+          : `To achieve a monthly take-home pay of <b>${targetM}</b> (annual net <b>${targetA}</b>), you should negotiate a gross salary of approximately <b>${reqM} / month</b> (<b>${reqA} / year</b>) with your employer.`;
+      }
     };
 
-    [netIn, tcIn, chIn].forEach(el => el.addEventListener('input', updateRev));
+    netIn.addEventListener('input', () => {
+      const m = GLTUtils.parseNumber(netIn.value, 0);
+      netAnnualIn.value = Math.round(m * 12);
+      updateRevSyncInfo();
+      updateRev();
+    });
+
+    netAnnualIn.addEventListener('input', () => {
+      const a = GLTUtils.parseNumber(netAnnualIn.value, 0);
+      netIn.value = Math.round(a / 12);
+      updateRevSyncInfo();
+      updateRev();
+    });
+
+    [tcIn, chIn].forEach(el => el.addEventListener('input', updateRev));
     document.getElementById('btn-rev-calc').addEventListener('click', updateRev);
+
+    updateRevSyncInfo();
     updateRev();
   },
 
@@ -2109,3 +2197,4 @@ const App = {
 document.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
+

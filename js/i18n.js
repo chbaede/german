@@ -46,7 +46,8 @@ const I18N = {
     // Salary Calculator (1)
     salaryTitle: "German Salary Calculator (Brutto → Netto)",
     salaryDesc: "Estimate your monthly and annual take-home salary after taxes and statutory social security deductions.",
-    grossSalaryMonthly: "Gross Salary (Brutto)",
+    grossSalaryMonthly: "Gross Monthly Salary (Brutto)",
+    grossSalaryAnnual: "Gross Annual Salary (Brutto)",
     salaryPeriod: "Period",
     monthly: "Monthly",
     annual: "Annual",
@@ -79,7 +80,8 @@ const I18N = {
     // Net to Gross Calculator (2)
     netToGrossTitle: "Net → Gross Calculator (Reverse Salary)",
     netToGrossDesc: "Find out the required gross salary (Brutto) needed to achieve your desired take-home pay (Netto).",
-    desiredNet: "Desired Net Salary (€/month)",
+    desiredNet: "Desired Monthly Net (€/month)",
+    desiredNetAnnual: "Desired Annual Net (€/year)",
     requiredGross: "Estimated Required Gross (Brutto)",
     requiredGrossAnnual: "Estimated Required Annual Gross",
     reverseExplain: "Uses an iterative binary-search method against standard German income tax brackets and social ceilings.",
@@ -368,7 +370,8 @@ const I18N = {
     // Salary Calculator (1)
     salaryTitle: "독일 월급 실수령액 계산기 (세전 → 세후)",
     salaryDesc: "독일 소득세 등급(1~6등급), 4대 사회보험, 종교세를 반영하여 월 및 연간 세후 실수령액을 계산합니다.",
-    grossSalaryMonthly: "세전 급여 (Brutto)",
+    grossSalaryMonthly: "세전 월급 (Brutto)",
+    grossSalaryAnnual: "세전 연봉 (Brutto)",
     salaryPeriod: "급여 기준",
     monthly: "월급 기준",
     annual: "연봉 기준",
@@ -401,9 +404,10 @@ const I18N = {
     // Net to Gross Calculator (2)
     netToGrossTitle: "역산 급여 계산기 (목표 세후 → 필요 세전)",
     netToGrossDesc: "희망하는 목표 월 실수령액(Netto)을 받기 위해 연봉 협상 시 요구해야 하는 세전 총급여(Brutto)를 역산합니다.",
-    desiredNet: "희망 월 실수령액 (€/월)",
-    requiredGross: "필요 예상 월 세전급여 (Brutto)",
-    requiredGrossAnnual: "필요 예상 연봉 (Brutto)",
+    desiredNet: "목표 세후 월급 (€/월)",
+    desiredNetAnnual: "목표 세후 연봉 (€/년)",
+    requiredGross: "필요 예상 세전 월급 (Brutto)",
+    requiredGrossAnnual: "필요 예상 세전 연봉 (Brutto)",
     reverseExplain: "독일 누진 소득세율 구간 및 사회보험 부과상한선(BBG)을 바탕으로 이진 탐색 알고리즘을 통해 역산합니다.",
 
     // Annual Compensation Calculator (3)
@@ -689,3 +693,4 @@ function setLanguage(lang) {
     window.onLanguageChanged(lang);
   }
 }
+
