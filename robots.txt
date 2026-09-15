@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://german.yocto.co.kr/sitemap.xml

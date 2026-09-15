@@ -1,0 +1,119 @@
+/* ==========================================================================
+   German Life Toolkit — Design System Tokens & Base Styles
+   ========================================================================== */
+
+:root {
+  /* Color Palette — Light Mode */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text-primary: #0f172a;       /* Dark Navy */
+  --text-secondary: #475569;     /* Slate */
+  --text-muted: #94a3b8;         /* Muted Gray */
+
+  --accent-primary: #4338ca;     /* Indigo */
+  --accent-hover: #3730a3;
+  --accent-light: #eef2ff;
+
+  --success-color: #059669;      /* Green for Net & Savings */
+  --success-light: #ecfdf5;
+  --warning-color: #d97706;      /* Orange */
+  --warning-light: #fffbeb;
+  --danger-color: #dc2626;       /* Red for Deductions */
+  --danger-light: #fef2f2;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.dark {
+  /* Color Palette — Dark Mode */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-surface: #171f30;
+  --bg-card: #171f30;
+  --bg-card-hover: #1e293b;
+  --border-subtle: #243049;
+  --border-strong: #334155;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-primary: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-light: #1e1b4b;
+
+  --success-color: #10b981;
+  --success-light: #064e3b;
+  --warning-color: #f59e0b;
+  --warning-light: #78350f;
+  --danger-color: #f87171;
+  --danger-light: #7f1d1d;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 100%;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+/* Accessibility Focus States */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}

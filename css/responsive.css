@@ -1,0 +1,91 @@
+/* ==========================================================================
+   German Life Toolkit — Responsive Breakpoints & Mobile Optimization
+   ========================================================================== */
+
+/* Laptop & Tablet Landscape (<= 1024px) */
+@media (max-width: 1024px) {
+  .header-nav {
+    display: none; /* Collapsed or secondary navigation on tablets/mobile */
+  }
+
+  .tool-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+}
+
+/* Tablet Portrait & Large Phones (<= 768px) */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 1.875rem;
+  }
+
+  .hero-desc {
+    font-size: 0.9375rem;
+  }
+
+  .tool-layout {
+    grid-template-columns: 1fr; /* Single column stack */
+  }
+
+  .result-panel {
+    position: static;
+    margin-top: 1rem;
+  }
+
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .footer-top {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer-links-group {
+    gap: 2rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Small Mobile Phones (<= 390px iPhone mini / SE) */
+@media (max-width: 390px) {
+  .container {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .result-hero-amount {
+    font-size: 1.625rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+  }
+
+  .btn-toggle-option {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.25rem;
+  }
+}

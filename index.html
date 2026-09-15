@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>German Life Toolkit — Smart tools for everyday life in Germany</title>
+
+  <!-- SEO & Search Engine Optimization Meta Tags -->
+  <meta name="title" content="German Life Toolkit — Smart tools for everyday life in Germany">
+  <meta name="description" content="100% Client-side utility platform for expats, professionals, and residents in Germany. German salary calculator (Brutto-Netto), rent & Kaution calculator, car TCO, public holidays, working days, Kindergeld, and expat glossary. Zero server uploads.">
+  <meta name="keywords" content="German Salary Calculator, Brutto Netto Rechner, German Rent Calculator, Kaution, German Public Holidays, Arbeitstage, Kindergeld, Schulferien, German Life Toolkit, Yocto, Expat Germany">
+  <meta name="author" content="yocto.co.kr">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://german.yocto.co.kr/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://german.yocto.co.kr/">
+  <meta property="og:title" content="German Life Toolkit — Smart tools for everyday life in Germany">
+  <meta property="og:description" content="100% Private client-side calculators & reference tools: German Brutto-Netto, Warmmiete, Kaution, Car TCO, Public Holidays, and Expat Glossary.">
+  <meta property="og:image" content="https://german.yocto.co.kr/assets/favicon.svg">
+  <meta property="og:site_name" content="German Life Toolkit">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ko_KR">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://german.yocto.co.kr/">
+  <meta name="twitter:title" content="German Life Toolkit — Smart tools for everyday life in Germany">
+  <meta name="twitter:description" content="Smart calculators and everyday utility platform for living and working in Germany. 100% client-side privacy.">
+  <meta name="twitter:image" content="https://german.yocto.co.kr/assets/favicon.svg">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "German Life Toolkit",
+    "url": "https://german.yocto.co.kr/",
+    "description": "Smart everyday utility platform for living in Germany: salary calculator, rent calculator, holidays, and expat glossary.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "inLanguage": ["en", "ko"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    }
+  }
+  </script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Immediate Theme Initializer -->
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Privacy First Notification Banner -->
+  <aside class="privacy-banner" role="complementary" aria-label="Privacy notice">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+    <span data-i18n="privacyBanner">100% Client-Side. Your financial and personal data never leaves your browser.</span>
+  </aside>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="#" class="brand-wrapper" title="German Life Toolkit Home">
+        <div class="brand-icon">
+          <img src="assets/favicon.svg" alt="German Life Toolkit Logo" width="36" height="36">
+        </div>
+        <div class="brand-titles">
+          <span class="brand-title">🇩🇪 German Life Toolkit</span>
+          <span class="brand-subtitle" data-i18n="appSubtitle">Smart tools for everyday life in Germany</span>
+        </div>
+      </a>
+
+      <!-- Quick Nav for Large Screens -->
+      <nav class="header-nav" aria-label="Main categories navigation">
+        <a href="#" class="nav-link" data-i18n="navHome">Home</a>
+        <button class="nav-link" onclick="ToolSearch.setCategory('money'); location.hash='';" data-i18n="navMoney">Money</button>
+        <button class="nav-link" onclick="ToolSearch.setCategory('housing'); location.hash='';" data-i18n="navHousing">Housing</button>
+        <button class="nav-link" onclick="ToolSearch.setCategory('transport'); location.hash='';" data-i18n="navTransport">Transport</button>
+        <button class="nav-link" onclick="ToolSearch.setCategory('calendar'); location.hash='';" data-i18n="navCalendar">Calendar</button>
+        <button class="nav-link" onclick="ToolSearch.setCategory('family'); location.hash='';" data-i18n="navFamily">Family</button>
+        <button class="nav-link" onclick="ToolSearch.setCategory('everyday'); location.hash='';" data-i18n="navEveryday">Everyday</button>
+        <button class="nav-link" onclick="ToolSearch.setCategory('reference'); location.hash='';" data-i18n="navReference">Reference</button>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <!-- Ecosystem Pill -->
+        <a href="https://main.yocto.co.kr" target="_blank" rel="noopener noreferrer" class="yocto-pill" title="Visit Yocto Portal Ecosystem">
+          <span class="yocto-dot"></span>
+          <span>yocto.co.kr</span>
+        </a>
+
+        <!-- Language Switcher -->
+        <button id="lang-toggle" class="btn-icon" onclick="setLanguage(currentLang === 'en' ? 'ko' : 'en')" title="Switch Language">
+          KO
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle" class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       MAIN CONTENT CONTAINER
+       ========================================================================= -->
+  <main id="app-main">
+    
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboard-view">
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="container hero-content">
+          <div class="hero-badge">
+            <span>🛡️</span>
+            <span>Zero Tracking • No Backend • Pure Client-Side</span>
+          </div>
+          <h1 class="hero-title" data-i18n="heroTitle">German Life Toolkit</h1>
+          <p class="hero-desc" data-i18n="heroDesc">
+            Practical calculators, converters, and reference tools for expats, professionals, families, and residents living in Germany.
+          </p>
+
+          <!-- Search Bar -->
+          <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="search" 
+              id="search-input" 
+              class="search-input" 
+              placeholder="Search tools (e.g. salary, rent, car, holidays, Anmeldung...)" 
+              data-i18n="searchPlaceholder"
+              autocomplete="off"
+            >
+            <button id="search-clear" class="search-clear" style="display:none;" aria-label="Clear search">✕</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Category Filter Pills Bar -->
+      <div class="container categories-bar">
+        <div id="category-pills" class="category-pills"></div>
+      </div>
+
+      <!-- Recently Used Section (Conditional) -->
+      <section id="recent-section" class="container" style="display:none; padding-top:1.5rem;">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span>🕒</span>
+            <span data-i18n="recentlyUsed">Recently Used</span>
+          </h2>
+        </div>
+        <div id="recent-grid" class="tools-grid" style="margin-bottom:1.5rem;"></div>
+      </section>
+
+      <!-- Main Tools Catalog Grid -->
+      <section class="container tools-section">
+        <div class="section-header">
+          <h2 id="tools-section-title" class="section-title">
+            <span>⭐</span>
+            <span data-i18n="popularTools">Popular Tools</span>
+          </h2>
+        </div>
+        
+        <div id="tools-grid" class="tools-grid"></div>
+
+        <div id="no-results-msg" style="display:none; text-align:center; padding:3rem 1rem; color:var(--text-muted);">
+          <p style="font-size:1.125rem; margin-bottom:0.5rem;">🔍</p>
+          <p data-i18n="noResults">No matching tools found. Try searching for other terms.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- INDIVIDUAL TOOL VIEW CONTAINER -->
+    <div id="tool-view" class="container tool-page-container">
+      <div id="tool-view-content"></div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+            <img src="assets/favicon.svg" alt="German Life Toolkit Logo" width="24" height="24">
+            <span style="font-weight:700; color:var(--text-primary); font-size:1rem;">German Life Toolkit</span>
+          </div>
+          <p style="font-size:0.8125rem; color:var(--text-secondary); line-height:1.6; margin-bottom:0.75rem;" data-i18n="footerTagline">
+            Smart tools for everyday life in Germany.
+          </p>
+          <div style="font-size:0.75rem; color:var(--text-muted);">
+            <span data-i18n="footerPartOf">Part of the yocto.co.kr ecosystem</span>
+          </div>
+        </div>
+
+        <div class="footer-links-group">
+          <div class="footer-col">
+            <span class="footer-col-title" data-i18n="footerEcosystem">Yocto Ecosystem</span>
+            <a href="https://main.yocto.co.kr" target="_blank" rel="noopener noreferrer" class="footer-link">Yocto Service Hub</a>
+            <a href="https://www.yocto.co.kr" target="_blank" rel="noopener noreferrer" class="footer-link">Yocto Blog</a>
+            <a href="https://autohub.yocto.co.kr" target="_blank" rel="noopener noreferrer" class="footer-link">AutoHub</a>
+            <a href="https://devtools.yocto.co.kr" target="_blank" rel="noopener noreferrer" class="footer-link">DevTools</a>
+            <a href="https://life.yocto.co.kr" target="_blank" rel="noopener noreferrer" class="footer-link">LifeTools</a>
+          </div>
+
+          <div class="footer-col">
+            <span class="footer-col-title">Project & Social</span>
+            <a href="https://github.com/chbaede/german" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="footerGithub">GitHub Repository</a>
+            <a href="https://www.linkedin.com/in/locust2001/" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="footerLinkedIn">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-disclaimer" data-i18n="footerLegal">
+          Tools are provided for informational purposes only. Calculations are estimates and may not reflect individual circumstances or legal/tax advice.
+        </p>
+        <div style="font-size:0.75rem; color:var(--text-muted);">
+          &copy; 2025–2026 German Life Toolkit • Built with Modern Vanilla JS
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       SCRIPTS
+       ========================================================================= -->
+  <!-- 1. Data Modules -->
+  <script src="js/data/tax-config.js"></script>
+  <script src="js/data/states-data.js"></script>
+  <script src="js/data/holidays.js"></script>
+  <script src="js/data/school-holidays.js"></script>
+  <script src="js/data/glossary.js"></script>
+  <script src="js/data.js"></script>
+
+  <!-- 2. i18n & Utilities -->
+  <script src="js/i18n.js"></script>
+  <script src="js/utils.js"></script>
+
+  <!-- 3. Calculator Engines -->
+  <script src="js/calculators/salary.js"></script>
+  <script src="js/calculators/rent.js"></script>
+  <script src="js/calculators/moving.js"></script>
+  <script src="js/calculators/car.js"></script>
+  <script src="js/calculators/fuel-ev.js"></script>
+  <script src="js/calculators/calendar-tools.js"></script>
+  <script src="js/calculators/family-tools.js"></script>
+  <script src="js/calculators/everyday-tools.js"></script>
+
+  <!-- 4. Search and App Controller -->
+  <script src="js/search.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
