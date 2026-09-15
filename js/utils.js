@@ -106,6 +106,31 @@ const GLTUtils = {
     } catch (e) {
       return [];
     }
+  },
+
+  /**
+   * Safe Google AdSense initialization for Single Page Applications (SPA)
+   * Safely discovers uninitialized ins.adsbygoogle slots and executes push
+   */
+  refreshAds() {
+    try {
+      // Delay slightly to ensure DOM reflow and element visibility
+      setTimeout(() => {
+        try {
+          const ads = document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])');
+          ads.forEach(ad => {
+            // Only push if the ad container is visible in DOM
+            if (ad.offsetParent !== null) {
+              (window.adsbygoogle = window.adsbygoogle || []).push({});
+            }
+          });
+        } catch (slotErr) {
+          console.debug('AdSense slot init info:', slotErr);
+        }
+      }, 50);
+    } catch (e) {
+      console.debug('AdSense init notice:', e);
+    }
   }
 };
 

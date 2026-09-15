@@ -92,14 +92,39 @@ const App = {
     const dashboard = document.getElementById('dashboard-view');
     const toolView = document.getElementById('tool-view');
 
+    const canonicalEl = document.getElementById('canonical-url');
+    const metaDescEl = document.getElementById('meta-description');
+    const ogTitleEl = document.querySelector('meta[property="og:title"]');
+    const ogDescEl = document.querySelector('meta[property="og:description"]');
+    const ogUrlEl = document.querySelector('meta[property="og:url"]');
+    const twitterTitleEl = document.querySelector('meta[name="twitter:title"]');
+    const twitterDescEl = document.querySelector('meta[name="twitter:description"]');
+    const twitterUrlEl = document.querySelector('meta[name="twitter:url"]');
+
     if (!hash) {
       // Show Dashboard
       this.activeToolId = null;
       if (dashboard) dashboard.style.display = 'block';
       if (toolView) toolView.style.display = 'none';
-      document.title = `${t('appTitle')} — ${t('appSubtitle')}`;
+
+      const homeTitle = `${t('appTitle')} — ${t('appSubtitle')}`;
+      const homeDesc = currentLang === 'ko'
+        ? "독일 거주자 및 직장인을 위한 100% 클라이언트 사이드 유틸리티: 2026 독일 월급 실수령액(Brutto-Netto), 밤미테 주거비, 킨더겔트(259€), 베를린 및 주별 공휴일, 근무일수, 생활 용어 사전. 서버 전송 없는 완벽한 개인정보 보호."
+        : "100% Client-side utility platform for expats, professionals, and residents in Germany. German salary calculator (Brutto-Netto 2026), rent & Nebenkosten, Kindergeld (€259), Berlin & state holidays, working days, and expat glossary.";
+
+      document.title = homeTitle;
+      if (metaDescEl) metaDescEl.setAttribute('content', homeDesc);
+      if (canonicalEl) canonicalEl.setAttribute('href', 'https://german.yocto.co.kr/');
+      if (ogTitleEl) ogTitleEl.setAttribute('content', homeTitle);
+      if (ogDescEl) ogDescEl.setAttribute('content', homeDesc);
+      if (ogUrlEl) ogUrlEl.setAttribute('content', 'https://german.yocto.co.kr/');
+      if (twitterTitleEl) twitterTitleEl.setAttribute('content', homeTitle);
+      if (twitterDescEl) twitterDescEl.setAttribute('content', homeDesc);
+      if (twitterUrlEl) twitterUrlEl.setAttribute('content', 'https://german.yocto.co.kr/');
+
       this.renderRecentlyUsed();
       ToolSearch.renderFilteredTools();
+      GLTUtils.refreshAds();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -112,7 +137,22 @@ const App = {
       if (dashboard) dashboard.style.display = 'none';
       if (toolView) toolView.style.display = 'block';
       this.renderTool(hash);
-      document.title = `${tool.title[currentLang]} | ${t('appTitle')}`;
+
+      const toolPageTitle = `${tool.title[currentLang]} — ${t('appTitle')}`;
+      const toolPageDesc = `${tool.desc[currentLang]} — 100% Client-Side Privacy on German Life Toolkit.`;
+      const toolUrl = `https://german.yocto.co.kr/#${tool.id}`;
+
+      document.title = toolPageTitle;
+      if (metaDescEl) metaDescEl.setAttribute('content', toolPageDesc);
+      if (canonicalEl) canonicalEl.setAttribute('href', toolUrl);
+      if (ogTitleEl) ogTitleEl.setAttribute('content', toolPageTitle);
+      if (ogDescEl) ogDescEl.setAttribute('content', toolPageDesc);
+      if (ogUrlEl) ogUrlEl.setAttribute('content', toolUrl);
+      if (twitterTitleEl) twitterTitleEl.setAttribute('content', toolPageTitle);
+      if (twitterDescEl) twitterDescEl.setAttribute('content', toolPageDesc);
+      if (twitterUrlEl) twitterUrlEl.setAttribute('content', toolUrl);
+
+      GLTUtils.refreshAds();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       window.location.hash = '';

@@ -316,6 +316,24 @@ const I18N = {
     catTransport: "Transport & Driving",
     catEveryday: "Everyday Life",
 
+    // Ads & Sponsored
+    adLabel: "ADVERTISEMENT",
+    adSponsored: "Sponsored",
+
+    // SEO Guide & FAQ Section
+    seoGuideTitle: "Living in Germany: Essential Guide & Frequently Asked Questions",
+    seoGuideSubtitle: "Expert answers on German taxation, 2026 Kindergeld benefit rates, Berlin holidays, and rental procedures.",
+    faq1Q: "How is German net salary (Netto) calculated from gross salary (Brutto)?",
+    faq1A: "In Germany, your monthly net income is calculated by deducting statutory social insurances (Health Insurance ~14.6% + additional ~1.7%, Pension 18.6%, Unemployment 2.6%, Long-Term Care 4.0% with childless surcharge/discounts) and Wage Tax (Lohnsteuer under EStG § 32a progressive brackets) according to your Tax Class (Steuerklasse I to VI). In Berlin, church tax (Kirchensteuer) is 9% of income tax if registered with a recognized church.",
+    faq2Q: "What is the official Kindergeld (Child Benefit) rate in 2026?",
+    faq2A: "As of 2026, statutory Kindergeld is <b>€259 per month per child</b>, up from €250 in 2023–2024 and €255 in 2025. It is scheduled to increase further to <b>€263 per month</b> from 2027 onwards. The Familienkasse pays this benefit directly to parents regardless of income for all eligible children up to age 18 (or up to age 25 if studying or in vocational training).",
+    faq3Q: "What are the statutory public holidays in Berlin for 2026?",
+    faq3A: "Berlin observes 10 statutory public holidays (gesetzliche Feiertage): New Year's Day (Jan 1), International Women's Day / Frauentag (March 8), Good Friday, Easter Monday, Ascension Day, Whit Monday, German Unity Day (Oct 3), and Christmas (Dec 25–26). Unlike southern states like Bavaria or Baden-Württemberg, Berlin does not celebrate Epiphany or Corpus Christi, but uniquely recognizes Frauentag.",
+    faq4Q: "What is the difference between Kaltmiete (Cold Rent) and Warmmiete (Warm Rent)?",
+    faq4A: "<b>Kaltmiete (Grundmiete)</b> is the pure base rent for the empty property space. <b>Warmmiete (Gesamtmiete)</b> equals Kaltmiete plus <b>Nebenkosten (Betriebskosten)</b>, which covers heating, water, trash disposal, building cleaning, and elevator maintenance. Note that private household electricity, internet, and the mandatory public broadcasting fee (Rundfunkbeitrag / GEZ at €18.36/month) are billed separately.",
+    faq5Q: "Does the German Life Toolkit store or send my financial data?",
+    faq5A: "<b>No, never.</b> The German Life Toolkit is engineered with a strict 100% client-side, zero-server architecture. All calculations—including your salary, rent, bonuses, and family details—are computed exclusively in your browser's local memory. No databases, tracking cookies, or external analytics endpoints are used.",
+
     // Footer
     footerBrand: "German Life Toolkit",
     footerTagline: "Smart tools for everyday life in Germany",
@@ -641,12 +659,30 @@ const I18N = {
     catTransport: "교통 및 자동차",
     catEveryday: "일상생활 상식",
 
+    // Ads & Sponsored
+    adLabel: "광고 (ADVERTISEMENT)",
+    adSponsored: "스폰서",
+
+    // SEO Guide & FAQ Section
+    seoGuideTitle: "독일 생활 핵심 가이드 & 자주 묻는 질문 (FAQ)",
+    seoGuideSubtitle: "독일 급여 세금 체계, 2026년 킨더겔트 수령액, 베를린 공휴일, 주거비 구성에 관한 핵심 정보입니다.",
+    faq1Q: "독일 월급 실수령액(Netto)은 세전 급여(Brutto)에서 어떻게 계산되나요?",
+    faq1A: "독일 월급은 세전 총급여에서 4대 사회보험료(건강보험 기본 14.6% + 추가보험료 평균 1.7%, 연금보험 18.6%, 실업보험 2.6%, 요양보험 4.0% 무자녀 가산/자녀 할인)와 소득세(EStG § 32a 누진세율표 적용), 그리고 세금 등급(Steuerklasse 1~6)에 따른 원천징수세를 공제하여 산출됩니다. 베를린의 경우 종교 등록자에 한해 소득세액의 9%가 종교세(Kirchensteuer)로 부과됩니다.",
+    faq2Q: "2026년 독일 아동수당(킨더겔트) 지급 금액과 향후 인상 계획은?",
+    faq2A: "2026년 법정 킨더겔트는 <b>자녀 1인당 월 259 €</b>(연간 3,108 €)입니다. 이는 2023~2024년 250 €, 2025년 255 €에 이어 추가 인상된 금액이며, <b>2027년부터는 263 €</b>로 추가 인상될 예정입니다. 부모의 소득 수준과 무관하게 만 18세까지 기본 지급되며, 대학생이나 직업교육생(Ausbildung)의 경우 만 25세까지 연장 지원됩니다.",
+    faq3Q: "2026년 베를린의 법정 공휴일(Feiertage)은 며칠인가요?",
+    faq3A: "베를린은 연간 10일의 법정 공휴일을 갖습니다: 신정(1월 1일), 세계 여성의 날(Frauentag, 3월 8일), 성금요일, 부활절 월요일, 예수승천일, 성령강림일, 독일 통일의 날(10월 3일), 성탄절(12월 25~26일). 바이에른주나 바덴뷔르템베르크주와 달리 주현절이나 성체축일은 쉬지 않으나, 베를린만의 고유 공휴일인 '세계 여성의 날'을 공식 휴일로 보장합니다.",
+    faq4Q: "기본 월세(Kaltmiete)와 관리비 포함 월세(Warmmiete)는 어떻게 다른가요?",
+    faq4A: "<b>칼트미테(Kaltmiete)</b>는 순수 공간 임대료(기본 월세)이며, <b>밤미테(Warmmiete)</b>는 칼트미테에 건물 난방, 온수, 수도, 쓰레기 수거, 청소 등 부대비용(Nebenkosten)이 합산된 총 월세입니다. 주의할 점은 개별 전기세(Strom), 가정용 인터넷(WLAN), 그리고 필수 공영방송 수신료(Rundfunkbeitrag / GEZ, 가구당 월 18.36 €)는 밤미테에 포함되지 않아 별도 계약 및 납부해야 합니다.",
+    faq5Q: "독일 생활 툴킷은 사용자의 금융 정보나 개인정보를 저장하나요?",
+    faq5A: "<b>절대 저장하거나 외부로 전송하지 않습니다.</b> 독일 생활 툴킷은 100% 브라우저 로컬(Client-Side) 환경에서 동작하도록 설계되었습니다. 입력하신 월급, 거주지, 자녀 수, 주거비 등 모든 데이터는 사용자의 PC/스마트폰 메모리에서만 즉시 계산되고 사라지며, 서버 통신이나 개인정보 데이터베이스가 일절 존재하지 않습니다.",
+
     // Footer
-    footerBrand: "German Life Toolkit",
-    footerTagline: "독일 생활 및 직장인을 위한 스마트 유틸리티",
-    footerPartOf: "yocto.co.kr 패밀리 서비스",
-    footerLegal: "본 사이트의 도구들은 정보 제공 목적으로만 제공됩니다. 계산 결과는 추정치이며 개별 법률, 세무 또는 재정적 조언을 대신할 수 없습니다.",
-    footerPrivacy: "개인정보 보호 정책",
+    footerBrand: "독일 생활 툴킷",
+    footerTagline: "독일 일상생활 및 직장인을 위한 스마트 유틸리티",
+    footerPartOf: "yocto.co.kr 웹 서비스 생태계의 일부입니다",
+    footerLegal: "본 웹사이트의 모든 계산 결과는 참고용 추산치이며, 공식적인 법률 또는 세무 자문을 대신할 수 없습니다.",
+    footerPrivacy: "개인정보 처리방침",
     footerDisclaimer: "면책 조항",
     footerEcosystem: "Yocto 생태계",
     footerGithub: "GitHub 저장소",

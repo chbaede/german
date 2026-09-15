@@ -14,8 +14,10 @@ Part of the **[yocto.co.kr](https://main.yocto.co.kr)** web ecosystem.
 - **100% Client-Side Privacy**: Zero data sent to any backend server. All calculations happen strictly in the user's browser.
 - **No Build Tools or Runtimes Needed**: Clean, modern HTML5, CSS3, and vanilla JavaScript. Zero Node.js or framework bloat.
 - **Bilingual (English & Korean)**: Fully localized across all user interfaces, tooltips, validation messages, and legal glossaries.
+- **Google SEO Optimized**: Rich JSON-LD Structured Data (`WebApplication`, `FAQPage`, `ItemList`), multilingual `hreflang`, preconnects, dynamic meta title/description routing, and static crawler markup.
+- **Google AdSense Integrated**: High-viewability, policy-compliant ad slots (Dashboard Mid, Dashboard Bottom, and Tool Detail View) with CLS layout-shift protection and safe SPA initialization.
 - **Production-Quality Design**: Minimalist developer-tool aesthetic with comprehensive Dark and Light mode support.
-- **Accurate German Financial & Legal Estimates**: Up-to-date parameters for German tax classes (I to VI), statutory social insurances (GKV, PV, RV, AV), rental laws (BGB § 551 Kaution), public holidays, and KMK school holidays.
+- **Accurate German Financial & Legal Estimates**: Up-to-date parameters for German tax classes (I to VI), statutory social insurances (GKV, PV, RV, AV), Berlin default (Frauentag, 9% church tax), public holidays, KMK school holidays, and 2026 Kindergeld (€259).
 
 ---
 

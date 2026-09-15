@@ -14,7 +14,7 @@ const CATEGORIES_DATA = [
     id: "housing",
     icon: "🏠",
     title: { en: "Housing & Rent", ko: "주거 & 월세" },
-    desc: { en: "Kaltmiete, Warmmiete, rental deposits (Kaution), and moving budgets", ko: "기본 월세, 관리비, 보증금(카우치온) 분할 및 이사 예산 계산" }
+    desc: { en: "Kaltmiete, Nebenkosten, Warmmiete, and moving budget calculators", ko: "기본 월세(Kaltmiete), 관리비(Nebenkosten), 총 주거비 및 이사 예산 계산" }
   },
   {
     id: "transport",
