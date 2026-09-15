@@ -329,11 +329,39 @@ const App = {
             </div>
           </div>
 
-          <div id="pkv-row" class="form-group" style="display:none;">
-            <label class="form-label">${t('pkvMonthlyAmount')}</label>
+          <div id="gkv-zusatz-row" class="form-group">
+            <label class="form-label">${t('kasseZusatzbeitragLabel')}</label>
             <div class="input-with-affix">
-              <span class="affix affix-left">€</span>
-              <input type="number" id="salary-pkv-val" class="form-input input-prefix" value="450" min="0">
+              <input type="number" id="salary-zusatzbeitrag" class="form-input" placeholder="2.9" step="0.01" min="0" max="10">
+              <span class="affix affix-right">%</span>
+            </div>
+            <div class="form-helper" style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem; line-height:1.4;">
+              💡 <strong>${t('usingAvgZusatzbeitrag2026')}</strong>. ${t('kasseZusatzbeitragNote')}
+            </div>
+          </div>
+
+          <div id="pkv-row" class="form-group" style="display:none; background:var(--bg-secondary); padding:1rem; border-radius:8px; border:1px solid var(--border-subtle);">
+            <div style="font-size:0.8125rem; font-weight:600; margin-bottom:0.35rem; color:var(--accent-primary);">
+              🛡️ ${t('pkvEstimatorTitle')}
+            </div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">
+              ${t('pkvEstimatorNotice')}
+            </p>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">${t('pkvMonthlyAmount')}</label>
+                <div class="input-with-affix">
+                  <span class="affix affix-left">€</span>
+                  <input type="number" id="salary-pkv-val" class="form-input input-prefix" value="450" min="0">
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">${t('pkvEmployerSubsidyLabel')}</label>
+                <div class="input-with-affix">
+                  <span class="affix affix-left">€</span>
+                  <input type="number" id="salary-pkv-subsidy" class="form-input input-prefix" value="0" min="0" placeholder="0">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -386,7 +414,10 @@ const App = {
               <span id="res-av" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('healthContribution')}</span>
+              <span class="breakdown-label">
+                <span id="label-health-name">${t('healthContribution')}</span>
+                <span id="badge-health-status" style="display:block; font-size:0.7rem; color:var(--text-muted); font-weight:normal;"></span>
+              </span>
               <span id="res-gkv" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
@@ -472,8 +503,11 @@ const App = {
     const churchEl = document.getElementById('salary-church');
     const childrenEl = document.getElementById('salary-children');
     const healthEl = document.getElementById('salary-health');
+    const gkvZusatzRow = document.getElementById('gkv-zusatz-row');
+    const zusatzbeitragEl = document.getElementById('salary-zusatzbeitrag');
     const pkvRow = document.getElementById('pkv-row');
     const pkvValEl = document.getElementById('salary-pkv-val');
+    const pkvSubsidyEl = document.getElementById('salary-pkv-subsidy');
     const yearBadgeEl = document.getElementById('salary-active-year-badge');
 
     const updateSyncInfo = () => {
@@ -489,6 +523,9 @@ const App = {
     const updateCalc = () => {
       const isPkv = healthEl.value === 'pkv';
       pkvRow.style.display = isPkv ? 'block' : 'none';
+      if (gkvZusatzRow) {
+        gkvZusatzRow.style.display = isPkv ? 'none' : 'block';
+      }
 
       const res = SalaryCalculator.calculateNetSalary({
         grossMonthly: grossEl.value,
@@ -498,11 +535,46 @@ const App = {
         hasChurchTax: churchEl.value === 'true',
         numChildren: childrenEl.value,
         healthType: healthEl.value,
-        pkvAmount: pkvValEl.value
+        kasseZusatzbeitrag: zusatzbeitragEl ? zusatzbeitragEl.value : null,
+        pkvAmount: pkvValEl ? pkvValEl.value : 0,
+        pkvEmployerSubsidy: pkvSubsidyEl ? pkvSubsidyEl.value : 0
       });
 
       if (yearBadgeEl) {
         yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.taxYear}`;
+      }
+
+      // Dynamic Health Insurance labels & membership badges
+      const labelHealthEl = document.getElementById('label-health-name');
+      const badgeHealthEl = document.getElementById('badge-health-status');
+
+      if (res.healthType === 'gkv') {
+        const ratePct = (res.gkvEmployeeRate * 100).toFixed(2);
+        if (labelHealthEl) {
+          labelHealthEl.textContent = currentLang === 'ko'
+            ? `건강보험 (GKV ${ratePct}%)`
+            : `Health Insurance (GKV ${ratePct}%)`;
+        }
+        if (badgeHealthEl) {
+          const statusText = (res.gkvMembershipStatus === 'voluntary')
+            ? t('gkvVoluntaryBadge')
+            : t('gkvMandatoryBadge');
+          const noteText = res.isCustomZusatzbeitrag
+            ? `Kasse Zusatz: ${(res.effectiveZusatzbeitrag * 100).toFixed(2)}%`
+            : t('usingAvgZusatzbeitrag2026');
+          badgeHealthEl.textContent = `${statusText} • ${noteText}`;
+        }
+      } else {
+        if (labelHealthEl) {
+          labelHealthEl.textContent = currentLang === 'ko'
+            ? '민간 건강보험 (PKV)'
+            : 'Private Health Insurance (PKV)';
+        }
+        if (badgeHealthEl) {
+          badgeHealthEl.textContent = currentLang === 'ko'
+            ? '개인별 고정 계약 보험료 (소득 무관 견적)'
+            : 'Contract-based individual premium (non-statutory)';
+        }
       }
 
       document.getElementById('res-net-monthly').textContent = GLTUtils.formatEuro(res.netMonthly);
@@ -533,7 +605,7 @@ const App = {
       updateCalc();
     });
 
-    [taxYearEl, taxClassEl, stateEl, churchEl, childrenEl, healthEl, pkvValEl].forEach(el => {
+    [taxYearEl, taxClassEl, stateEl, churchEl, childrenEl, healthEl, zusatzbeitragEl, pkvValEl, pkvSubsidyEl].filter(Boolean).forEach(el => {
       el.addEventListener('input', updateCalc);
       el.addEventListener('change', updateCalc);
     });
@@ -548,7 +620,9 @@ const App = {
       churchEl.value = "false";
       childrenEl.value = "0";
       healthEl.value = "gkv";
-      pkvValEl.value = "450";
+      if (zusatzbeitragEl) zusatzbeitragEl.value = "";
+      if (pkvValEl) pkvValEl.value = "450";
+      if (pkvSubsidyEl) pkvSubsidyEl.value = "0";
       updateSyncInfo();
       updateCalc();
     });

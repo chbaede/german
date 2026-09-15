@@ -232,6 +232,51 @@ const SalaryCalculator = {
   },
 
   /**
+   * Statutory Health Insurance (GKV) Rate Calculation for 2026
+   * Statutory Basis: § 241, § 242, § 242a SGB V; BMG Bekanntmachung 2026
+   *
+   * - General statutory rate: 14.6% (employee base share: 7.3%)
+   * - Average Zusatzbeitrag 2026: 2.9% (employee average Zusatz share: 1.45%)
+   * - Total standard employee rate using national average: 8.75%
+   * - Optional custom kasseZusatzbeitrag: employee rate = 7.3% + (kasseZusatzbeitrag / 2)
+   *
+   * @param {object} [params]
+   * @param {number|string} [params.kasseZusatzbeitrag] - Specific health fund additional rate (e.g. 2.5 or 0.025)
+   * @returns {object} Health insurance calculation details
+   */
+  getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag } = {}) {
+    const baseRate = 0.146;
+    const employeeBaseRate = 0.073;
+    const avgZusatzbeitrag = 0.029;
+    let effectiveZusatzbeitrag = avgZusatzbeitrag;
+    let isCustom = false;
+
+    if (kasseZusatzbeitrag !== undefined && kasseZusatzbeitrag !== null && String(kasseZusatzbeitrag).trim() !== '') {
+      const parsed = typeof kasseZusatzbeitrag === 'number'
+        ? kasseZusatzbeitrag
+        : parseFloat(String(kasseZusatzbeitrag).replace(',', '.'));
+      if (!isNaN(parsed) && parsed >= 0) {
+        effectiveZusatzbeitrag = (parsed > 0.20) ? (parsed / 100) : parsed;
+        isCustom = true;
+      }
+    }
+
+    const employeeZusatzRate = Number((effectiveZusatzbeitrag / 2).toFixed(5));
+    const totalEmployeeRate = Number((employeeBaseRate + employeeZusatzRate).toFixed(5));
+
+    return {
+      baseRate,
+      employeeBaseRate,
+      avgZusatzbeitrag,
+      effectiveZusatzbeitrag,
+      employeeZusatzRate,
+      totalEmployeeRate,
+      isCustom,
+      note: "Using the 2026 average Zusatzbeitrag of 2.9%"
+    };
+  },
+
+  /**
    * Main Gross to Net Calculator
    * Computes social insurances, statutory taxable income, wage tax, SolZ, and church tax.
    *
@@ -243,7 +288,10 @@ const SalaryCalculator = {
    * @param {boolean} [params.hasChurchTax=false] - Whether subject to church tax
    * @param {number} [params.numChildren=0] - Number of eligible children under age 25
    * @param {string} [params.healthType="gkv"] - "gkv" (statutory) or "pkv" (private)
-   * @param {number} [params.pkvAmount=0] - Monthly PKV premium if healthType is "pkv"
+   * @param {number|string} [params.kasseZusatzbeitrag] - Specific health fund additional rate (e.g. 2.5)
+   * @param {number|string} [params.pkvAmount=0] - Monthly PKV employee premium/cost
+   * @param {number|string} [params.pkvTotalPremium] - Optional total PKV premium before employer subsidy
+   * @param {number|string} [params.pkvEmployerSubsidy=0] - Optional monthly employer subsidy toward PKV
    */
   calculateNetSalary(params) {
     const grossMonthly = Math.max(0, GLTUtils.parseNumber(params.grossMonthly, 0));
@@ -260,7 +308,6 @@ const SalaryCalculator = {
     const hasChurchTax = Boolean(params.hasChurchTax);
     const numChildren = Math.max(0, parseInt(params.numChildren || 0, 10));
     const healthType = params.healthType || "gkv";
-    const pkvAmount = healthType === "pkv" ? Math.max(0, GLTUtils.parseNumber(params.pkvAmount, 0)) : 0;
 
     // ========================================================================
     // 1. STATUTORY SOCIAL INSURANCE (Sozialversicherungsbeiträge)
@@ -278,25 +325,47 @@ const SalaryCalculator = {
     const avMonthly = avAssessmentMonthly * yCfg.unemployment.employeeRate;
     const avAnnual = avMonthly * 12;
 
-    // C. Health Insurance (Gesetzliche Krankenversicherung - GKV)
-    // Contribution assessment ceiling: €5,812.50/month in 2026 (€69,750/year)
-    // Note: Compulsory threshold (JAEG) is €77,400/year (€6,450/mo), but contributions cap at BBG.
+    // C. Health Insurance (Gesetzliche Krankenversicherung - GKV) vs PKV
+    // 2026 Statutory Parameters (§ 241, § 242, § 242a SGB V; BMG Bekanntmachung):
+    // - Contribution assessment ceiling (BBG): €5,812.50/month (€69,750/year)
+    // - Compulsory insurance threshold (JAEG): €77,400/year (€6,450/mo)
+    //   Gross <= JAEG: Mandatory GKV member (Pflichtversichert)
+    //   Gross > JAEG: Voluntary GKV member (Freiwillig versichert)
     let gkvAssessmentMonthly = 0;
     let gkvMonthly = 0;
+    let gkvEmployeeRate = 0;
+    let healthRateDetails = null;
+    const gkvMembershipStatus = (grossAnnual > yCfg.health.jaegAnnual) ? "voluntary" : "mandatory";
+
     if (healthType === "gkv") {
       gkvAssessmentMonthly = Math.min(grossMonthly, yCfg.health.bbgMonthly);
-      gkvMonthly = gkvAssessmentMonthly * yCfg.health.totalEmployeeRate;
+      healthRateDetails = this.getEmployeeHealthInsuranceRate({
+        kasseZusatzbeitrag: params.kasseZusatzbeitrag
+      });
+      gkvEmployeeRate = healthRateDetails.totalEmployeeRate;
+      gkvMonthly = gkvAssessmentMonthly * gkvEmployeeRate;
     } else {
-      gkvMonthly = pkvAmount;
+      // PKV Estimator Mode:
+      // Private health insurance is NOT calculated as a statutory percentage of gross salary.
+      // Requires monthly employee cost input and optionally employer subsidy.
       gkvAssessmentMonthly = 0;
+      gkvEmployeeRate = 0;
+      const pkvEmployerSubsidy = Math.max(0, GLTUtils.parseNumber(params.pkvEmployerSubsidy, 0));
+      const pkvTotalPremium = GLTUtils.parseNumber(params.pkvTotalPremium, null);
+
+      if (pkvTotalPremium !== null && pkvTotalPremium > 0) {
+        gkvMonthly = Math.max(0, pkvTotalPremium - pkvEmployerSubsidy);
+      } else {
+        gkvMonthly = Math.max(0, GLTUtils.parseNumber(params.pkvAmount, 0));
+      }
     }
     const gkvAnnual = gkvMonthly * 12;
 
     // D. Long-Term Care Insurance (Soziale Pflegeversicherung - PV)
     // Contribution assessment ceiling: €5,812.50/month in 2026 (€69,750/year)
     // PUEG Reform child-dependent rate scale:
-    // - 0 children: Base employee rate + 0.6% childless surcharge
-    // - 1 child: Base employee rate (surcharge eliminated for life)
+    // - 0 children: Base employee rate + 0.6% childless surcharge (2.40% non-SN / 2.90% SN)
+    // - 1 child: Base employee rate (1.80% non-SN / 2.30% SN)
     // - 2-5 children under 25: Graduated reduction of 0.25% per child from 2nd to 5th child
     // - 5+ children: Statutory rate floor (0.80% non-Saxony, 1.30% in Saxony)
     let pvAssessmentMonthly = 0;
@@ -339,7 +408,8 @@ const SalaryCalculator = {
 
       // Statutory Vorsorgepauschale
       const deductibleRvAnnual = Math.min(grossAnnual, yCfg.pension.bbgAnnual) * yCfg.pension.employeeRate;
-      const deductibleGkvAnnual = Math.min(grossAnnual, yCfg.health.bbgAnnual) * (yCfg.health.totalEmployeeRate * 0.96);
+      const gkvDeductibleRate = (healthType === "gkv" && gkvEmployeeRate > 0) ? (gkvEmployeeRate * 0.96) : (yCfg.health.totalEmployeeRate * 0.96);
+      const deductibleGkvAnnual = Math.min(grossAnnual, yCfg.health.bbgAnnual) * gkvDeductibleRate;
       const deductiblePvAnnual = Math.min(grossAnnual, yCfg.care.bbgAnnual) * pvEmployeeRate;
       annualVorsorge = deductibleRvAnnual + deductibleGkvAnnual + deductiblePvAnnual;
 
@@ -455,6 +525,12 @@ const SalaryCalculator = {
       pvMonthly,
       pvAnnual,
       pvEmployeeRate,
+      gkvEmployeeRate,
+      gkvMembershipStatus,
+      healthType,
+      isCustomZusatzbeitrag: healthRateDetails ? healthRateDetails.isCustom : false,
+      effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : null,
+      usingAvgZusatzbeitragNote: "Using the 2026 average Zusatzbeitrag of 2.9%",
       totalSocialMonthly,
       totalSocialAnnual,
 
@@ -476,7 +552,10 @@ const SalaryCalculator = {
         rvBbgMonthly: yCfg.pension.bbgMonthly,
         gkvBbgMonthly: yCfg.health.bbgMonthly,
         jaegMonthly: yCfg.health.jaegMonthly,
-        gkvEmployeeRate: yCfg.health.totalEmployeeRate,
+        gkvEmployeeRate,
+        gkvMembershipStatus,
+        effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : yCfg.health.avgZusatzbeitrag,
+        usingAvgZusatzbeitragWording: "Using the 2026 average Zusatzbeitrag of 2.9%",
         solzThreshold: solzThreshold,
         modelDescription: "Statutory estimation model based on BMF Lohnsteuer-Handbuch and § 32a EStG",
         disclaimerEn: "Estimated result. Actual payroll withholding may differ based on individual health insurance additional contribution and employer parameters.",
@@ -544,6 +623,8 @@ const SalaryCalculator = {
 // Global export for direct function calls
 if (typeof globalThis !== 'undefined') {
   globalThis.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
+  globalThis.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
 } else if (typeof window !== 'undefined') {
   window.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
+  window.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
 }

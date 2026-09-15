@@ -182,7 +182,77 @@ if (!solzSource.topicEn.includes("20,350") || !solzSource.topicEn.includes("40,7
 }
 console.log(`[PASS] SolZ Statutory Source Metadata Verified: ${solzSource.reference}`);
 
-// 5. Church Tax Rates: BY (8%) vs NW (9%) vs None (0%)
+// 5. Statutory Health Insurance (GKV) & PKV 2026 Audit (§ 241, § 242, § 242a SGB V)
+console.log("\n--- GKV & PKV 2026 Statutory Verification ---");
+
+// A. Standard 2026 Rate (Using national average Zusatzbeitrag of 2.9%)
+const defaultHealth = SalaryCalculator.getEmployeeHealthInsuranceRate();
+if (defaultHealth.baseRate !== 0.146) throw new Error("General health insurance rate must be 14.6%");
+if (defaultHealth.employeeBaseRate !== 0.073) throw new Error("Employee base rate must be 7.3%");
+if (defaultHealth.avgZusatzbeitrag !== 0.029) throw new Error("2026 Average Zusatzbeitrag must be 2.9%");
+if (Math.abs(defaultHealth.employeeZusatzRate - 0.0145) > 1e-6) throw new Error("Employee Zusatz share must be 1.45%");
+if (Math.abs(defaultHealth.totalEmployeeRate - 0.0875) > 1e-6) throw new Error("Total standard employee rate must be 8.75%");
+if (defaultHealth.note !== "Using the 2026 average Zusatzbeitrag of 2.9%") {
+  throw new Error("Must include exact wording: 'Using the 2026 average Zusatzbeitrag of 2.9%'");
+}
+console.log(`[PASS] Standard GKV 2026 Rate: Base 7.3% + Avg Zusatz 1.45% = ${(defaultHealth.totalEmployeeRate * 100).toFixed(2)}% ("${defaultHealth.note}")`);
+
+// B. Optional kasseZusatzbeitrag Field Verification
+// 1. Custom rate 2.5% (e.g. TK or similar): employee rate = 7.3% + (2.5% / 2) = 8.55%
+const custom25 = SalaryCalculator.getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag: 2.5 });
+if (Math.abs(custom25.totalEmployeeRate - 0.0855) > 1e-6) throw new Error("Custom 2.5% Zusatz must yield 8.55% employee rate");
+
+// 2. Custom rate 3.4%: employee rate = 7.3% + (3.4% / 2) = 9.00%
+const custom34 = SalaryCalculator.getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag: 3.4 });
+if (Math.abs(custom34.totalEmployeeRate - 0.0900) > 1e-6) throw new Error("Custom 3.4% Zusatz must yield 9.00% employee rate");
+
+// 3. Decimal format 0.027: employee rate = 7.3% + 1.35% = 8.65%
+const customDecimal = SalaryCalculator.getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag: 0.027 });
+if (Math.abs(customDecimal.totalEmployeeRate - 0.0865) > 1e-6) throw new Error("Custom 0.027 Zusatz must yield 8.65% employee rate");
+
+console.log(`[PASS] Custom kasseZusatzbeitrag: 2.5% => ${(custom25.totalEmployeeRate*100).toFixed(2)}%, 3.4% => ${(custom34.totalEmployeeRate*100).toFixed(2)}%, 0.027 => ${(customDecimal.totalEmployeeRate*100).toFixed(2)}%`);
+
+// C. Integration in calculateNetSalary with custom and default Zusatzbeitrag
+const netDefaultGkv = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, healthType: "gkv" });
+if (Math.abs(netDefaultGkv.gkvMonthly - (4000 * 0.0875)) > 0.01) throw new Error("Default GKV deduction mismatch");
+
+const netCustomGkv = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, healthType: "gkv", kasseZusatzbeitrag: 2.5 });
+if (Math.abs(netCustomGkv.gkvMonthly - (4000 * 0.0855)) > 0.01) throw new Error("Custom GKV deduction mismatch");
+console.log(`[PASS] calculateNetSalary GKV Deductions: Default(8.75%)=€${netDefaultGkv.gkvMonthly.toFixed(2)}, Custom(8.55%)=€${netCustomGkv.gkvMonthly.toFixed(2)}`);
+
+// D. GKV Mandatory vs Voluntary Membership Status (§ 6 SGB V vs JAEG €77,400/yr / €6,450/mo)
+const mandatoryMember = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2026 }); // €60,000/yr <= €77,400
+if (mandatoryMember.gkvMembershipStatus !== "mandatory") throw new Error("Gross €5,000/mo must be mandatory GKV member");
+
+const voluntaryMember = SalaryCalculator.calculateNetSalary({ grossMonthly: 7000, taxYear: 2026 }); // €84,000/yr > €77,400
+if (voluntaryMember.gkvMembershipStatus !== "voluntary") throw new Error("Gross €7,000/mo must be voluntary GKV member");
+if (voluntaryMember.gkvAssessmentMonthly !== 5812.50) throw new Error("Voluntary GKV assessment must be capped at €5,812.50 BBG");
+console.log(`[PASS] Membership Status: €5,000/mo => ${mandatoryMember.gkvMembershipStatus}, €7,000/mo => ${voluntaryMember.gkvMembershipStatus} (capped at €${voluntaryMember.gkvAssessmentMonthly})`);
+
+// E. PKV Estimator Mode (Non-statutory contract rate, monthly input & optional employer subsidy)
+const pkvDirect = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, healthType: "pkv", pkvAmount: 450 });
+if (pkvDirect.gkvAssessmentMonthly !== 0) throw new Error("PKV must not have statutory GKV assessment");
+if (pkvDirect.gkvMonthly !== 450) throw new Error("PKV employee cost must equal inputted €450");
+
+const pkvWithSubsidy = SalaryCalculator.calculateNetSalary({
+  grossMonthly: 6000,
+  taxYear: 2026,
+  healthType: "pkv",
+  pkvTotalPremium: 800,
+  pkvEmployerSubsidy: 400
+});
+if (pkvWithSubsidy.gkvMonthly !== 400) throw new Error("PKV net cost must equal total premium - employer subsidy (800 - 400 = 400)");
+console.log(`[PASS] PKV Estimator Mode: Direct Cost=€${pkvDirect.gkvMonthly}, Total €800 - Subsidy €400 = €${pkvWithSubsidy.gkvMonthly}`);
+
+// F. BMG Official Source Reference Verification
+const bmgSource = GERMAN_TAX_CONFIG.officialSources.find(s => s.institution.includes("Gesundheit"));
+if (!bmgSource) throw new Error("Missing BMG source metadata in GERMAN_TAX_CONFIG");
+if (!bmgSource.reference.includes("Zusatzbeitrag") || !bmgSource.topicEn.includes("2.9%")) {
+  throw new Error("BMG source metadata must document 2026 Zusatzbeitrag Bekanntmachung of 2.9%");
+}
+console.log(`[PASS] BMG Statutory Source Metadata Verified: ${bmgSource.reference}`);
+
+// 6. Church Tax Rates: BY (8%) vs NW (9%) vs None (0%)
 const by = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, taxClass: "1", stateCode: "BY", hasChurchTax: true });
 const nw = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, taxClass: "1", stateCode: "NW", hasChurchTax: true });
 const none = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, taxClass: "1", stateCode: "BE", hasChurchTax: false });

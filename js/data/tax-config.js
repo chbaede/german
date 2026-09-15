@@ -31,9 +31,9 @@ const GERMAN_TAX_CONFIG = {
     },
     {
       institution: "Bundesministerium für Gesundheit (BMG)",
-      reference: "Sozialversicherungs-Rechengrößen-Verordnung 2026",
-      topicEn: "GKV BBG (€5,812.50/mo), JAEG (€77,400/yr), PV base rate (3.6%)",
-      topicKo: "건강보험 상한선(5,812.50 €/월), JAEG(77,400 €/년), 요양보험 요율(3.6%)"
+      reference: "Bekanntmachung des durchschnittlichen Zusatzbeitragssatzes in der GKV 2026 (§ 242a Abs. 2 SGB V) & Sozialversicherungs-Rechengrößen-Verordnung 2026",
+      topicEn: "Using the 2026 average Zusatzbeitrag of 2.9% (individual Krankenkassen vary); General health insurance rate 14.6% (7.3% employee share + 1.45% avg Zusatz = 8.75% total employee); GKV BBG €5,812.50/mo; JAEG €77,400/yr",
+      topicKo: "2026년 법정 평균 추가보험료(Zusatzbeitrag) 2.9% 고시 (§ 242a SGB V, 개별 공보험사별 상이); 일반 건강보험료율 14.6% (근로자 7.3% + 평균 추가분 1.45% = 총 8.75%); 부과상한선(BBG) 5,812.50 €/월; 가입의무상한선(JAEG) 77,400 €/년"
     },
     {
       institution: "Bundesministerium für Arbeit und Soziales (BMAS)",
@@ -290,6 +290,51 @@ const GERMAN_TAX_CONFIG = {
     BY: 0.08, // Bayern (8%)
     BW: 0.08, // Baden-Württemberg (8%)
     DEFAULT: 0.09 // All other 14 Bundesländer including Berlin (9%)
+  },
+
+  /**
+   * Statutory Health Insurance (GKV) Rate Calculation for 2026
+   * Statutory Basis: § 241, § 242, § 242a SGB V; BMG Bekanntmachung 2026
+   *
+   * - General statutory rate: 14.6% (employee base share: 7.3%)
+   * - Average Zusatzbeitrag 2026: 2.9% (employee average Zusatz share: 1.45%)
+   * - Total standard employee rate using national average: 8.75%
+   * - Optional custom kasseZusatzbeitrag: employee rate = 7.3% + (kasseZusatzbeitrag / 2)
+   *
+   * @param {object} [params]
+   * @param {number|string} [params.kasseZusatzbeitrag] - Specific health fund additional rate (e.g. 2.5 or 0.025)
+   * @returns {object} Health insurance calculation details
+   */
+  getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag } = {}) {
+    const baseRate = 0.146;
+    const employeeBaseRate = 0.073;
+    const avgZusatzbeitrag = 0.029;
+    let effectiveZusatzbeitrag = avgZusatzbeitrag;
+    let isCustom = false;
+
+    if (kasseZusatzbeitrag !== undefined && kasseZusatzbeitrag !== null && String(kasseZusatzbeitrag).trim() !== '') {
+      const parsed = typeof kasseZusatzbeitrag === 'number'
+        ? kasseZusatzbeitrag
+        : parseFloat(String(kasseZusatzbeitrag).replace(',', '.'));
+      if (!isNaN(parsed) && parsed >= 0) {
+        effectiveZusatzbeitrag = (parsed > 0.20) ? (parsed / 100) : parsed;
+        isCustom = true;
+      }
+    }
+
+    const employeeZusatzRate = Number((effectiveZusatzbeitrag / 2).toFixed(5));
+    const totalEmployeeRate = Number((employeeBaseRate + employeeZusatzRate).toFixed(5));
+
+    return {
+      baseRate,
+      employeeBaseRate,
+      avgZusatzbeitrag,
+      effectiveZusatzbeitrag,
+      employeeZusatzRate,
+      totalEmployeeRate,
+      isCustom,
+      note: "Using the 2026 average Zusatzbeitrag of 2.9%"
+    };
   },
 
   /**
