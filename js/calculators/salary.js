@@ -127,6 +127,111 @@ const SalaryCalculator = {
   },
 
   /**
+   * Official Statutory Solidarity Surcharge (Solidaritätszuschlag - SolZ) Calculation for 2026
+   * Statutory Basis: §§ 3, 4 SolZG (Solidaritätszuschlaggesetz 1995 as amended for 2026)
+   *
+   * 1. Freigrenze (§ 3 Abs. 3 SolZG 2026):
+   *    - Single / non-splitting cases (Tax Classes I, II, IV, VI): €20,350 annual income tax liability
+   *    - Joint splitting cases (Tax Class III / married filing jointly): €40,700 annual income tax liability
+   *    If incomeTax <= threshold, SolZ = 0.
+   *
+   * 2. Milderungszone (§ 4 Satz 2 SolZG):
+   *    To prevent an abrupt jump cliff, SolZ is capped at maximum 11.9% of the difference
+   *    between the income tax liability and the statutory Freigrenze:
+   *    milderungAmount = (incomeTax - threshold) * 0.119
+   *
+   * 3. Statutory Cap (§ 3 Abs. 1 SolZG):
+   *    The surcharge cannot exceed standard 5.5% of the total income tax liability:
+   *    fullAmount = incomeTax * 0.055
+   *    solz = Math.min(fullAmount, milderungAmount)
+   *
+   * Upper transition boundary where 11.9% excess matches 5.5% of total tax:
+   * - Single: €20,350 * (0.119 / 0.064) = €37,838.28
+   * - Splitting: €40,700 * (0.119 / 0.064) = €75,676.56
+   *
+   * @param {number|object} paramsOrTax - Income tax liability in Euro, or params object
+   * @param {boolean|string|number} [isSplittingOrClass] - Splitting flag or tax class (e.g. "3")
+   * @param {object} [options] - Additional options (e.g. { raw: boolean, details: boolean })
+   * @returns {number|object} Annual Solidarity Surcharge in Euro
+   */
+  calculateSolidaritySurcharge2026(paramsOrTax, isSplittingOrClass, options = {}) {
+    let incomeTax = 0;
+    let isSplitting = false;
+    let opt = options;
+
+    if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      isSplitting = Boolean(
+        paramsOrTax.isSplitting ??
+        (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
+      );
+      opt = paramsOrTax;
+    } else {
+      incomeTax = Number(paramsOrTax || 0);
+      if (typeof isSplittingOrClass === 'boolean') {
+        isSplitting = isSplittingOrClass;
+      } else if (typeof isSplittingOrClass === 'string' || typeof isSplittingOrClass === 'number') {
+        isSplitting = (String(isSplittingOrClass) === '3');
+      } else if (typeof isSplittingOrClass === 'object' && isSplittingOrClass !== null) {
+        opt = isSplittingOrClass;
+        isSplitting = Boolean(opt.isSplitting ?? (opt.taxClass === '3' || opt.isMarried));
+      }
+    }
+
+    // Official 2026 Statutory Parameters (§§ 3, 4 SolZG)
+    const threshold = isSplitting ? 40700 : 20350;
+    const standardRate = 0.055;
+    const milderungRate = 0.119;
+
+    // 1. Below or equal to exemption limit -> Completely exempt (0 €)
+    if (incomeTax <= threshold) {
+      if (opt && opt.details) {
+        return {
+          solz: 0,
+          threshold,
+          inTransitionZone: false,
+          isExempt: true,
+          isFullRate: false,
+          excess: 0,
+          milderungAmount: 0,
+          fullAmount: Number((incomeTax * standardRate).toFixed(2))
+        };
+      }
+      return 0;
+    }
+
+    // 2. Milderungszone: Maximum 11.9% of excess over Freigrenze
+    const excess = incomeTax - threshold;
+    const milderungAmount = excess * milderungRate;
+
+    // 3. Statutory Cap: 5.5% of total income tax
+    const fullAmount = incomeTax * standardRate;
+
+    // 4. Statutory SolZ is the minimum of standard 5.5% and the milderung limit
+    const rawSolz = Math.min(fullAmount, milderungAmount);
+    const roundedSolz = Number(rawSolz.toFixed(2));
+
+    if (opt && opt.details) {
+      return {
+        solz: roundedSolz,
+        threshold,
+        inTransitionZone: milderungAmount < fullAmount,
+        isExempt: false,
+        isFullRate: milderungAmount >= fullAmount,
+        excess,
+        milderungAmount: Number(milderungAmount.toFixed(2)),
+        fullAmount: Number(fullAmount.toFixed(2))
+      };
+    }
+
+    if (opt && (opt.raw === true || opt.round === false)) {
+      return rawSolz;
+    }
+
+    return roundedSolz;
+  },
+
+  /**
    * Main Gross to Net Calculator
    * Computes social insurances, statutory taxable income, wage tax, SolZ, and church tax.
    *
@@ -277,14 +382,24 @@ const SalaryCalculator = {
     // ========================================================================
     // 4. SOLIDARITY SURCHARGE (Solidaritätszuschlag)
     // ========================================================================
-    // 2026 Exemption threshold: €19,950 tax liability (Single) / €39,900 (Married Class III)
-    // Milderungszone: 11.9% of excess over threshold, capped at 5.5% of total income tax.
+    // Statutory rules under §§ 3, 4 SolZG:
+    // 2026 Freigrenze: €20,350 (Single / non-splitting) / €40,700 (Splitting / Class III)
+    // Milderungszone: max 11.9% of difference between income tax and Freigrenze
+    // Capped at standard 5.5% of total income tax liability
+    const isSplitting = (taxClass === "3");
+    const solzThreshold = isSplitting ? yCfg.solz.thresholdMarried : yCfg.solz.thresholdSingle;
     let solzAnnual = 0;
-    const solzThreshold = (taxClass === "3") ? yCfg.solz.thresholdMarried : yCfg.solz.thresholdSingle;
 
-    if (incomeTaxAnnual > solzThreshold) {
-      const excess = incomeTaxAnnual - solzThreshold;
-      solzAnnual = Math.min(incomeTaxAnnual * yCfg.solz.rate, excess * yCfg.solz.milderungRate);
+    if (taxYear === 2026) {
+      solzAnnual = this.calculateSolidaritySurcharge2026({
+        incomeTax: incomeTaxAnnual,
+        isSplitting
+      });
+    } else {
+      if (incomeTaxAnnual > solzThreshold) {
+        const excess = incomeTaxAnnual - solzThreshold;
+        solzAnnual = Math.min(incomeTaxAnnual * yCfg.solz.rate, excess * yCfg.solz.milderungRate);
+      }
     }
     const solzMonthly = solzAnnual / 12;
 
@@ -425,3 +540,10 @@ const SalaryCalculator = {
     };
   }
 };
+
+// Global export for direct function calls
+if (typeof globalThis !== 'undefined') {
+  globalThis.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
+} else if (typeof window !== 'undefined') {
+  window.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
+}

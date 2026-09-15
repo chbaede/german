@@ -107,7 +107,82 @@ const expectedPvRates = {
   console.log(`[PASS] calculateNetSalary PV Rate for k=${k}: NW=${(nw.pvEmployeeRate*100).toFixed(2)}%, SN=${(sn.pvEmployeeRate*100).toFixed(2)}%`);
 });
 
-// 4. Church Tax Rates: BY (8%) vs NW (9%) vs None (0%)
+// 4. Solidaritätszuschlag 2026 Statutory Audit (§§ 3, 4 SolZG)
+console.log("\n--- SolZ 2026 Statutory Verification ---");
+
+// Test Cases: [taxLiability, isSplitting, expectedSolz, description]
+const solzTestCases = [
+  // A. Below threshold (< €20,350 single / < €40,700 splitting)
+  { tax: 19000, splitting: false, exp: 0, desc: "€19,000 single (below €20,350 Freigrenze -> 0)" },
+  { tax: 19000, splitting: true,  exp: 0, desc: "€19,000 splitting (below €40,700 Freigrenze -> 0)" },
+
+  // B. Exact Freigrenze threshold (€20,350 single / €40,700 splitting)
+  { tax: 20350, splitting: false, exp: 0, desc: "€20,350 single (exact Freigrenze -> 0)" },
+  { tax: 20350, splitting: true,  exp: 0, desc: "€20,350 splitting (below €40,700 Freigrenze -> 0)" },
+  { tax: 40700, splitting: true,  exp: 0, desc: "€40,700 splitting (exact Freigrenze -> 0)" },
+
+  // C. 1 Euro above threshold -> Start of Milderungszone (§ 4 SolZG: (T - F) * 11.9%)
+  // Single: (20,351 - 20,350) * 0.119 = 0.119 € -> 0.12 €
+  { tax: 20351, splitting: false, exp: 0.12, desc: "€20,351 single (1€ excess in Milderungszone -> 0.12 €)" },
+  { tax: 20351, splitting: true,  exp: 0,    desc: "€20,351 splitting (below €40,700 -> 0)" },
+  // Splitting: (40,701 - 40,700) * 0.119 = 0.119 € -> 0.12 €
+  { tax: 40701, splitting: true,  exp: 0.12, desc: "€40,701 splitting (1€ excess in Milderungszone -> 0.12 €)" },
+
+  // D. Moderate income in transition zone: €25,000
+  // Single: (25,000 - 20,350) * 0.119 = 4,650 * 0.119 = 553.35 €
+  // (Standard 5.5% would be 1,375.00 €, so 11.9% milderung saves 821.65 €)
+  { tax: 25000, splitting: false, exp: 553.35, desc: "€25,000 single (in transition zone -> 553.35 €)" },
+  { tax: 25000, splitting: true,  exp: 0,      desc: "€25,000 splitting (below €40,700 -> 0)" },
+
+  // E. Single at €40,700 and €40,701 (Single has crossed into full 5.5% cap zone > €37,838.28)
+  // Single €40,700: 40,700 * 0.055 = 2,238.50 € (milderung would be 2,421.65 €, cap wins)
+  { tax: 40700, splitting: false, exp: 2238.50, desc: "€40,700 single (5.5% cap active -> 2,238.50 €)" },
+  // Single €40,701: 40,701 * 0.055 = 2,238.56 € (milderung would be 2,421.77 €, cap wins)
+  { tax: 40701, splitting: false, exp: 2238.56, desc: "€40,701 single (5.5% cap active -> 2,238.56 €)" },
+
+  // F. High-Income Cases
+  // Single €50,000: 50,000 * 0.055 = 2,750.00 € (capped)
+  { tax: 50000, splitting: false, exp: 2750.00, desc: "€50,000 single (5.5% cap active -> 2,750.00 €)" },
+  // Splitting €50,000: (50,000 - 40,700) * 0.119 = 9,300 * 0.119 = 1,106.70 € (transition zone active)
+  { tax: 50000, splitting: true,  exp: 1106.70, desc: "€50,000 splitting (in transition zone -> 1,106.70 €)" },
+  // Single €100,000: 100,000 * 0.055 = 5,500.00 € (capped)
+  { tax: 100000, splitting: false, exp: 5500.00, desc: "€100,000 single (5.5% cap active -> 5,500.00 €)" },
+  // Splitting €100,000: 100,000 * 0.055 = 5,500.00 € (milderung would be 7,056.70 €, 5.5% cap active)
+  { tax: 100000, splitting: true,  exp: 5500.00, desc: "€100,000 splitting (5.5% cap active -> 5,500.00 €)" }
+];
+
+solzTestCases.forEach(({ tax, splitting, exp, desc }) => {
+  // Test both SalaryCalculator method and GERMAN_TAX_CONFIG method
+  const r1 = SalaryCalculator.calculateSolidaritySurcharge2026(tax, splitting);
+  const r2 = GERMAN_TAX_CONFIG.calculateSolidaritySurcharge2026(tax, splitting);
+  const r3 = SalaryCalculator.calculateSolidaritySurcharge2026({ incomeTax: tax, isSplitting: splitting });
+  const rGlobal = global.calculateSolidaritySurcharge2026 ? global.calculateSolidaritySurcharge2026(tax, splitting) : r1;
+
+  if (Math.abs(r1 - exp) > 0.01) {
+    throw new Error(`SalaryCalculator SolZ failure for ${desc}: got ${r1}, expected ${exp}`);
+  }
+  if (Math.abs(r2 - exp) > 0.01) {
+    throw new Error(`GERMAN_TAX_CONFIG SolZ failure for ${desc}: got ${r2}, expected ${exp}`);
+  }
+  if (Math.abs(r3 - exp) > 0.01) {
+    throw new Error(`Object-signature SolZ failure for ${desc}: got ${r3}, expected ${exp}`);
+  }
+  if (Math.abs(rGlobal - exp) > 0.01) {
+    throw new Error(`Global SolZ failure for ${desc}: got ${rGlobal}, expected ${exp}`);
+  }
+
+  console.log(`[PASS] SolZ: ${desc} => €${r1.toFixed(2)}`);
+});
+
+// G. Verify SolZG Source Metadata in GERMAN_TAX_CONFIG
+const solzSource = GERMAN_TAX_CONFIG.officialSources.find(s => s.reference.includes("SolZG"));
+if (!solzSource) throw new Error("Missing SolZG source metadata in GERMAN_TAX_CONFIG.officialSources");
+if (!solzSource.topicEn.includes("20,350") || !solzSource.topicEn.includes("40,700")) {
+  throw new Error("SolZG source metadata does not document 2026 thresholds 20,350 / 40,700");
+}
+console.log(`[PASS] SolZ Statutory Source Metadata Verified: ${solzSource.reference}`);
+
+// 5. Church Tax Rates: BY (8%) vs NW (9%) vs None (0%)
 const by = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, taxClass: "1", stateCode: "BY", hasChurchTax: true });
 const nw = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, taxClass: "1", stateCode: "NW", hasChurchTax: true });
 const none = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, taxClass: "1", stateCode: "BE", hasChurchTax: false });

@@ -434,9 +434,13 @@ const App = {
                 <span class="param-mini-label">PV Base Employee:</span>
                 <strong class="param-mini-val">1,80% (SN: 2,30%) + 0,6% childless</strong>
               </div>
+              <div class="param-mini-card">
+                <span class="param-mini-label">SolZ Freigrenze (2026):</span>
+                <strong class="param-mini-val">€ 20.350 (Single) / € 40.700 (Splitting)</strong>
+              </div>
             </div>
             <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem; line-height:1.5;">
-              * Note: JAEG (€77.400/yr) is the statutory private health insurance threshold, while social security contributions cap at the GKV contribution ceiling (€5.812,50/mo).
+              * Note: JAEG (€77.400/yr) is the statutory private health insurance threshold, while social security contributions cap at the GKV contribution ceiling (€5.812,50/mo). SolZ applies above the statutory exemption threshold with an 11.9% transition zone (§ 4 SolZG).
             </p>
           </div>
 
@@ -445,6 +449,7 @@ const App = {
             <h3 class="panel-title">🏛️ ${t('officialSourcesTitle')}</h3>
             <ul style="font-size:0.8125rem; color:var(--text-secondary); line-height:1.6; margin:0.5rem 0 1rem 1.25rem;">
               <li><b>Bundesfinanzministerium (BMF):</b> Lohnsteuer-Handbuch 2026 & § 32a EStG (Einkommensteuertarif 2026).</li>
+              <li><b>Solidaritätszuschlaggesetz (SolZG):</b> §§ 3, 4 SolZG (Freigrenzen: €20.350 / €40.700; Milderungszone 11,9%).</li>
               <li><b>Bundesministerium für Gesundheit (BMG):</b> Sozialversicherungs-Rechengrößen-Verordnung 2026.</li>
               <li><b>Bundesministerium für Arbeit und Soziales (BMAS):</b> Rechengrößen der Sozialversicherung 2026.</li>
               <li><b>Deutsche Rentenversicherung:</b> Gesetzliche Beitragssätze und Grenzwerte 2026.</li>

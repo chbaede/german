@@ -20,8 +20,14 @@ const GERMAN_TAX_CONFIG = {
     {
       institution: "Bundesfinanzministerium (BMF)",
       reference: "BMF Lohnsteuer-Handbuch 2026 / § 32a EStG",
-      topicEn: "Income tax brackets, basic allowance (€12,348), SolZ threshold (€19,950)",
-      topicKo: "소득세 누진세율표, 기본공제(12,348 €), 연대세 면제한도(19,950 €)"
+      topicEn: "Income tax brackets, basic allowance (€12,348), progressive tariff zones",
+      topicKo: "소득세 누진세율표, 기본공제(12,348 €), 누진세율 구간"
+    },
+    {
+      institution: "Bundesfinanzministerium (BMF) / Gesetzgeber",
+      reference: "Solidaritätszuschlaggesetz (SolZG 1995) §§ 3, 4 (Stand 2026)",
+      topicEn: "SolZ Freigrenzen 2026: Single/Class I, II, IV, VI €20,350; Married Splitting/Class III €40,700; Milderungszone 11.9%; 5.5% cap",
+      topicKo: "2026년 연대특별세(통일세) 면제한도: 1인 20,350 € / 부부합산 40,700 €; 완충구간(Milderungszone) 11.9%; 최고 5.5% 상한"
     },
     {
       institution: "Bundesministerium für Gesundheit (BMG)",
@@ -191,10 +197,12 @@ const GERMAN_TAX_CONFIG = {
         saxonyAdditionalEmployeeShare: 0.0050
       },
       solz: {
-        thresholdSingle: 19950,  // Exemption limit 2026: €19,950 income tax
-        thresholdMarried: 39900, // Joint splitting threshold: €39,900 income tax
-        rate: 0.055,             // 5.5% standard SolZ rate
-        milderungRate: 0.119     // 11.9% transition zone multiplier
+        thresholdSingle: 20350,  // Freigrenze 2026 (Single / non-splitting): €20,350 income tax (§ 3 Abs. 3 Nr. 1 SolZG)
+        thresholdMarried: 40700, // Freigrenze 2026 (Joint splitting / Class III): €40,700 income tax (§ 3 Abs. 3 Nr. 2 SolZG)
+        rate: 0.055,             // 5.5% standard statutory SolZ rate (§ 3 Abs. 1 SolZG)
+        milderungRate: 0.119,    // 11.9% transition zone multiplier (§ 4 Satz 2 SolZG)
+        capThresholdSingle: 37838.28, // Transition zone upper limit for single: 20,350 * (0.119 / 0.064)
+        capThresholdMarried: 75676.56 // Transition zone upper limit for married splitting: 40,700 * (0.119 / 0.064)
       },
       lumpSums: {
         werbungskosten: 1230,    // Employee lump-sum (€1,230/yr)
@@ -330,6 +338,111 @@ const GERMAN_TAX_CONFIG = {
     }
 
     return rate;
+  },
+
+  /**
+   * Official Statutory Solidarity Surcharge (Solidaritätszuschlag - SolZ) Calculation for 2026
+   * Statutory Basis: §§ 3, 4 SolZG (Solidaritätszuschlaggesetz 1995 as amended for 2026)
+   *
+   * 1. Freigrenze (§ 3 Abs. 3 SolZG 2026):
+   *    - Single / non-splitting cases (Tax Classes I, II, IV, VI): €20,350 annual income tax liability
+   *    - Joint splitting cases (Tax Class III / married filing jointly): €40,700 annual income tax liability
+   *    If incomeTax <= threshold, SolZ = 0.
+   *
+   * 2. Milderungszone (§ 4 Satz 2 SolZG):
+   *    To prevent an abrupt jump cliff, SolZ is capped at maximum 11.9% of the difference
+   *    between the income tax liability and the statutory Freigrenze:
+   *    milderungAmount = (incomeTax - threshold) * 0.119
+   *
+   * 3. Statutory Cap (§ 3 Abs. 1 SolZG):
+   *    The surcharge cannot exceed standard 5.5% of the total income tax liability:
+   *    fullAmount = incomeTax * 0.055
+   *    solz = Math.min(fullAmount, milderungAmount)
+   *
+   * Upper transition boundary where 11.9% excess matches 5.5% of total tax:
+   * - Single: €20,350 * (0.119 / 0.064) = €37,838.28
+   * - Splitting: €40,700 * (0.119 / 0.064) = €75,676.56
+   *
+   * @param {number|object} paramsOrTax - Income tax liability in Euro, or params object
+   * @param {boolean|string|number} [isSplittingOrClass] - Splitting flag or tax class (e.g. "3")
+   * @param {object} [options] - Additional options (e.g. { raw: boolean, details: boolean })
+   * @returns {number|object} Annual Solidarity Surcharge in Euro
+   */
+  calculateSolidaritySurcharge2026(paramsOrTax, isSplittingOrClass, options = {}) {
+    let incomeTax = 0;
+    let isSplitting = false;
+    let opt = options;
+
+    if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      isSplitting = Boolean(
+        paramsOrTax.isSplitting ??
+        (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
+      );
+      opt = paramsOrTax;
+    } else {
+      incomeTax = Number(paramsOrTax || 0);
+      if (typeof isSplittingOrClass === 'boolean') {
+        isSplitting = isSplittingOrClass;
+      } else if (typeof isSplittingOrClass === 'string' || typeof isSplittingOrClass === 'number') {
+        isSplitting = (String(isSplittingOrClass) === '3');
+      } else if (typeof isSplittingOrClass === 'object' && isSplittingOrClass !== null) {
+        opt = isSplittingOrClass;
+        isSplitting = Boolean(opt.isSplitting ?? (opt.taxClass === '3' || opt.isMarried));
+      }
+    }
+
+    // Official 2026 Statutory Parameters (§§ 3, 4 SolZG)
+    const threshold = isSplitting ? 40700 : 20350;
+    const standardRate = 0.055;
+    const milderungRate = 0.119;
+
+    // 1. Below or equal to exemption limit -> Completely exempt (0 €)
+    if (incomeTax <= threshold) {
+      if (opt && opt.details) {
+        return {
+          solz: 0,
+          threshold,
+          inTransitionZone: false,
+          isExempt: true,
+          isFullRate: false,
+          excess: 0,
+          milderungAmount: 0,
+          fullAmount: Number((incomeTax * standardRate).toFixed(2))
+        };
+      }
+      return 0;
+    }
+
+    // 2. Milderungszone: Maximum 11.9% of excess over Freigrenze
+    const excess = incomeTax - threshold;
+    const milderungAmount = excess * milderungRate;
+
+    // 3. Statutory Cap: 5.5% of total income tax
+    const fullAmount = incomeTax * standardRate;
+
+    // 4. Statutory SolZ is the minimum of standard 5.5% and the milderung limit
+    const rawSolz = Math.min(fullAmount, milderungAmount);
+    const roundedSolz = Number(rawSolz.toFixed(2));
+
+    if (opt && opt.details) {
+      return {
+        solz: roundedSolz,
+        threshold,
+        inTransitionZone: milderungAmount < fullAmount,
+        isExempt: false,
+        isFullRate: milderungAmount >= fullAmount,
+        excess,
+        milderungAmount: Number(milderungAmount.toFixed(2)),
+        fullAmount: Number(fullAmount.toFixed(2))
+      };
+    }
+
+    if (opt && (opt.raw === true || opt.round === false)) {
+      return rawSolz;
+    }
+
+    return roundedSolz;
   },
 
   // Comprehensive Tax Class Guidance
