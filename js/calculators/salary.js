@@ -710,25 +710,59 @@ const SalaryCalculator = {
   },
 
   /**
-   * Annual salary with bonuses calculation
+   * Annual compensation calculation with contract-specific additions
+   * 
+   * Note: Additional payments (e.g. additional monthly salaries, Urlaubsgeld, Weihnachtsgeld, performance bonus)
+   * are employer/contract dependent and are not statutory entitlements under German labour law.
+   * 
+   * @param {Object|number} paramsOrMonthlyGross
+   * @param {number} [bonusPct]
+   * @param {number} [fixedBonusCount]
+   * @param {number} [fixedAnnualBonus]
    */
-  calculateAnnualCompensation(monthlyGross, bonusPct, fixedBonusCount) {
-    const monthly = Math.max(0, GLTUtils.parseNumber(monthlyGross, 0));
-    const bonusPercent = Math.max(0, GLTUtils.parseNumber(bonusPct, 0));
-    const fixedCount = Math.max(0, GLTUtils.parseNumber(fixedBonusCount, 0));
+  calculateAnnualCompensation(paramsOrMonthlyGross, bonusPct = 0, fixedBonusCount = 0, fixedAnnualBonus = 0) {
+    let monthlyGross = 0;
+    let performancePercent = 0;
+    let additionalMonthlyCount = 0;
+    let fixedAnnualAmount = 0;
+
+    if (typeof paramsOrMonthlyGross === 'object' && paramsOrMonthlyGross !== null) {
+      monthlyGross = GLTUtils.parseNumber(paramsOrMonthlyGross.monthlyGross || paramsOrMonthlyGross.baseMonthly, 0);
+      performancePercent = GLTUtils.parseNumber(paramsOrMonthlyGross.performanceBonusPercent || paramsOrMonthlyGross.bonusPct, 0);
+      additionalMonthlyCount = GLTUtils.parseNumber(paramsOrMonthlyGross.additionalMonthlyCount || paramsOrMonthlyGross.fixedBonusCount, 0);
+      fixedAnnualAmount = GLTUtils.parseNumber(paramsOrMonthlyGross.fixedAnnualBonus || paramsOrMonthlyGross.otherAnnualAmount || paramsOrMonthlyGross.fixedBonusAmount, 0);
+    } else {
+      monthlyGross = GLTUtils.parseNumber(paramsOrMonthlyGross, 0);
+      performancePercent = GLTUtils.parseNumber(bonusPct, 0);
+      additionalMonthlyCount = GLTUtils.parseNumber(fixedBonusCount, 0);
+      fixedAnnualAmount = GLTUtils.parseNumber(fixedAnnualBonus, 0);
+    }
+
+    const monthly = Math.max(0, monthlyGross);
+    const bonusPercent = Math.max(0, performancePercent);
+    const monthlyCount = Math.max(0, additionalMonthlyCount);
+    const fixedBonus = Math.max(0, fixedAnnualAmount);
 
     const baseAnnual = monthly * 12;
-    const bonusFixed = monthly * fixedCount;
-    const bonusPerformance = baseAnnual * (bonusPercent / 100);
-    const totalComp = baseAnnual + bonusFixed + bonusPerformance;
+    const additionalMonthlyAmount = monthly * monthlyCount;
+    const performanceBonusAmount = baseAnnual * (bonusPercent / 100);
+    const totalComp = baseAnnual + additionalMonthlyAmount + performanceBonusAmount + fixedBonus;
     const monthlyEquivalent = totalComp / 12;
 
     return {
+      monthlyGross: monthly,
       baseAnnual,
-      bonusFixed,
-      bonusPerformance,
+      additionalMonthlyCount: monthlyCount,
+      additionalMonthlyAmount,
+      performanceBonusPercent: bonusPercent,
+      performanceBonusAmount,
+      fixedAnnualAmount: fixedBonus,
       totalComp,
-      monthlyEquivalent
+      monthlyEquivalent,
+      // Backward compatibility aliases
+      bonusFixed: additionalMonthlyAmount,
+      bonusPerformance: performanceBonusAmount,
+      note: "Additional payments are employer/contract dependent and are not statutory entitlements."
     };
   }
 };
@@ -738,8 +772,10 @@ if (typeof globalThis !== 'undefined') {
   globalThis.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
   globalThis.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
   globalThis.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
+  globalThis.calculateAnnualCompensation = SalaryCalculator.calculateAnnualCompensation.bind(SalaryCalculator);
 } else if (typeof window !== 'undefined') {
   window.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
   window.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
   window.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
+  window.calculateAnnualCompensation = SalaryCalculator.calculateAnnualCompensation.bind(SalaryCalculator);
 }

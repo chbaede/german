@@ -87,7 +87,7 @@ const TOOLS_DATA = [
       ko: ["역산", "목표실수령액", "연봉협상", "필요세전급여"]
     }
   },
-  // 3. Annual Salary Calculator
+  // 3. Annual Compensation Calculator
   {
     id: "annual-salary",
     category: "money",
@@ -95,15 +95,15 @@ const TOOLS_DATA = [
     popular: false,
     title: {
       en: "Annual Compensation Calculator",
-      ko: "연봉 및 보너스 합산 계산기"
+      ko: "연간 총 보수 계산기"
     },
     desc: {
-      en: "Calculate total yearly compensation including monthly base pay, 13th month, and bonus payments.",
-      ko: "기본 월급에 13월의 보너스, 휴가비(Urlaubsgeld), 성과급을 합산하여 연간 총소득을 계산합니다."
+      en: "Calculate total yearly compensation: base salary, fixed additional payments, performance bonus, and other annual payments.",
+      ko: "기본급에 계약상 고정 추가 수당, 성과급, 기타 연간 상여금을 합산하여 연간 총 보수를 계산합니다."
     },
     tags: {
-      en: ["Annual Salary", "Bonus", "13th Salary", "Total Compensation"],
-      ko: ["연봉", "보너스", "성과급", "13월급여", "총보수"]
+      en: ["Annual Compensation", "Base Salary", "Bonus", "Performance Bonus", "Total Compensation"],
+      ko: ["연간보수", "기본급", "추가수당", "성과급", "총보수"]
     }
   },
   // 4. Tax Class Comparison

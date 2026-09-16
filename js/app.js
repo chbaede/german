@@ -876,26 +876,63 @@ const App = {
 
       <div class="tool-layout">
         <div class="input-panel">
-          <h2 class="panel-title"><span>💵 Base & Bonus Inputs</span></h2>
-          <div class="form-group">
-            <label class="form-label">${t('monthlyGross')}</label>
+          <h2 class="panel-title"><span>💵 Compensation Components</span></h2>
+
+          <!-- 1. Base salary -->
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="form-label" style="font-weight:700; color:var(--text-primary);">
+              ${t('baseSalarySection') || 'Base salary'}
+            </label>
             <div class="input-with-affix">
               <span class="affix affix-left">€</span>
-              <input type="number" id="ann-base" class="form-input input-prefix" value="5000" min="0">
+              <input type="number" id="ann-base" class="form-input input-prefix" value="5000" min="0" step="100">
               <span class="affix affix-right">/mo</span>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">${t('bonusPercentage')}</label>
-              <div class="input-with-affix">
-                <input type="number" id="ann-bonus-pct" class="form-input" value="10" min="0" max="200">
-                <span class="affix affix-right">%</span>
-              </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">
+              ${t('monthlyGross')}
             </div>
-            <div class="form-group">
-              <label class="form-label">${t('bonusPaymentsCount')}</label>
-              <input type="number" id="ann-bonus-fixed" class="form-input" value="1" min="0" max="6" step="0.5">
+          </div>
+
+          <!-- 2. Fixed additional payments -->
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="form-label" style="font-weight:700; color:var(--text-primary);">
+              ${t('fixedAdditionalSection') || 'Fixed additional payments'}
+            </label>
+            <div class="input-with-affix">
+              <input type="number" id="ann-monthly-count" class="form-input" value="1" min="0" max="6" step="0.25">
+              <span class="affix affix-right">× monthly</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">
+              ${t('additionalMonthlyCountSub')}
+            </div>
+          </div>
+
+          <!-- 3. Performance bonus -->
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="form-label" style="font-weight:700; color:var(--text-primary);">
+              ${t('performanceBonusSection') || 'Performance bonus'}
+            </label>
+            <div class="input-with-affix">
+              <input type="number" id="ann-bonus-pct" class="form-input" value="10" min="0" max="200" step="0.5">
+              <span class="affix affix-right">%</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">
+              ${t('performanceBonusPctSub')}
+            </div>
+          </div>
+
+          <!-- 4. Other annual payments -->
+          <div class="form-group" style="margin-bottom:0.5rem;">
+            <label class="form-label" style="font-weight:700; color:var(--text-primary);">
+              ${t('otherAnnualSection') || 'Other annual payments'}
+            </label>
+            <div class="input-with-affix">
+              <span class="affix affix-left">€</span>
+              <input type="number" id="ann-fixed-amount" class="form-input input-prefix" value="0" min="0" step="250">
+              <span class="affix affix-right">/year</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">
+              ${t('fixedAnnualBonusSub')}
             </div>
           </div>
         </div>
@@ -909,36 +946,52 @@ const App = {
           </div>
           <div class="breakdown-list">
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('baseAnnual')} (12 × Base)</span>
+              <span class="breakdown-label">${t('baseSalarySection') || 'Base salary'} (12 × Base)</span>
               <span id="res-ann-base" class="breakdown-value">€ 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('bonusFromPercent')}</span>
+              <span class="breakdown-label">${t('fixedAdditionalSection') || 'Fixed additional payments'}</span>
+              <span id="res-ann-monthly-add" class="breakdown-value positive">+ € 0,00</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-label">${t('performanceBonusSection') || 'Performance bonus'}</span>
               <span id="res-ann-pct" class="breakdown-value positive">+ € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('bonusFromFixed')}</span>
-              <span id="res-ann-fixed" class="breakdown-value positive">+ € 0,00</span>
+              <span class="breakdown-label">${t('otherAnnualSection') || 'Other annual payments'}</span>
+              <span id="res-ann-fixed-lump" class="breakdown-value positive">+ € 0,00</span>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="info-box" style="margin-top:1.5rem; font-size:0.875rem; color:var(--text-muted); line-height:1.5;">
+        ℹ️ <strong>${t('annualCompStatutoryNote')}</strong>
+      </div>
     `;
 
     const baseIn = document.getElementById('ann-base');
+    const monthlyCountIn = document.getElementById('ann-monthly-count');
     const pctIn = document.getElementById('ann-bonus-pct');
-    const fixedIn = document.getElementById('ann-bonus-fixed');
+    const fixedAmountIn = document.getElementById('ann-fixed-amount');
 
     const updateAnn = () => {
-      const res = SalaryCalculator.calculateAnnualCompensation(baseIn.value, pctIn.value, fixedIn.value);
+      const res = SalaryCalculator.calculateAnnualCompensation({
+        monthlyGross: baseIn.value,
+        additionalMonthlyCount: monthlyCountIn.value,
+        performanceBonusPercent: pctIn.value,
+        fixedAnnualBonus: fixedAmountIn.value
+      });
+
       document.getElementById('res-ann-total').textContent = GLTUtils.formatEuro(res.totalComp);
       document.getElementById('res-ann-monthly').textContent = `${t('monthlyAverageComp')}: ${GLTUtils.formatEuro(res.monthlyEquivalent)}`;
       document.getElementById('res-ann-base').textContent = GLTUtils.formatEuro(res.baseAnnual);
-      document.getElementById('res-ann-pct').textContent = `+ ${GLTUtils.formatEuro(res.bonusPerformance)}`;
-      document.getElementById('res-ann-fixed').textContent = `+ ${GLTUtils.formatEuro(res.bonusFixed)}`;
+      document.getElementById('res-ann-monthly-add').textContent = `+ ${GLTUtils.formatEuro(res.additionalMonthlyAmount)} (${res.additionalMonthlyCount} × Mo)`;
+      document.getElementById('res-ann-pct').textContent = `+ ${GLTUtils.formatEuro(res.performanceBonusAmount)} (${res.performanceBonusPercent}%)`;
+      document.getElementById('res-ann-fixed-lump').textContent = `+ ${GLTUtils.formatEuro(res.fixedAnnualAmount)}`;
     };
 
-    [baseIn, pctIn, fixedIn].forEach(el => el.addEventListener('input', updateAnn));
+    [baseIn, monthlyCountIn, pctIn, fixedAmountIn].forEach(el => el.addEventListener('input', updateAnn));
     updateAnn();
   },
 

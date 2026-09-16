@@ -1,4 +1,5 @@
 const fs = require('fs');
+const assert = require('assert');
 const vm = require('vm');
 
 global.window = {};
@@ -515,5 +516,71 @@ if (!kuendigung.en.includes("wet") || !kuendigung.legalBasis.includes("§ 623"))
 
 console.log(`[PASS] All ${GERMAN_GLOSSARY.length} Glossary entries audited & validated for 2026 legal correctness and metadata.`);
 
+// === 9. ANNUAL COMPENSATION CALCULATOR AUDIT ===
+console.log("\n=== 9. ANNUAL COMPENSATION CALCULATOR AUDIT ===");
+
+// A. Base salary only: €5,000/mo
+const annBaseOnly = SalaryCalculator.calculateAnnualCompensation({ monthlyGross: 5000 });
+assert.strictEqual(annBaseOnly.baseAnnual, 60000);
+assert.strictEqual(annBaseOnly.additionalMonthlyAmount, 0);
+assert.strictEqual(annBaseOnly.performanceBonusAmount, 0);
+assert.strictEqual(annBaseOnly.fixedAnnualAmount, 0);
+assert.strictEqual(annBaseOnly.totalComp, 60000);
+assert.strictEqual(annBaseOnly.monthlyEquivalent, 5000);
+assert.strictEqual(annBaseOnly.note, "Additional payments are employer/contract dependent and are not statutory entitlements.");
+console.log("[PASS] Base salary only: €5,000/mo => Base Annual: €60,000, Total Comp: €60,000");
+
+// B. Contractual additional monthly-equivalent payments (e.g. 1.0 month & 0.5 month)
+const annWithMonthlyCount = SalaryCalculator.calculateAnnualCompensation({
+  monthlyGross: 5000,
+  additionalMonthlyCount: 1.0
+});
+assert.strictEqual(annWithMonthlyCount.baseAnnual, 60000);
+assert.strictEqual(annWithMonthlyCount.additionalMonthlyAmount, 5000);
+assert.strictEqual(annWithMonthlyCount.totalComp, 65000);
+assert.strictEqual(annWithMonthlyCount.monthlyEquivalent, 65000 / 12);
+console.log("[PASS] Contractual additional monthly-equivalent payments: 1.0 month => +€5,000, Total Comp: €65,000");
+
+// C. Performance bonus percentage (10% of base annual):
+const annWithBonusPct = SalaryCalculator.calculateAnnualCompensation({
+  monthlyGross: 5000,
+  performanceBonusPercent: 10
+});
+assert.strictEqual(annWithBonusPct.performanceBonusAmount, 6000); // 10% of 60,000
+assert.strictEqual(annWithBonusPct.totalComp, 66000);
+console.log("[PASS] Performance bonus: 10% of €60,000 => +€6,000, Total Comp: €66,000");
+
+// D. Fixed annual bonus lump sum (€3,500):
+const annWithLumpSum = SalaryCalculator.calculateAnnualCompensation({
+  monthlyGross: 5000,
+  fixedAnnualBonus: 3500
+});
+assert.strictEqual(annWithLumpSum.fixedAnnualAmount, 3500);
+assert.strictEqual(annWithLumpSum.totalComp, 63500);
+console.log("[PASS] Fixed annual bonus lump sum: +€3,500 => Total Comp: €63,500");
+
+// E. Full composite compensation package:
+// €5,000 base + 1.0 additional month (€5,000) + 10% bonus (€6,000) + €2,000 lump sum = €73,000
+const annComposite = SalaryCalculator.calculateAnnualCompensation({
+  monthlyGross: 5000,
+  additionalMonthlyCount: 1.0,
+  performanceBonusPercent: 10,
+  fixedAnnualBonus: 2000
+});
+assert.strictEqual(annComposite.baseAnnual, 60000);
+assert.strictEqual(annComposite.additionalMonthlyAmount, 5000);
+assert.strictEqual(annComposite.performanceBonusAmount, 6000);
+assert.strictEqual(annComposite.fixedAnnualAmount, 2000);
+assert.strictEqual(annComposite.totalComp, 73000);
+assert.strictEqual(Math.round(annComposite.monthlyEquivalent * 100) / 100, 6083.33);
+assert.strictEqual(annComposite.note, "Additional payments are employer/contract dependent and are not statutory entitlements.");
+console.log("[PASS] Composite compensation package: €5k base + 1x month + 10% perf + €2k lump => Total Comp: €73,000 (€6,083.33/mo)");
+
+// F. Positional parameter backward compatibility:
+const annPositional = SalaryCalculator.calculateAnnualCompensation(5000, 10, 1, 2000);
+assert.strictEqual(annPositional.totalComp, 73000);
+console.log("[PASS] Positional parameter call backward compatibility verified: €73,000");
+
 console.log("\n🎉 ALL 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");
+
 
