@@ -30,7 +30,7 @@ Part of the **[yocto.co.kr](https://main.yocto.co.kr)** web ecosystem.
 4. **Tax Class Comparison Guide**: Interactive reference comparing Steuerklassen I to VI, married couple strategies (3/5 vs 4/4 vs 4 mit Faktor).
 
 ### 🏠 Housing & Rent
-5. **Rent & Living Cost Calculator**: Kaltmiete, Nebenkosten, heating, electricity, internet, and GEZ / Rundfunkbeitrag breakdown.
+5. **Rent & Living Cost Calculator**: Kaltmiete, Nebenkosten, heating, electricity, internet, and Rundfunkbeitrag (formerly commonly called GEZ) per dwelling breakdown.
 6. **Moving Cost Calculator (Umzugskosten)**: Van rental, moving company, boxes, cleaning/renovation, and fitted kitchen (EBK).
 
 ### 🚗 Transport & Driving

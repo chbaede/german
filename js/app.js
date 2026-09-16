@@ -1102,6 +1102,16 @@ const App = {
             </div>
           </div>
           <div class="form-group">
+            <label class="form-label">${t('rundfunkbeitragLabel')}</label>
+            <select id="rent-rundfunk" class="form-select">
+              <option value="true" selected>${t('rundfunkPayDwelling')}</option>
+              <option value="false">${t('rundfunkCoveredOrExempt')}</option>
+            </select>
+            <div class="form-hint" style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.35rem; line-height:1.5;">
+              ${t('rundfunkLegalNotice')}
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-label">${t('netMonthlyIncome')}</label>
             <div class="input-with-affix">
               <span class="affix affix-left">€</span>
@@ -1135,8 +1145,8 @@ const App = {
               <span id="res-rent-elec-inet" class="breakdown-value">€ 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('gezFee')}</span>
-              <span id="res-rent-gez" class="breakdown-value">€ 18,36</span>
+              <span class="breakdown-label">${t('rundfunkbeitragBreakdown')}</span>
+              <span id="res-rent-rundfunk" class="breakdown-value">€ 18,36</span>
             </div>
             <div class="breakdown-row total-row">
               <span class="breakdown-label">${t('rentIncomeRatio')}</span>
@@ -1166,6 +1176,7 @@ const App = {
     const heatExtraIn = document.getElementById('rent-heat-extra');
     const elecIn = document.getElementById('rent-elec');
     const inetIn = document.getElementById('rent-inet');
+    const rundfunkIn = document.getElementById('rent-rundfunk');
     const netIncIn = document.getElementById('rent-net-income');
 
     const updateRent = () => {
@@ -1179,6 +1190,7 @@ const App = {
         extraHeating: heatExtraIn.value,
         electricity: elecIn.value,
         internet: inetIn.value,
+        includeRundfunkbeitrag: rundfunkIn.value === 'true',
         netIncome: netIncIn.value
       });
 
@@ -1188,10 +1200,11 @@ const App = {
       document.getElementById('res-rent-neben').textContent = GLTUtils.formatEuro(res.nebenkosten);
       document.getElementById('res-rent-warm').textContent = GLTUtils.formatEuro(res.warmmiete);
       document.getElementById('res-rent-elec-inet').textContent = GLTUtils.formatEuro(res.electricity + res.internet);
+      document.getElementById('res-rent-rundfunk').textContent = GLTUtils.formatEuro(res.rundfunkbeitrag);
       document.getElementById('res-rent-ratio').textContent = res.rentRatio ? `${res.rentRatio.toFixed(1)} %` : 'N/A';
     };
 
-    [kaltIn, nebenIn, heatIncIn, heatExtraIn, elecIn, inetIn, netIncIn].forEach(el => {
+    [kaltIn, nebenIn, heatIncIn, heatExtraIn, elecIn, inetIn, rundfunkIn, netIncIn].forEach(el => {
       el.addEventListener('input', updateRent);
       el.addEventListener('change', updateRent);
     });

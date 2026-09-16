@@ -132,17 +132,17 @@ const GERMAN_GLOSSARY = [
     ko: "독일 전역 11개 지역 독립 공보험사 연합체 (AOK Bayern, AOK Plus 등, 전체 독일 인구의 약 3분의 1 보험 가입). 각 주별 AOK는 독립적인 법인으로 자체적인 추가보험료율(Zusatzbeitrag)을 고시하며, 지역 밀착형 오프라인 지사망을 광범위하게 보유하고 있습니다."
   },
   {
-    term: "GEZ / Rundfunkbeitrag",
+    term: "Rundfunkbeitrag (formerly commonly called GEZ)",
     category: "housing",
     classification: "legal_requirement",
-    classificationEn: "Legal Requirement",
-    classificationKo: "법적 의무 (가구당 부과)",
-    legalBasis: "Rundfunkbeitragsstaatsvertrag (RBStV) § 2",
+    classificationEn: "Statutory Contribution (Per Dwelling)",
+    classificationKo: "법정 분담금 (주택/가구 단위 부과)",
+    legalBasis: "Rundfunkbeitragsstaatsvertrag (RBStV) § 2 Abs. 1, Abs. 3",
     source: "ARD ZDF Deutschlandradio Beitragsservice",
     sourceUrl: "https://www.rundfunkbeitrag.de/",
     lastVerified: "2026-09-16",
-    en: "Mandatory statutory broadcasting contribution of €18.36 per month per dwelling (Wohnung), regardless of whether television, radio, or internet devices are present or used. Paid once per household (roommates in flatshares divide the fee). The historic acronym 'GEZ' was officially abolished in 2013 but remains in universal colloquial usage. Statutory exemptions or reductions are available under § 4 RBStV for recipients of social welfare (Bürgergeld, BAföG, Grundsicherung) or severe disability (RF mark).",
-    ko: "독일 공영방송 수신료. 가구(주택 단위)당 월 18.36유로가 법적으로 부과되며, TV나 라디오 소유 및 실제 시청 여부와 무관하게 부과됩니다. 아파트/주택당 1명만 납부하면 되므로 셰어하우스(WG)는 거주자끼리 1/N로 분담합니다. 과거 징수기구 명칭인 'GEZ'는 2013년 공식 폐지되었으나 대중적으로 통용됩니다. 기초생활수급자(Bürgergeld), BAföG 장학생, 중증장애인은 증빙 제출 시 수신료 면제 또는 감면을 신청할 수 있습니다."
+    en: "Statutory broadcasting contribution of €18.36 per month levied per dwelling (Wohnung), regardless of whether television, radio, or internet devices are present or used. Under § 2 Abs. 1 RBStV, the contribution is legally owed per dwelling arrangement rather than per individual person. Co-occupants in shared flats (Wohngemeinschaft / WG), married couples, and registered partnerships are joint debtors under § 2 Abs. 3 RBStV, meaning only one resident pays for the entire dwelling while flatmates divide costs internally. The historic agency acronym 'GEZ' (Gebühreneinzugszentrale) was officially abolished in 2013 with the transition from device-based fees to household contributions, but remains in widespread colloquial usage. Statutory exemptions or fee reductions exist under § 4 RBStV for welfare recipients (Bürgergeld, BAföG, Grundsicherung) or people with severe disabilities (RF mark).",
+    ko: "독일 법정 공영방송 수신료(Rundfunkbeitrag). 주택(Wohnung) 단위로 월 18.36유로가 법적으로 부과되며, TV·라디오 보유나 실제 시청 여부와 무관하게 부과됩니다. 방송수신료는 개인별이 아니라 '주택(주거 공간)' 단위로 부과되므로(RBStV § 2 Abs. 1), 셰어하우스(WG), 부부, 동거인의 경우 거주자 전원이 연대채무를 지되(RBStV § 2 Abs. 3), 거주자 중 1명의 납부번호(Beitragsnummer)로 주택 전체가 등록되면 나머지 동거인은 중복 납부할 필요가 없습니다. 과거 징수기구 명칭인 'GEZ'(Gebühreneinzugszentrale)는 기기별 수수료 체계가 주택별 부담금으로 전환된 2013년에 공식 폐지되었으나, 일상 관용어로 널리 불립니다. 시민수당(Bürgergeld), BAföG 장학생, 기초생계급여 수급자나 중증장애인(RF 마크)은 증빙 제출 시 법정 면제 또는 감면을 신청할 수 있습니다."
   },
   {
     term: "Kaltmiete (Nettokaltmiete)",
@@ -168,7 +168,7 @@ const GERMAN_GLOSSARY = [
     sourceUrl: "https://www.gesetze-im-internet.de/bgb/__556.html",
     lastVerified: "2026-09-16",
     en: "Total monthly rental payment transferred to the landlord, combining the net base rent (Kaltmiete) and estimated advance prepayments for operating and heating costs (Nebenkostenvorauszahlung). In standard German residential leases, Warmmiete does NOT include private household electricity, internet, or the Rundfunkbeitrag, which tenants contract directly with utility providers unless explicitly agreed in flat-rate all-inclusive leases (Pauschalmiete).",
-    ko: "난방·관리비 포함 총 월세. 기본 월세(Kaltmiete)에 난방, 온수, 수도, 건물 청소 등 예상 관리비 선수금(Vorauszahlung)이 합산된 금액입니다. 일반적인 독일 주택 임대차 계약에서 가정용 전기세(Strom), 인터넷 요금, 방송수신료(GEZ)는 밤미테에 포함되지 않으며 세입자가 공급업체와 별도 계약해야 합니다 (모든 비용이 포함된 기숙사/단기 임대 Pauschalmiete 제외)."
+    ko: "난방·관리비 포함 총 월세. 기본 월세(Kaltmiete)에 난방, 온수, 수도, 건물 청소 등 예상 관리비 선수금(Vorauszahlung)이 합산된 금액입니다. 일반적인 독일 주택 임대차 계약에서 가정용 전기세(Strom), 인터넷 요금, 방송수신료(Rundfunkbeitrag, 구 GEZ)는 밤미테에 포함되지 않으며 세입자가 공급업체와 별도 계약해야 합니다 (모든 비용이 포함된 기숙사/단기 임대 Pauschalmiete 제외)."
   },
   {
     term: "Nebenkosten (Betriebskosten)",

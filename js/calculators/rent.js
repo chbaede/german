@@ -12,12 +12,18 @@ const RentCalculator = {
     const extraHeating = isHeatingIncluded ? 0 : Math.max(0, GLTUtils.parseNumber(params.extraHeating, 0));
     const electricity = Math.max(0, GLTUtils.parseNumber(params.electricity, 0));
     const internet = Math.max(0, GLTUtils.parseNumber(params.internet, 0));
-    const gezFee = params.includeGez !== false ? 18.36 : 0; // GEZ Rundfunkbeitrag is standard €18.36/mo
+    // Rundfunkbeitrag (§ 2 RBStV): Statutory contribution of €18.36/month per dwelling (Wohnung).
+    // In multi-person households or flatshares (WG), only one occupant pays for the entire dwelling.
+    const includeRundfunk = params.includeRundfunkbeitrag !== undefined
+      ? Boolean(params.includeRundfunkbeitrag)
+      : (params.includeGez !== false);
+    const rundfunkbeitrag = includeRundfunk ? 18.36 : 0;
+    const gezFee = rundfunkbeitrag; // preserved for backward compatibility
     const otherCosts = Math.max(0, GLTUtils.parseNumber(params.otherCosts, 0));
     const netIncome = Math.max(0, GLTUtils.parseNumber(params.netIncome, 0));
 
     const warmmiete = kaltmiete + nebenkosten + extraHeating;
-    const totalHousingMonthly = warmmiete + electricity + internet + gezFee + otherCosts;
+    const totalHousingMonthly = warmmiete + electricity + internet + rundfunkbeitrag + otherCosts;
     const totalHousingAnnual = totalHousingMonthly * 12;
 
     const rentRatio = netIncome > 0 ? (totalHousingMonthly / netIncome) * 100 : null;
@@ -29,7 +35,8 @@ const RentCalculator = {
       warmmiete,
       electricity,
       internet,
-      gezFee,
+      rundfunkbeitrag,
+      gezFee, // preserved for backward compatibility
       otherCosts,
       totalHousingMonthly,
       totalHousingAnnual,
@@ -58,4 +65,8 @@ const RentCalculator = {
     };
   }
 };
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.RentCalculator = RentCalculator;
+}
 

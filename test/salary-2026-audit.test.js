@@ -17,6 +17,7 @@ vm.runInThisContext(fs.readFileSync('./js/data/tax-config.js', 'utf8'));
 vm.runInThisContext(fs.readFileSync('./js/calculators/salary.js', 'utf8'));
 vm.runInThisContext("global.GERMAN_SCHOOL_HOLIDAYS = { getSchoolHolidays: () => [] };");
 vm.runInThisContext(fs.readFileSync('./js/calculators/family-tools.js', 'utf8'));
+vm.runInThisContext(fs.readFileSync('./js/calculators/rent.js', 'utf8'));
 vm.runInThisContext(fs.readFileSync('./js/data/glossary.js', 'utf8'));
 
 console.log("=== COMPREHENSIVE 2026 SALARY AUDIT VERIFICATION ===");
@@ -407,7 +408,7 @@ const requiredGlossaryTerms = [
   "Finanzamt",
   "TK",
   "AOK",
-  "GEZ / Rundfunkbeitrag",
+  "Rundfunkbeitrag",
   "Kaltmiete",
   "Warmmiete",
   "Nebenkosten",
@@ -484,9 +485,15 @@ if (!abmeldung.en.includes("giving up a secondary residence") && !abmeldung.en.i
   throw new Error("Abmeldung must state it is only required when leaving Germany or giving up secondary home");
 }
 
-const gez = GERMAN_GLOSSARY.find(g => g.term.startsWith("GEZ"));
-if ((gez.classification !== "legal_requirement" && gez.classification !== "informal_term") || !gez.legalBasis.includes("RBStV")) {
-  throw new Error("GEZ / Rundfunkbeitrag must cite RBStV legal basis");
+const rundfunk = GERMAN_GLOSSARY.find(g => g.term.startsWith("Rundfunkbeitrag"));
+if (!rundfunk) {
+  throw new Error("Rundfunkbeitrag entry missing in glossary");
+}
+if ((rundfunk.classification !== "legal_requirement" && rundfunk.classification !== "informal_term" && rundfunk.classification !== "statutory_definition") || !rundfunk.legalBasis.includes("RBStV")) {
+  throw new Error("Rundfunkbeitrag must cite RBStV legal basis");
+}
+if (!rundfunk.en.includes("dwelling") || !rundfunk.en.includes("Wohnung")) {
+  throw new Error("Rundfunkbeitrag must explain the statutory dwelling (Wohnung) unit");
 }
 
 const tuev = GERMAN_GLOSSARY.find(g => g.term.startsWith("TÜV"));
@@ -580,6 +587,58 @@ console.log("[PASS] Composite compensation package: €5k base + 1x month + 10% 
 const annPositional = SalaryCalculator.calculateAnnualCompensation(5000, 10, 1, 2000);
 assert.strictEqual(annPositional.totalComp, 73000);
 console.log("[PASS] Positional parameter call backward compatibility verified: €73,000");
+
+// === 10. HOUSING & RUNDFUNKBEITRAG STATUTORY AUDIT ===
+console.log("\n=== 10. HOUSING & RUNDFUNKBEITRAG STATUTORY AUDIT ===");
+
+// A. Standard dwelling with direct Rundfunkbeitrag (€18.36/mo per dwelling)
+const rentWithRundfunk = RentCalculator.calculateRent({
+  kaltmiete: 1000,
+  nebenkosten: 200,
+  electricity: 60,
+  internet: 40,
+  includeRundfunkbeitrag: true
+});
+assert.strictEqual(rentWithRundfunk.warmmiete, 1200);
+assert.strictEqual(rentWithRundfunk.rundfunkbeitrag, 18.36);
+assert.strictEqual(rentWithRundfunk.gezFee, 18.36); // backward compatibility
+assert.strictEqual(rentWithRundfunk.totalHousingMonthly, 1318.36);
+assert.strictEqual(rentWithRundfunk.totalHousingAnnual, 1318.36 * 12);
+console.log("[PASS] Rent with direct dwelling Rundfunkbeitrag: €1,318.36/mo (Warmmiete €1,200 + €100 utils + €18.36)");
+
+// B. Shared flat (WG) or spouse/partner covered / statutory exemption: Rundfunkbeitrag = €0
+const rentWithoutRundfunk = RentCalculator.calculateRent({
+  kaltmiete: 1000,
+  nebenkosten: 200,
+  electricity: 60,
+  internet: 40,
+  includeRundfunkbeitrag: false
+});
+assert.strictEqual(rentWithoutRundfunk.warmmiete, 1200);
+assert.strictEqual(rentWithoutRundfunk.rundfunkbeitrag, 0);
+assert.strictEqual(rentWithoutRundfunk.gezFee, 0);
+assert.strictEqual(rentWithoutRundfunk.totalHousingMonthly, 1300);
+console.log("[PASS] Rent with partner/flatmate-covered or exempt Rundfunkbeitrag: €1,300.00/mo (€0 Rundfunkbeitrag)");
+
+// C. Backward compatibility with legacy includeGez flag:
+const rentLegacyFalse = RentCalculator.calculateRent({
+  kaltmiete: 800,
+  nebenkosten: 150,
+  includeGez: false
+});
+assert.strictEqual(rentLegacyFalse.rundfunkbeitrag, 0);
+assert.strictEqual(rentLegacyFalse.gezFee, 0);
+assert.strictEqual(rentLegacyFalse.totalHousingMonthly, 950);
+
+const rentLegacyTrue = RentCalculator.calculateRent({
+  kaltmiete: 800,
+  nebenkosten: 150,
+  includeGez: true
+});
+assert.strictEqual(rentLegacyTrue.rundfunkbeitrag, 18.36);
+assert.strictEqual(rentLegacyTrue.gezFee, 18.36);
+assert.strictEqual(rentLegacyTrue.totalHousingMonthly, 968.36);
+console.log("[PASS] Legacy includeGez / gezFee backward compatibility verified.");
 
 console.log("\n🎉 ALL 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");
 

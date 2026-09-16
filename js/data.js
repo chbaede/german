@@ -136,12 +136,12 @@ const TOOLS_DATA = [
       ko: "월세 & 주거비 총비용 계산기"
     },
     desc: {
-      en: "Compute total housing expenses including Kaltmiete, Nebenkosten, heating, electricity, internet, and GEZ fee.",
-      ko: "순수 월세(Kaltmiete), 관리비, 난방, 전기세, 인터넷 및 공영방송 수신료를 합산한 실제 주거비를 계산합니다."
+      en: "Compute total housing expenses including Kaltmiete, Nebenkosten, heating, electricity, internet, and Rundfunkbeitrag (formerly commonly called GEZ).",
+      ko: "순수 월세(Kaltmiete), 관리비, 난방, 전기세, 인터넷 및 방송수신료(Rundfunkbeitrag, 구 GEZ)를 합산한 실제 주거비를 계산합니다."
     },
     tags: {
-      en: ["Rent", "Kaltmiete", "Warmmiete", "Nebenkosten", "GEZ", "Apartment"],
-      ko: ["월세", "칼트미테", "밤미테", "관리비", "방송수신료", "아파트"]
+      en: ["Rent", "Kaltmiete", "Warmmiete", "Nebenkosten", "Rundfunkbeitrag", "GEZ", "Apartment", "Housing"],
+      ko: ["월세", "칼트미테", "밤미테", "관리비", "방송수신료", "Rundfunkbeitrag", "GEZ", "주거비", "아파트"]
     }
   },
 

@@ -141,14 +141,19 @@ const I18N = {
 
     // Rent Calculator (5)
     rentTitle: "German Rent & Housing Cost Calculator",
-    rentDesc: "Understand the true cost of renting an apartment in Germany: Kaltmiete, Nebenkosten, heating, electricity, and GEZ.",
+    rentDesc: "Understand the true cost of renting an apartment in Germany: Kaltmiete, Nebenkosten, heating, electricity, internet, and Rundfunkbeitrag (formerly commonly called GEZ).",
     kaltmiete: "Cold Rent (Kaltmiete - base rent)",
     nebenkosten: "Advance Operating Costs (Nebenkosten)",
     heatingIncluded: "Is heating included in Nebenkosten?",
     extraHeating: "Extra Heating / Hot Water (€/month)",
     electricity: "Electricity (€/month)",
     internet: "Internet / Broadband (€/month)",
-    gezFee: "Public Broadcasting Fee (GEZ / Rundfunkbeitrag)",
+    rundfunkbeitragLabel: "Rundfunkbeitrag (formerly commonly called GEZ)",
+    rundfunkPayDwelling: "Pay for this dwelling (€18.36/month)",
+    rundfunkCoveredOrExempt: "Already covered by another occupant in this dwelling / Exempt (€0.00)",
+    rundfunkLegalNotice: "Under § 2 RBStV, the statutory contribution (€18.36/month) is owed once per dwelling (Wohnung), not per person. If a flatmate (WG), spouse, or partner in the same dwelling already pays under their Beitragsnummer, or if you hold a statutory exemption (§ 4 RBStV), no additional fee is owed.",
+    rundfunkbeitragBreakdown: "Rundfunkbeitrag (formerly GEZ)",
+    gezFee: "Rundfunkbeitrag (formerly commonly called GEZ)",
     otherHousing: "Other Monthly Housing Costs",
     netMonthlyIncome: "Your Monthly Net Income (optional, to check budget)",
     warmmiete: "Warm Rent (Warmmiete)",
@@ -157,7 +162,7 @@ const I18N = {
     rentIncomeRatio: "Housing Cost as % of Net Income",
     rentHealthyNote: "German financial rule of thumb: Total housing cost should ideally not exceed 30% to 35% of monthly net income.",
     kaltmieteExplainTitle: "Understanding German Rent Terms",
-    kaltmieteExplain: "• <b>Kaltmiete (Cold Rent):</b> The bare price for the living space alone.<br>• <b>Nebenkosten (Operating costs):</b> Prepayments for building insurance, trash collection, stairwell cleaning, and water.<br>• <b>Warmmiete:</b> Kaltmiete + Nebenkosten (and heating if included).<br>• <b>Electricity & Internet:</b> Almost always contracted separately by the tenant.",
+    kaltmieteExplain: "• <b>Kaltmiete (Cold Rent):</b> The bare price for the living space alone.<br>• <b>Nebenkosten (Operating costs):</b> Prepayments for building insurance, trash collection, stairwell cleaning, water, and elevator maintenance.<br>• <b>Warmmiete:</b> Kaltmiete + Nebenkosten (and heating if included).<br>• <b>Electricity & Internet:</b> Almost always contracted directly by the tenant with utility and telecom providers.<br>• <b>Rundfunkbeitrag (formerly commonly called GEZ):</b> Statutory broadcasting contribution of €18.36/month per dwelling (Wohnung). In flatshares (WG) or multi-person households, only one occupant pays for the entire dwelling.",
 
     // Rental Deposit Calculator (6)
     depositTitle: "Rental Deposit Calculator (Mietkaution)",
@@ -355,7 +360,7 @@ const I18N = {
     // Glossary (21)
     glossaryTitle: "German Expat Glossary & Abbreviations",
     glossaryDesc: "Searchable dictionary of 40+ essential bureaucratic, legal, tax, housing, and everyday terms in Germany.",
-    searchGlossary: "Filter terms (e.g. Anmeldung, Schufa, TÜV, GEZ...)",
+    searchGlossary: "Filter terms (e.g. Anmeldung, Schufa, TÜV, Rundfunkbeitrag...)",
     allGlossaryCats: "All Categories",
     catBureaucracy: "Bureaucracy & Residence",
     catHousing: "Housing & Rent",
@@ -379,7 +384,7 @@ const I18N = {
     faq3Q: "What are the statutory public holidays in Berlin for 2026?",
     faq3A: "Berlin observes 10 statutory public holidays (gesetzliche Feiertage): New Year's Day (Jan 1), International Women's Day / Frauentag (March 8), Good Friday, Easter Monday, Ascension Day, Whit Monday, German Unity Day (Oct 3), and Christmas (Dec 25–26). Unlike southern states like Bavaria or Baden-Württemberg, Berlin does not celebrate Epiphany or Corpus Christi, but uniquely recognizes Frauentag.",
     faq4Q: "What is the difference between Kaltmiete (Cold Rent) and Warmmiete (Warm Rent)?",
-    faq4A: "<b>Kaltmiete (Grundmiete)</b> is the pure base rent for the empty property space. <b>Warmmiete (Gesamtmiete)</b> equals Kaltmiete plus <b>Nebenkosten (Betriebskosten)</b>, which covers heating, water, trash disposal, building cleaning, and elevator maintenance. Note that private household electricity, internet, and the mandatory public broadcasting fee (Rundfunkbeitrag / GEZ at €18.36/month) are billed separately.",
+    faq4A: "<b>Kaltmiete (Grundmiete)</b> is the pure base rent for the empty property space. <b>Warmmiete (Gesamtmiete)</b> equals Kaltmiete plus <b>Nebenkosten (Betriebskosten)</b>, which covers heating, water, trash disposal, building cleaning, and elevator maintenance. Note that private household electricity, internet, and the statutory broadcasting contribution (<b>Rundfunkbeitrag</b>, formerly commonly called GEZ, at €18.36/month per dwelling) are billed separately. Under broadcasting contribution regulations (§ 2 RBStV), the contribution is levied strictly per dwelling (Wohnung)—meaning roommates in a flatshare (WG) or couples only pay once for the shared household.",
     faq5Q: "Does the German Life Toolkit store or send my financial data?",
     faq5A: "<b>No, never.</b> The German Life Toolkit is engineered with a strict 100% client-side, zero-server architecture. All calculations—including your salary, rent, bonuses, and family details—are computed exclusively in your browser's local memory. No databases, tracking cookies, or external analytics endpoints are used.",
 
@@ -532,14 +537,19 @@ const I18N = {
 
     // Rent Calculator (5)
     rentTitle: "독일 월세 & 주거비 총비용 계산기",
-    rentDesc: "기본 월세(Kaltmiete), 관리비(Nebenkosten), 난방, 전기세, 인터넷 및 방송수신료를 종합한 실제 주거비를 계산합니다.",
+    rentDesc: "기본 월세(Kaltmiete), 관리비(Nebenkosten), 난방비, 전기세, 인터넷 및 방송수신료(Rundfunkbeitrag, 구 GEZ)를 종합한 실제 주거비를 계산합니다.",
     kaltmiete: "순수 기본 월세 (Kaltmiete)",
     nebenkosten: "선납 관리비 (Nebenkosten)",
     heatingIncluded: "난방비가 관리비에 포함되어 있나요?",
     extraHeating: "추가 난방/온수비 (€/월)",
     electricity: "전기요금 (€/월)",
     internet: "인터넷/통신비 (€/월)",
-    gezFee: "공영방송 수신료 (GEZ / Rundfunkbeitrag)",
+    rundfunkbeitragLabel: "방송수신료 (Rundfunkbeitrag, 구 GEZ)",
+    rundfunkPayDwelling: "이 주택(가구)에 대해 직접 납부 (월 18.36 €)",
+    rundfunkCoveredOrExempt: "동일 주택 동거인/룸메이트가 이미 납부 중이거나 법정 면제 (0.00 €)",
+    rundfunkLegalNotice: "독일 방송수신료 국가협약(RBStV § 2)에 따라 방송수신료(월 18.36 €)는 개인별이 아닌 주택(Wohnung) 단위로 부과됩니다. 셰어하우스(WG)나 동거 가족 중 이미 1명이 납부번호(Beitragsnummer)로 납부 중이거나 법정 면제(RBStV § 4) 대상인 경우 중복 납부하지 않습니다.",
+    rundfunkbeitragBreakdown: "방송수신료 (Rundfunkbeitrag, 구 GEZ)",
+    gezFee: "공영방송 수신료 (Rundfunkbeitrag, 구 GEZ)",
     otherHousing: "기타 월 주거비용",
     netMonthlyIncome: "월 순수령 소득 (선택 사항, 주거비 비중 점검용)",
     warmmiete: "관리비 포함 월세 (Warmmiete)",
@@ -548,7 +558,7 @@ const I18N = {
     rentIncomeRatio: "소득 대비 주거비 비율",
     rentHealthyNote: "독일 권장 주거비 가이드라인: 총 주거비용은 월 순소득의 30%~35% 이내로 유지하는 것이 이상적입니다.",
     kaltmieteExplainTitle: "독일 임대 용어 핵심 요약",
-    kaltmieteExplain: "• <b>Kaltmiete (칼트미테):</b> 순수 주거 공간에 대한 기본 임대료.<br>• <b>Nebenkosten (네벤코스텐):</b> 건물 보험, 쓰레기 수거, 계단 청소 등 관리비 선수금 (연말 정산).<br>• <b>Warmmiete (밤미테):</b> 칼트미테 + 네벤코스텐 (난방비 포함 시).<br>• <b>전기 및 인터넷:</b> 세입자가 공급업체와 직접 개별 계약하는 것이 일반적입니다.",
+    kaltmieteExplain: "• <b>Kaltmiete (칼트미테):</b> 순수 주거 공간에 대한 기본 임대료.<br>• <b>Nebenkosten (네벤코스텐):</b> 건물 보험, 쓰레기 수거, 계단 청소 등 관리비 선수금 (연말 정산).<br>• <b>Warmmiete (밤미테):</b> 칼트미테 + 네벤코스텐 (난방비 포함 시).<br>• <b>전기 및 인터넷:</b> 세입자가 공급업체와 직접 개별 계약하는 것이 일반적입니다.<br>• <b>Rundfunkbeitrag (과거 관용명 GEZ):</b> 주택(Wohnung) 단위로 월 18.36 €가 부과되는 법정 방송수신료입니다. 셰어하우스(WG)나 다인 가구는 주택당 1명만 납부하면 되므로 동거인과 분담하거나 대표자가 납부합니다.",
 
     // Rental Deposit Calculator (6)
     depositTitle: "보증금(Kaution) 및 입주 초기비용 계산기",
@@ -746,7 +756,7 @@ const I18N = {
     // Glossary (21)
     glossaryTitle: "독일 생활 & 행정 필수 용어 사전",
     glossaryDesc: "전입신고, 슈파, 방송수신료, 튀프, 밤미테, 수습기간 등 독일 거주에 필수적인 40개 이상의 핵심 행정/법률 용어 해설집입니다.",
-    searchGlossary: "용어 검색 (예: Anmeldung, Schufa, TÜV, GEZ...)",
+    searchGlossary: "용어 검색 (예: Anmeldung, Schufa, TÜV, Rundfunkbeitrag...)",
     allGlossaryCats: "전체 카테고리",
     catBureaucracy: "행정 및 거주 등록",
     catHousing: "주거 및 임대차",
@@ -770,7 +780,7 @@ const I18N = {
     faq3Q: "2026년 베를린의 법정 공휴일(Feiertage)은 며칠인가요?",
     faq3A: "베를린은 연간 10일의 법정 공휴일을 갖습니다: 신정(1월 1일), 세계 여성의 날(Frauentag, 3월 8일), 성금요일, 부활절 월요일, 예수승천일, 성령강림일, 독일 통일의 날(10월 3일), 성탄절(12월 25~26일). 바이에른주나 바덴뷔르템베르크주와 달리 주현절이나 성체축일은 쉬지 않으나, 베를린만의 고유 공휴일인 '세계 여성의 날'을 공식 휴일로 보장합니다.",
     faq4Q: "기본 월세(Kaltmiete)와 관리비 포함 월세(Warmmiete)는 어떻게 다른가요?",
-    faq4A: "<b>칼트미테(Kaltmiete)</b>는 순수 공간 임대료(기본 월세)이며, <b>밤미테(Warmmiete)</b>는 칼트미테에 건물 난방, 온수, 수도, 쓰레기 수거, 청소 등 부대비용(Nebenkosten)이 합산된 총 월세입니다. 주의할 점은 개별 전기세(Strom), 가정용 인터넷(WLAN), 그리고 필수 공영방송 수신료(Rundfunkbeitrag / GEZ, 가구당 월 18.36 €)는 밤미테에 포함되지 않아 별도 계약 및 납부해야 합니다.",
+    faq4A: "<b>칼트미테(Kaltmiete)</b>는 순수 공간 임대료(기본 월세)이며, <b>밤미테(Warmmiete)</b>는 칼트미테에 건물 난방, 온수, 수도, 쓰레기 수거, 청소 등 부대비용(Nebenkosten)이 합산된 총 월세입니다. 주의할 점은 개별 전기세(Strom), 가정용 인터넷(WLAN), 그리고 법정 방송수신료(<b>Rundfunkbeitrag</b>, 과거 흔히 GEZ로 불림, 주택당 월 18.36 €)는 밤미테에 포함되지 않아 별도로 처리해야 합니다. 방송수신료는 개인별이 아닌 주택(Wohnung) 단위로 부과되므로(RBStV § 2), 셰어하우스(WG)나 부부·동거 가구의 경우 거주자 중 1명만 대표로 납부하면 됩니다.",
     faq5Q: "독일 생활 툴킷은 사용자의 금융 정보나 개인정보를 저장하나요?",
     faq5A: "<b>절대 저장하거나 외부로 전송하지 않습니다.</b> 독일 생활 툴킷은 100% 브라우저 로컬(Client-Side) 환경에서 동작하도록 설계되었습니다. 입력하신 월급, 거주지, 자녀 수, 주거비 등 모든 데이터는 사용자의 PC/스마트폰 메모리에서만 즉시 계산되고 사라지며, 서버 통신이나 개인정보 데이터베이스가 일절 존재하지 않습니다.",
 
