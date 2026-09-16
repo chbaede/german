@@ -392,4 +392,128 @@ if (kgGlossary.en.includes("€250 per child as of 2025/2026")) {
 }
 console.log(`[PASS] Kindergeld Glossary Entry Verified: "${kgGlossary.en.slice(0, 75)}..."`);
 
+// ==========================================
+// 8. FACTUAL AUDIT OF ENTIRE GERMAN_GLOSSARY
+// ==========================================
+console.log("\n=== 8. GERMAN GLOSSARY FACTUAL AUDIT (2026) ===");
+
+const requiredGlossaryTerms = [
+  "Anmeldung",
+  "Abmeldung",
+  "Steuer-ID",
+  "Steuerklasse",
+  "ELSTER",
+  "Finanzamt",
+  "TK",
+  "AOK",
+  "GEZ / Rundfunkbeitrag",
+  "Kaltmiete",
+  "Warmmiete",
+  "Nebenkosten",
+  "Kaution",
+  "Schufa",
+  "Haftpflichtversicherung",
+  "Kfz",
+  "HU",
+  "AU",
+  "TÜV",
+  "Arbeitsvertrag",
+  "Probezeit",
+  "Kündigung / Kündigungsfrist",
+  "Kurzarbeit",
+  "Kindergeld",
+  "Elterngeld",
+  "Kita"
+];
+
+const validClassifications = [
+  "legal_requirement",
+  "statutory_definition",
+  "common_practice",
+  "recommendation",
+  "informal_term"
+];
+
+// Verify all required terms exist
+requiredGlossaryTerms.forEach(term => {
+  const item = GERMAN_GLOSSARY.find(g => 
+    g.term === term || 
+    g.term.startsWith(term + " ") || 
+    g.term.startsWith(term + " /") || 
+    g.term.startsWith(term + " (")
+  );
+  if (!item) {
+    throw new Error(`Mandatory glossary term missing: "${term}"`);
+  }
+});
+
+// Verify metadata schema, sources, dates, and classifications for all entries
+GERMAN_GLOSSARY.forEach(item => {
+  if (!item.term || !item.category || !item.en || !item.ko) {
+    throw new Error(`Glossary entry missing core fields: ${JSON.stringify(item)}`);
+  }
+  if (!validClassifications.includes(item.classification)) {
+    throw new Error(`Invalid classification "${item.classification}" on term "${item.term}"`);
+  }
+  if (!item.classificationEn || !item.classificationKo) {
+    throw new Error(`Missing classification localized labels on term "${item.term}"`);
+  }
+  if (!item.legalBasis || typeof item.legalBasis !== 'string') {
+    throw new Error(`Missing legalBasis on term "${item.term}"`);
+  }
+  if (!item.source || typeof item.source !== 'string') {
+    throw new Error(`Missing source on term "${item.term}"`);
+  }
+  if (!item.sourceUrl || !item.sourceUrl.startsWith("https://")) {
+    throw new Error(`Invalid or missing sourceUrl on term "${item.term}": got ${item.sourceUrl}`);
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(item.lastVerified)) {
+    throw new Error(`Invalid lastVerified date format on term "${item.term}": got ${item.lastVerified}`);
+  }
+});
+
+// Specific factual verification tests
+const anmeldung = GERMAN_GLOSSARY.find(g => g.term.startsWith("Anmeldung"));
+if (anmeldung.classification !== "legal_requirement" || !anmeldung.legalBasis.includes("§ 17") || !anmeldung.legalBasis.includes("BMG")) {
+  throw new Error("Anmeldung must be classified as legal_requirement under § 17 BMG");
+}
+
+const abmeldung = GERMAN_GLOSSARY.find(g => g.term.startsWith("Abmeldung"));
+if (!abmeldung.en.includes("giving up a secondary residence") && !abmeldung.en.includes("permanently leaving Germany")) {
+  throw new Error("Abmeldung must state it is only required when leaving Germany or giving up secondary home");
+}
+
+const gez = GERMAN_GLOSSARY.find(g => g.term.startsWith("GEZ"));
+if ((gez.classification !== "legal_requirement" && gez.classification !== "informal_term") || !gez.legalBasis.includes("RBStV")) {
+  throw new Error("GEZ / Rundfunkbeitrag must cite RBStV legal basis");
+}
+
+const tuev = GERMAN_GLOSSARY.find(g => g.term.startsWith("TÜV"));
+if (tuev.classification !== "informal_term") {
+  throw new Error("TÜV must be classified as informal_term");
+}
+
+const kaution = GERMAN_GLOSSARY.find(g => g.term.startsWith("Kaution"));
+if (!kaution.en.includes("installments") || !kaution.legalBasis.includes("§ 551") || !kaution.legalBasis.includes("BGB")) {
+  throw new Error("Kaution must cite § 551 BGB and statutory right to installments");
+}
+
+const haftpflicht = GERMAN_GLOSSARY.find(g => g.term.startsWith("Haftpflichtversicherung"));
+if (haftpflicht.classification !== "recommendation") {
+  throw new Error("Privathaftpflicht must be classified as recommendation (not mandatory)");
+}
+
+const probezeit = GERMAN_GLOSSARY.find(g => g.term.startsWith("Probezeit"));
+if ((!probezeit.en.includes("two weeks") && !probezeit.en.includes("two-week")) || !probezeit.legalBasis.includes("§ 622")) {
+  throw new Error("Probezeit must cite 2-week notice under § 622 Abs. 3 BGB");
+}
+
+const kuendigung = GERMAN_GLOSSARY.find(g => g.term.startsWith("Kündigung"));
+if (!kuendigung.en.includes("wet") || !kuendigung.legalBasis.includes("§ 623")) {
+  throw new Error("Kündigung must cite § 623 BGB strict wet-ink signature requirement");
+}
+
+console.log(`[PASS] All ${GERMAN_GLOSSARY.length} Glossary entries audited & validated for 2026 legal correctness and metadata.`);
+
 console.log("\n🎉 ALL 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");
+

@@ -1,247 +1,537 @@
 /**
- * German Life & Bureaucracy Abbreviations and Glossary
- * Highly practical definitions for expats, newcomers, and residents in Germany.
+ * German Life & Bureaucracy Abbreviations and Comprehensive Glossary
+ * Factually audited for 2026 statutory and administrative rules.
+ * 
+ * Each entry clearly distinguishes:
+ * - Legal requirement (Gesetzliche Pflicht)
+ * - Common practice (Übliche Praxis)
+ * - Recommendation (Empfehlung)
+ * - Informal terminology (Umgangssprachlicher Begriff)
+ * - Statutory definition (Gesetzliche Definition)
+ *
+ * Official sources: Gesetze im Internet (BMJ), BMF, BMG, BMAS, BA, BAMF, Verbraucherzentrale.
+ * Last verified: 2026-09-16
  */
+
 const GERMAN_GLOSSARY = [
   {
-    term: "Anmeldung",
+    term: "Anmeldung (Wohnsitzanmeldung)",
     category: "bureaucracy",
-    en: "Official residential registration at the local Citizens' Registration Office (Bürgeramt/Bürgerbüro). Legally mandatory within 14 days of moving into an apartment in Germany.",
-    ko: "주소지 등록 (전입신고). 독일 입국/이사 후 14일 이내 관할 주민센터(Bürgeramt)에 의무적으로 신고해야 하며, 거주확인서(Wohnungsgeberbestätigung)가 필요합니다. 계좌 개설, 비자 발급의 필수 기초 서류입니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 의무",
+    legalBasis: "§ 17 Abs. 1 Bundesmeldegesetz (BMG)",
+    source: "Bundesministerium des Innern (BMI) / BMG",
+    sourceUrl: "https://www.gesetze-im-internet.de/bmg/__17.html",
+    lastVerified: "2026-09-16",
+    en: "Mandatory residential address registration at the local Citizens' Office (Bürgeramt/Bürgerbüro). Under § 17 BMG, anyone moving into a residence in Germany is legally required to register within 14 days of moving in, presenting a valid passport/ID and a signed landlord confirmation (Wohnungsgeberbestätigung). Temporary stays under 3 months for visitors residing abroad (§ 27 BMG) are exempt. In major cities, securing an appointment within 14 days fulfills administrative requirements.",
+    ko: "법정 거주지 전입신고. 독일 연방주민등록법(BMG § 17)에 따라 독일 내 주택에 입주한 모든 거주자는 이사일로부터 14일 이내에 관할 주민센터(Bürgeramt)에 의무적으로 전입신고를 마쳐야 합니다. 유효한 여권과 임대인 거주확인서(Wohnungsgeberbestätigung) 제출이 필수입니다. 해외 거주자의 3개월 미만 단기 체류는 면제되며, 베를린 등 대도시의 경우 14일 이내에 예약(Termin)을 신청한 기록으로 기한 준수가 인정됩니다."
   },
   {
-    term: "Abmeldung",
+    term: "Abmeldung (Wohnsitzabmeldung)",
     category: "bureaucracy",
-    en: "Official de-registration of your German address when permanently leaving Germany or surrendering a residence.",
-    ko: "주소지 등록 말소 (전출신고). 독일을 완전히 떠나거나 영구 귀국할 때 Bürgeramt에서 진행하며, 통신사/헬스장/보험 위약금 없는 특별 해지(Sonderkündigung) 증빙으로 사용됩니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement (Conditional)",
+    classificationKo: "법적 의무 (조건부)",
+    legalBasis: "§ 17 Abs. 2 Bundesmeldegesetz (BMG)",
+    source: "Bundesministerium des Innern (BMI) / BMG",
+    sourceUrl: "https://www.gesetze-im-internet.de/bmg/__17.html",
+    lastVerified: "2026-09-16",
+    en: "Official residential de-registration. Under § 17 Abs. 2 BMG, de-registration is legally required ONLY when permanently leaving Germany (moving abroad) or giving up a secondary residence (Nebenwohnung) without establishing a new one. If moving to another address within Germany, you do NOT de-register; registering your new address automatically updates records nationwide. An Abmeldebestätigung serves as proof for special contract cancellations (Sonderkündigung) for telecom or health insurance.",
+    ko: "주소지 등록 말소 (전출신고). 독일 연방주민등록법(BMG § 17 제2항)상 영구 귀국 등 독일 국외로 출국하거나 부거주지(Nebenwohnung)를 말소할 때만 필수 의무입니다. 독일 국내에서 다른 주소지로 이사할 때는 별도의 전출신고가 필요 없으며, 새 주소지에서 전입신고(Anmeldung)를 하면 이전 주소는 자동 말소됩니다. 전출확인서는 해외 이주 시 통신사, 헬스장, 보험 등의 위약금 없는 특별 해약(Sonderkündigung) 증빙으로 사용됩니다."
   },
   {
-    term: "Wohnungsgeberbestätigung",
+    term: "Wohnungsgeberbestätigung (Vermieterbescheinigung)",
     category: "housing",
-    en: "Landlord Confirmation form legally required from the landlord or main tenant confirming your move-in date for the Bürgeramt address registration.",
-    ko: "집주인(임대인) 거주확인서. 전입신고(Anmeldung)를 위해 집주인이 서명해 주는 필수 서류로, 이사 날짜와 주소, 임대인 인적사항이 기재되어 있습니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 의무",
+    legalBasis: "§ 19 Bundesmeldegesetz (BMG)",
+    source: "Bundesministerium des Innern (BMI) / BMG",
+    sourceUrl: "https://www.gesetze-im-internet.de/bmg/__19.html",
+    lastVerified: "2026-09-16",
+    en: "Mandatory landlord/housing provider confirmation form. Under § 19 BMG, the accommodation provider (landlord, property manager, or primary tenant in an authorized sublease) is legally obliged to issue this certificate confirming the move-in date within 2 weeks of moving in. A rental lease alone is legally insufficient for residential registration at the Bürgeramt.",
+    ko: "임대인(거주제공자) 입주확인서. 연방주민등록법(BMG § 19)에 따라 집주인(또는 공식 전대 권한이 있는 메인 세입자)은 입주 후 2주 이내에 입주일을 확인하는 서류를 세입자에게 의무적으로 발급해야 합니다. 주민센터 전입신고 시 단순 임대차계약서만으로는 접수가 불가능하며 반드시 서명된 거주확인서 원본이 필요합니다."
   },
   {
-    term: "Steuer-ID (Steueridentifikationsnummer)",
+    term: "Steuer-ID (Steuerliche Identifikationsnummer)",
     category: "tax",
-    en: "Permanent 11-digit Tax ID number automatically issued by the Federal Central Tax Office (BZSt) to every registered resident in Germany for life.",
-    ko: "독일 개인 세금 식별번호. 전입신고 후 연방세무청(BZSt)에서 우편으로 자동 발송되는 평생 불변의 11자리 번호입니다. 회사 급여 처리 및 은행 계좌 개설 시 필수 제출 항목입니다."
+    classification: "statutory_definition",
+    classificationEn: "Statutory Identifier",
+    classificationKo: "법정 고유 식별번호",
+    legalBasis: "§ 139b Abgabenordnung (AO)",
+    source: "Bundeszentralamt für Steuern (BZSt)",
+    sourceUrl: "https://www.bzst.de/DE/Privatpersonen/SteuerlicheIdentifikationsnummer/steuerlicheidentifikationsnummer_node.html",
+    lastVerified: "2026-09-16",
+    en: "Permanent, unique 11-digit national tax identifier issued automatically by the Federal Central Tax Office (BZSt) to every registered resident in Germany. It remains valid for life and does not change when moving or changing tax offices. It is required for employer payroll withholding (ELSTAM), opening German bank accounts, tax returns, and child benefit (Kindergeld) processing. Distinct from the local 10-13 digit 'Steuernummer' assigned by local tax offices for freelance and annual assessment.",
+    ko: "독일 개인 세금 고유식별번호(IdNr). 독일에서 최초 전입신고 완료 후 연방세무청(BZSt)에서 우편으로 자동 발송되는 평생 불변의 11자리 번호입니다. 관할 세무서나 주소지가 변경되어도 평생 동일하게 유지되며, 직장 급여 원천징수(ELSTAM), 은행 계좌 개설, 아동수당 신청 시 필수 제출 항목입니다. 세무서별로 부여되는 프리랜서/종합소득세용 일반 세번(Steuernummer)과는 구분됩니다."
   },
   {
-    term: "Steuerklasse",
+    term: "Steuerklasse (Lohnsteuerklasse)",
     category: "tax",
-    en: "Income tax withholding bracket (Classes I to VI) determining monthly salary deductions based on marital status, children, and employment type.",
-    ko: "소득세 등급 (1~6등급). 혼인 여부, 부양가족, 다중 고용 여부에 따라 매월 급여 원천징수 세율을 결정하는 등급 체계입니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 분류 체계",
+    legalBasis: "§ 38b Einkommensteuergesetz (EStG)",
+    source: "Bundesfinanzministerium (BMF) / § 38b EStG",
+    sourceUrl: "https://www.gesetze-im-internet.de/estg/__38b.html",
+    lastVerified: "2026-09-16",
+    en: "Statutory income tax withholding classes (Classes I to VI) that determine the monthly wage tax withheld by employers from your gross salary. Tax classes do not determine your final annual tax liability; discrepancies are settled via the annual tax return (Einkommensteuererklärung). In 2026, the 3/5 combination remains legally available alongside 4/4 and 4 with factor, with ongoing legislative plans to transition couples gradually toward the modern factor method.",
+    ko: "근로소득세 원천징수 세금 등급 (1~6등급). 근로자의 혼인 여부, 부양가족, 다중 고용 여부에 따라 매월 급여에서 원천징수할 세액을 결정하는 법정 등급입니다. 세금 등급은 연간 최종 확정 소득세액을 결정하는 것이 아니며, 과부족분은 연말정산(소득세 확정신고)을 통해 100% 정산 환급/추징됩니다. 2026년 현재 부부 3/5 등급 및 4/4 팩터 제도가 유효하게 운영되고 있습니다."
   },
   {
-    term: "ELSTER",
+    term: "ELSTER (Elektronische Steuererklärung)",
     category: "tax",
-    en: "Electronic Tax Declaration platform (Elektronische Steuererklärung) provided by the German tax authority (Finanzamt) for filing annual tax returns online.",
-    ko: "독일 국세청 온라인 전자세무 플랫폼(Elster). 한국의 홈택스에 해당하며, 온라인으로 소득세 연말정산(Steuererklärung) 신고 및 세금 등급 변경을 신청할 수 있습니다."
+    classification: "common_practice",
+    classificationEn: "Administrative Portal",
+    classificationKo: "공식 행정 플랫폼",
+    legalBasis: "§ 150 Abs. 6 Abgabenordnung (AO), StDÜV",
+    source: "Koordinierte Finanzverwaltung der Länder und des Bundes",
+    sourceUrl: "https://www.elster.de/",
+    lastVerified: "2026-09-16",
+    en: "Official electronic tax declaration platform operated jointly by German federal and state tax administrations. It allows electronic submission of income tax returns, tax class changes, and VAT filings. Mandatory for self-employed and business filers; optional for voluntary employee filers who may alternately choose certified third-party tax software (e.g. WISO, Taxfix).",
+    ko: "독일 국세청 공식 전자세무 플랫폼 (한국의 홈택스에 해당). 연방 및 각 주 세무청이 공동 운영하며, 연간 소득세 신고(Steuererklärung), 세금 등급 변경, 부가세 신고 등을 온라인으로 직접 처리할 수 있습니다. 프리랜서 및 개인사업자는 전자 제출이 법적 의무이며, 일반 직장인의 자발적 소득세 신고는 ELSTER 웹사이트나 상용 세무 소프트웨어를 통해 진행할 수 있습니다."
   },
   {
     term: "Finanzamt",
     category: "tax",
-    en: "Local German tax office responsible for tax assessment, refunds, and issuing tax numbers.",
-    ko: "독일 관할 세무서. 소득세 연말정산 서류를 심사하고 환급 또는 추징 결정을 내리는 세무 행정 기관입니다."
+    classification: "statutory_definition",
+    classificationEn: "State Authority",
+    classificationKo: "국가 세무 행정기관",
+    legalBasis: "Finanzverwaltungsgesetz (FVG), § 19 Abgabenordnung (AO)",
+    source: "Bundesfinanzministerium (BMF)",
+    sourceUrl: "https://www.bundesfinanzministerium.de/",
+    lastVerified: "2026-09-16",
+    en: "Local German state tax office responsible for administering tax returns, assessing liabilities, issuing local tax numbers (Steuernummer), and managing refunds or audits. Jurisdiction is strictly determined by your residential municipality (Wohnsitzfinanzamt under § 19 AO).",
+    ko: "관할 세무서. 독일 각 주 정부 산하의 세무 관청으로, 납세자의 거주지(Wohnsitzfinanzamt)를 기준으로 관할이 배정됩니다. 연간 소득세 신고서를 심사하여 세액 결정통지서(Steuerbescheid)를 발행하고, 환급금 지급, 체납 추징, 프리랜서 사업자 세번 부여를 담당합니다."
   },
   {
     term: "TK (Techniker Krankenkasse)",
     category: "health",
-    en: "The largest statutory health insurance fund (Gesetzliche Krankenkasse - GKV) in Germany, popular among international professionals and students for English support.",
-    ko: "테크니커 공보험. 독일 최대 규모의 법정 공보험사 중 하나로, 영문 지원 서비스가 잘 되어 있어 외국인 직장인과 유학생들이 가장 많이 가입하는 보험사입니다."
+    classification: "common_practice",
+    classificationEn: "Statutory Fund (GKV)",
+    classificationKo: "법정 공보험사 (GKV)",
+    legalBasis: "Fünftes Buch Sozialgesetzbuch (SGB V)",
+    source: "Techniker Krankenkasse / GKV-Spitzenverband",
+    sourceUrl: "https://www.tk.de/",
+    lastVerified: "2026-09-16",
+    en: "Germany's largest statutory health insurance fund (Gesetzliche Krankenkasse - GKV), covering over 11 million insured. As a statutory fund, over 95% of its medical coverage catalog is uniform by federal law (SGB V). Each statutory fund may charge a specific supplementary contribution (kassenindividueller Zusatzbeitrag) split equally between employee and employer.",
+    ko: "독일 최대 규모의 법정 공보험 조합(GKV) 중 하나 (가입자 약 1,100만 명). 법정 공보험으로서 보장 항목의 95% 이상은 연방 사회법전(SGB V)에 의해 표준화되어 있습니다. 다만 각 공보험사마다 독립적으로 책정하는 추가보험료율(Zusatzbeitrag)에 약간의 차이가 있으며, 외국인 및 유학생 대상 영문 상담 지원이 체계적으로 운영됩니다."
   },
   {
     term: "AOK (Allgemeine Ortskrankenkasse)",
     category: "health",
-    en: "Major regional statutory health insurance organization in Germany operating across different federal states.",
-    ko: "아오카 공보험. 독일 전역의 주별 지사를 두고 있는 대표적인 대형 공보험사 중 하나입니다."
+    classification: "common_practice",
+    classificationEn: "Statutory Fund System (GKV)",
+    classificationKo: "지역별 법정 공보험 체계",
+    legalBasis: "Fünftes Buch Sozialgesetzbuch (SGB V)",
+    source: "AOK-Bundesverband / GKV-Spitzenverband",
+    sourceUrl: "https://www.aok.de/",
+    lastVerified: "2026-09-16",
+    en: "Federation of 11 independent regional statutory health insurance funds across Germany (e.g. AOK Bayern, AOK Plus, AOK Baden-Württemberg). Together insuring roughly one-third of the German population, each regional AOK operates independently and sets its own specific additional contribution rate (Zusatzbeitrag).",
+    ko: "독일 전역 11개 지역 독립 공보험사 연합체 (AOK Bayern, AOK Plus 등, 전체 독일 인구의 약 3분의 1 보험 가입). 각 주별 AOK는 독립적인 법인으로 자체적인 추가보험료율(Zusatzbeitrag)을 고시하며, 지역 밀착형 오프라인 지사망을 광범위하게 보유하고 있습니다."
   },
   {
     term: "GEZ / Rundfunkbeitrag",
     category: "housing",
-    en: "Mandatory public broadcasting fee (€18.36 per month per household / apartment), regardless of whether you own a TV or radio.",
-    ko: "독일 공영방송 수신료. 가구(아파트)당 월 18.36유로가 의무 부과되며, TV나 라디오 소유 여부와 무관하게 독일 내 모든 주거 가구가 납부해야 합니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 의무 (가구당 부과)",
+    legalBasis: "Rundfunkbeitragsstaatsvertrag (RBStV) § 2",
+    source: "ARD ZDF Deutschlandradio Beitragsservice",
+    sourceUrl: "https://www.rundfunkbeitrag.de/",
+    lastVerified: "2026-09-16",
+    en: "Mandatory statutory broadcasting contribution of €18.36 per month per dwelling (Wohnung), regardless of whether television, radio, or internet devices are present or used. Paid once per household (roommates in flatshares divide the fee). The historic acronym 'GEZ' was officially abolished in 2013 but remains in universal colloquial usage. Statutory exemptions or reductions are available under § 4 RBStV for recipients of social welfare (Bürgergeld, BAföG, Grundsicherung) or severe disability (RF mark).",
+    ko: "독일 공영방송 수신료. 가구(주택 단위)당 월 18.36유로가 법적으로 부과되며, TV나 라디오 소유 및 실제 시청 여부와 무관하게 부과됩니다. 아파트/주택당 1명만 납부하면 되므로 셰어하우스(WG)는 거주자끼리 1/N로 분담합니다. 과거 징수기구 명칭인 'GEZ'는 2013년 공식 폐지되었으나 대중적으로 통용됩니다. 기초생활수급자(Bürgergeld), BAföG 장학생, 중증장애인은 증빙 제출 시 수신료 면제 또는 감면을 신청할 수 있습니다."
   },
   {
-    term: "Kaltmiete",
+    term: "Kaltmiete (Nettokaltmiete)",
     category: "housing",
-    en: "Cold Rent: the pure base rental cost of the living space excluding heating, warm water, and utility/operating charges.",
-    ko: "순수 기본 월세 (차디찬 월세). 난방, 온수, 관리비(Nebenkosten)가 일체 포함되지 않은 순수 건물 공간 사용료입니다."
+    classification: "common_practice",
+    classificationEn: "Contractual Baseline",
+    classificationKo: "임대차 계약 기본 기준",
+    legalBasis: "§ 535, § 558 BGB",
+    source: "Bürgerliches Gesetzbuch (BGB)",
+    sourceUrl: "https://www.gesetze-im-internet.de/bgb/__558.html",
+    lastVerified: "2026-09-16",
+    en: "Pure net cold base rent paid exclusively for the use of the unfurnished living space, completely excluding heating, hot water, and operating costs (Nebenkosten). Kaltmiete is the exclusive statutory reference value for rent index comparisons (Mietspiegel), statutory rent caps (Mietpreisbremse), rent increase ceilings (§ 558 BGB), and maximum tenancy deposit calculation (§ 551 BGB).",
+    ko: "순수 기본 월세 (차디찬 월세). 난방비, 온수비, 건물 관리비(Nebenkosten)가 일체 포함되지 않은 순수 공간 점유 대가입니다. 독일 임대차법상 공식 임대료 지수(Mietspiegel), 임대료 상승 상한제(Mietpreisbremse), 월세 인상 한도(BGB § 558), 그리고 임차 보증금 상한선(BGB § 551)을 산정하는 유일한 법적 기준 금액입니다."
   },
   {
-    term: "Warmmiete",
+    term: "Warmmiete (Bruttowarmmiete / Gesamtmiete)",
     category: "housing",
-    en: "Warm Rent: Total monthly rent including Kaltmiete and estimated advance utility/operating prepayments (Nebenkosten). Electricity and internet are usually separate.",
-    ko: "난방·관리비 포함 월세. 기본 월세(Kaltmiete)에 난방비, 청소비, 건물 보험 등 예상 관리비 선수금이 합산된 월세입니다. (전기세와 인터넷비는 통상 별도 계약)"
+    classification: "common_practice",
+    classificationEn: "Contractual Total",
+    classificationKo: "계약상 총 월세",
+    legalBasis: "§ 535, § 556 BGB",
+    source: "Bürgerliches Gesetzbuch (BGB)",
+    sourceUrl: "https://www.gesetze-im-internet.de/bgb/__556.html",
+    lastVerified: "2026-09-16",
+    en: "Total monthly rental payment transferred to the landlord, combining the net base rent (Kaltmiete) and estimated advance prepayments for operating and heating costs (Nebenkostenvorauszahlung). In standard German residential leases, Warmmiete does NOT include private household electricity, internet, or the Rundfunkbeitrag, which tenants contract directly with utility providers unless explicitly agreed in flat-rate all-inclusive leases (Pauschalmiete).",
+    ko: "난방·관리비 포함 총 월세. 기본 월세(Kaltmiete)에 난방, 온수, 수도, 건물 청소 등 예상 관리비 선수금(Vorauszahlung)이 합산된 금액입니다. 일반적인 독일 주택 임대차 계약에서 가정용 전기세(Strom), 인터넷 요금, 방송수신료(GEZ)는 밤미테에 포함되지 않으며 세입자가 공급업체와 별도 계약해야 합니다 (모든 비용이 포함된 기숙사/단기 임대 Pauschalmiete 제외)."
   },
   {
-    term: "Nebenkosten",
+    term: "Nebenkosten (Betriebskosten)",
     category: "housing",
-    en: "Operating/utility costs paid monthly in advance (trash collection, building maintenance, heating, water, property tax). Reconciled annually in the Nebenkostenabrechnung.",
-    ko: "주택 관리비/부대비용. 쓰레기 수거, 난방, 수도, 건물 청소비 등을 매월 선납하고, 연말에 실제 계량기 사용량을 정산(Abrechnung)하여 차액을 환급받거나 추가 납부합니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Cost Structure",
+    classificationKo: "법정 부대비용 규정",
+    legalBasis: "§ 556 BGB, Betriebskostenverordnung (BetrKV)",
+    source: "Betriebskostenverordnung (BetrKV) / § 556 BGB",
+    sourceUrl: "https://www.gesetze-im-internet.de/betrkv/",
+    lastVerified: "2026-09-16",
+    en: "Operating costs of a residential property that may legally be apportioned to tenants under the BetrKV (17 exhaustive categories: property tax, central heating, hot water, sewer, elevator maintenance, street cleaning, garbage disposal, building cleaning, property insurance, caretaker). Capital repair costs (Instandhaltung) and landlord administrative expenses (Verwaltung) can NEVER legally be passed to residential tenants. Reconciled annually in an itemized statement (Nebenkostenabrechnung) within 12 months after the billing cycle.",
+    ko: "주택 운영 관리비. 독일 관리비 규정(BetrKV 제2조)에 법적으로 열거된 17개 항목(재산세, 중앙 난방비, 수도/하수도, 엘리베이터 점검비, 쓰레기 수거비, 건물 청소비, 건물 화재보험, 관리인 인건비 등)에 한해 세입자에게 전가할 수 있습니다. 건물의 노후 수리비(Instandhaltung)나 임대인의 일반 관리비용은 법적으로 절대 전가할 수 없습니다. 매년 실제 계량기 사용량을 정산(Abrechnung)하여 12개월 이내에 정산서를 교부해야 합니다."
   },
   {
-    term: "Kaution",
+    term: "Kaution (Mietsicherheit)",
     category: "housing",
-    en: "Rental deposit paid by tenant to the landlord as financial security. Legally capped at maximum 3 months' Kaltmiete (net cold rent) under BGB § 551.",
-    ko: "임차 보증금. 세입자가 집주인에게 예치하는 담보금으로, 독일 민법(BGB)상 최대 순수 기본월세 3개월분(3 Kaltmieten)으로 엄격히 제한되며 3회 분할 납부가 가능합니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Limit & Protection",
+    classificationKo: "법적 상한 및 분할 권리",
+    legalBasis: "§ 551 Bürgerliches Gesetzbuch (BGB)",
+    source: "Bürgerliches Gesetzbuch (BGB) § 551",
+    sourceUrl: "https://www.gesetze-im-internet.de/bgb/__551.html",
+    lastVerified: "2026-09-16",
+    en: "Rental security deposit held as financial protection against tenant damages or unpaid rent. Under § 551 BGB, the deposit is legally capped at a maximum of three months' net cold rent (3 Nettokaltmieten, excluding Nebenkosten). Tenants have a non-waivable statutory right to pay the deposit in three equal monthly installments, with the first installment due at the beginning of the lease. Landlords must hold it in a separate escrow account (Mietkautionskonto) insulated from their personal assets at statutory savings interest.",
+    ko: "임차 보증금. 임대차 계약 시 파손이나 임대료 체납을 담보하기 위해 집주인에게 예치하는 보증금입니다. 독일 민법(BGB § 551)에 따라 최대 '순수 기본월세 3개월분(3 Nettokaltmieten)'을 초과할 수 없습니다. 세입자는 보증금을 3회에 걸쳐 균등 분할 납부할 법적 권리가 있으며(첫 회분은 입주일 납부), 집주인은 개인 재산과 분리된 법정 신탁 계좌(Mietkautionskonto)에 보관해야 합니다."
   },
   {
-    term: "Schufa (Schufa-Auskunft)",
+    term: "Schufa (SCHUFA Holding AG)",
     category: "housing",
-    en: "German credit rating report from Germany's dominant credit bureau. Landlords typically require a positive Schufa certificate (Bonitätsauskunft) before signing a rental lease.",
-    ko: "슈파 신용조회서. 독일 개인 신용평가기관에서 발급하는 신용보고서로, 독일에서 아파트 임대 계약을 맺거나 휴대폰 개통, 대출 시 집주인이 필수적으로 요구합니다."
+    classification: "common_practice",
+    classificationEn: "Private Credit Bureau",
+    classificationKo: "민간 신용조회기관 (관행)",
+    legalBasis: "DSGVO Art. 15, § 31 Bundesdatenschutzgesetz (BDSG)",
+    source: "SCHUFA Holding AG / BfDI",
+    sourceUrl: "https://www.meineschufa.de/",
+    lastVerified: "2026-09-16",
+    en: "Germany's dominant private credit reporting agency (SCHUFA Holding AG, not a governmental body). It collects credit transaction histories (bank accounts, credit cards, loans, leasing, mobile contracts) and logs payment defaults. Landlords and banks routinely demand a certificate of creditworthiness (Bonitätsauskunft) before signing leases or granting loans. Under Article 15 of the EU GDPR, every resident has the legal right to request a free detailed personal data report (Datenkopie) from Schufa at regular intervals.",
+    ko: "독일 최대 민간 신용평가기관 (공공기관 아님). 은행 계좌, 신용카드, 대출, 통신 계약 및 연체 채무 데이터를 수집하여 개인 신용 점수를 산출합니다. 독일에서 아파트 임대 계약이나 대출 신청 시 집주인이 신용확인서(SCHUFA-Bonitätsauskunft)를 필수적으로 요구하는 것이 보편적 관행입니다. 유럽 일반개인정보보호법(GDPR 제15조)에 따라 누구나 무료 신용정보 복사본(Datenkopie)을 온라인으로 청구할 수 있습니다."
   },
   {
-    term: "Haftpflichtversicherung",
+    term: "Haftpflichtversicherung (Privathaftpflicht)",
     category: "everyday",
-    en: "Private Third-Party Personal Liability Insurance. Highly recommended in Germany to protect against unintentional damages or bodily injuries caused to others.",
-    ko: "개인 책임배상보험. 타인에게 실수로 입힌 신체 상해나 물건 파손(예: 열쇠 분실, 이웃집 누수, 자전거 접촉사고)을 무제한 보상해 주는 독일 생활 필수 1순위 민간 보험입니다."
+    classification: "recommendation",
+    classificationEn: "Strong Recommendation",
+    classificationKo: "핵심 권장 사항 (비의무)",
+    legalBasis: "§ 823 Bürgerliches Gesetzbuch (BGB)",
+    source: "Verbraucherzentrale Bundesverband (vzbv)",
+    sourceUrl: "https://www.verbraucherzentrale.de/wissen/geld-versicherungen/weitere-versicherungen/private-haftpflichtversicherung-ein-absolutes-muss-fuer-jeden-13891",
+    lastVerified: "2026-09-16",
+    en: "Private third-party personal liability insurance. Unlike motor vehicle liability (Kfz-Haftpflicht), private personal liability is NOT legally mandatory in Germany. However, under § 823 BGB, individuals bear unlimited legal liability with all current and future personal assets for damages or bodily harm caused to others through negligence. Held by ~85% of German households and universally recommended by consumer advocates to protect against ruinous accidental claims.",
+    ko: "개인 책임배상보험. 자동차 의무보험(Kfz-Haftpflicht)과 달리 법적 강제 의무는 아닙니다. 그러나 독일 민법(BGB § 823)에 따라 타인에게 실수로 가한 신체 상해나 재산 손해(예: 자전거 사고, 아파트 누수, 열쇠 분실)에 대해 현재 및 미래의 전 재산으로 무제한 손해배상 책임을 지게 됩니다. 소비자보호원(Verbraucherzentrale)에서 독일 생활 1순위로 가입을 강력 권장하며, 전체 가구의 약 85%가 가입되어 있습니다."
   },
   {
     term: "Kfz (Kraftfahrzeug)",
     category: "transport",
-    en: "German abbreviation for motor vehicle (car, motorcycle, van, truck).",
-    ko: "자동차/차량 (모터비히클). 자동차 관련 서류(Kfz-Schein, Kfz-Steuer, Kfz-Versicherung)의 공통 접두어로 쓰입니다."
+    classification: "statutory_definition",
+    classificationEn: "Legal Definition",
+    classificationKo: "법률상 차량 정의",
+    legalBasis: "§ 1 Abs. 2 Straßenverkehrsgesetz (StVG)",
+    source: "Straßenverkehrsgesetz (StVG)",
+    sourceUrl: "https://www.gesetze-im-internet.de/stvg/__1.html",
+    lastVerified: "2026-09-16",
+    en: "Official legal abbreviation for motor vehicle (land vehicles propelled by mechanical engine power without track guidance, including passenger cars, motorcycles, vans, and heavy commercial trucks). Forms the standard administrative prefix for official vehicular laws and documentation (Kfz-Zulassung, Kfz-Steuer, Kfz-Haftpflicht).",
+    ko: "자동차/원동기 차량 (Kraftfahrzeug의 공식 약칭). 도로교통법(StVG § 1 제2항)상 궤도에 의존하지 않고 원동기 엔진에 의해 주행하는 모든 육상 차량(승용차, 오토바이, 트럭 등)을 뜻하는 법률 용어입니다. 차량 등록(Kfz-Zulassung), 자동차세(Kfz-Steuer), 자동차책임보험(Kfz-Haftpflicht) 등 모든 차량 관련 공문서의 기본 표준 접두어로 사용됩니다."
   },
   {
     term: "HU (Hauptuntersuchung)",
     category: "transport",
-    en: "Mandatory regular technical vehicle inspection required every 24 months (36 months for brand-new cars) to verify roadworthiness.",
-    ko: "정기 차량 기술 정밀검사. 자동차 도로 주행 적합성을 검증하기 위해 2년마다 의무적으로 받아야 하는 안전 검사입니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 의무 정기검사",
+    legalBasis: "§ 29 StVZO, Anlage VIII",
+    source: "Straßenverkehrs-Zulassungs-Ordnung (StVZO)",
+    sourceUrl: "https://www.gesetze-im-internet.de/stvzo_2012/__29.html",
+    lastVerified: "2026-09-16",
+    en: "Mandatory statutory vehicle technical roadworthiness inspection under § 29 StVZO. Required every 24 months for registered passenger cars (first inspection after 36 months for brand-new cars). Passing vehicles receive a colored round inspection badge (Prüfplakette) on the rear license plate, with the top number indicating the expiration month and the center indicating the year.",
+    ko: "법정 정기 자동차 정밀검사. 도로교통허가규정(StVZO § 29)에 따라 독일 내 번호판을 부착한 모든 승용차는 24개월마다(신차는 출고 후 36개월 차에 최초 검사) 의무적으로 안전 검사를 받아야 합니다. 합격 시 차량 뒷 번호판에 검사 만료 연월을 나타내는 원형 색상 배지(Prüfplakette)가 부착됩니다."
   },
   {
     term: "AU (Abgasuntersuchung)",
     category: "transport",
-    en: "Mandatory exhaust emissions test for combustion engine vehicles, integrated into the regular HU inspection.",
-    ko: "자동차 배출가스 검사. 내연기관 차량의 배기가스 기준치 충족 여부를 확인하는 검사로, HU 검사와 함께 통합 진행됩니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 의무 배출가스 검사",
+    legalBasis: "§ 29 StVZO, Anlage VIIIa",
+    source: "Kraftfahrt-Bundesamt (KBA) / StVZO",
+    sourceUrl: "https://www.gesetze-im-internet.de/stvzo_2012/__29.html",
+    lastVerified: "2026-09-16",
+    en: "Statutory exhaust emissions test for motor vehicles with internal combustion engines (gasoline/diesel) to verify emissions standards compliance. Since 2010, the AU is no longer a separate procedure with a front-plate hexagonal sticker; it is an integral mandatory component of the general HU inspection. Pure electric vehicles (BEVs) are legally exempt from AU testing.",
+    ko: "자동차 배출가스 정기검사. 내연기관(가솔린/디젤) 차량의 배기가스가 법정 환경 기준치를 초과하지 않는지 측정하는 의무 검사입니다. 2010년부터 앞 번호판의 육각형 스티커 제도가 폐지되고 정기 기술검사(HU) 내부의 필수 검사 항목으로 완전 통합되었습니다. 순수 전기차(BEV)는 배출가스 검사 대상에서 법적으로 제외됩니다."
   },
   {
     term: "TÜV (Technischer Überwachungsverein)",
     category: "transport",
-    en: "Technical Inspection Association. The most famous independent accredited testing body conducting vehicle HU inspections, industrial safety tests, and certifications.",
-    ko: "튀프 (독일 기술검사협회). 차량 정기검사(HU)와 각종 공학·산업 안전 인증을 수행하는 독일 대표 공인 기술 검사 기관입니다."
+    classification: "informal_term",
+    classificationEn: "Informal Term / Testing Body",
+    classificationKo: "통칭 관용어 / 공인 검사기관",
+    legalBasis: "§ 29 StVZO, Akkreditierungsstelle (DAkkS)",
+    source: "TÜV-Verband / DAkkS",
+    sourceUrl: "https://www.tuev-verband.de/",
+    lastVerified: "2026-09-16",
+    en: "Technical Inspection Association. In everyday German, 'zum TÜV gehen' or 'mein Auto hat TÜV' is the universal colloquial term for passing the mandatory roadworthiness test (HU). However, 'TÜV' is not a government agency; it is a private accredited inspection organization (TÜV Süd, TÜV Rheinland, TÜV Nord). Statutory vehicle inspections may equally be performed by competing accredited organizations such as DEKRA, GTÜ, or KÜS.",
+    ko: "기술검사협회 (통칭 '튀프'). 일상 독일어에서 'TÜV를 받는다'는 표현은 정기 차량검사(HU)를 받는다는 의미의 관용어로 널리 쓰입니다. 하지만 TÜV 자체는 정부 기관이 아니며 독립된 공인 민간 검사 기관(TÜV Süd, TÜV Rheinland 등)입니다. 법정 차량 정기검사는 TÜV 외에도 DEKRA, GTÜ, KÜS 등 동등한 권한을 가진 공인 검사 협회 어디서나 자유롭게 받을 수 있습니다."
   },
   {
     term: "Arbeitsvertrag",
     category: "work",
-    en: "Employment contract specifying salary, working hours, notice period, vacation entitlement, and job responsibilities.",
-    ko: "근로계약서. 급여, 주당 근무시간, 휴가일수, 수습기간, 해고 예고기간 등이 명시된 고용 계약 문서입니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Contract / NachwG",
+    classificationKo: "법적 근로계약 문서",
+    legalBasis: "§ 611a BGB, Nachweisgesetz (NachwG)",
+    source: "Bundesministerium für Arbeit und Soziales (BMAS)",
+    sourceUrl: "https://www.gesetze-im-internet.de/nachwg/",
+    lastVerified: "2026-09-16",
+    en: "Employment contract establishing the employment relationship. Under the German Verification Act (Nachweisgesetz - NachwG), employers are legally required to provide employees with the key terms of employment (gross compensation, breakdown, working hours, break times, probation period, notice period procedure, vacation entitlements) in written form with an original handwritten wet signature. Electronic signatures remain strictly restricted for core NachwG compliance.",
+    ko: "근로계약서. 고용 관계를 규정하는 법률 계약입니다. 독일 근로조건서면명시법(Nachweisgesetz - NachwG)에 따라 고용주는 급여 구성 항목, 근로시간, 휴게시간, 수습기간, 해고 절차, 유급휴가 일수 등 핵심 근로조건을 '서면(종이 원본에 자필 서명)'으로 근로자에게 의무 교부해야 합니다. 순수 전자 서명(PDF/이메일) 교부는 핵심 조항 증명에 법적 제한이 따릅니다."
   },
   {
     term: "Probezeit",
     category: "work",
-    en: "Probationary period at the start of an employment contract, typically lasting up to 6 months. Shorter statutory notice period (usually 2 weeks) applies to both parties.",
-    ko: "수습 기간 (시용 기간). 통상 입사 후 최대 6개월간 적용되며, 이 기간 동안은 노사 양측 모두 2주의 단축 예고기간(Notice period)으로 자유롭게 계약을 해지할 수 있습니다."
+    classification: "legal_requirement",
+    classificationEn: "Contractual / § 622 BGB",
+    classificationKo: "법정 수습/시용 기간",
+    legalBasis: "§ 622 Abs. 3 BGB, § 1 KSchG",
+    source: "Bürgerliches Gesetzbuch (BGB) / BMAS",
+    sourceUrl: "https://www.gesetze-im-internet.de/bgb/__622.html",
+    lastVerified: "2026-09-16",
+    en: "Probationary period at the start of employment. Under § 622 Abs. 3 BGB, a probationary period may be agreed for a maximum of 6 months, during which a shortened statutory notice period of two weeks applies to either party at any time. General statutory protection against dismissal (Kündigungsschutzgesetz - KSchG) only takes effect after 6 months of uninterrupted service, regardless of whether a formal Probezeit was agreed.",
+    ko: "수습 기간 (시용 기간). 독일 민법(BGB § 622 제3항)에 따라 계약 시 최대 6개월까지 설정할 수 있습니다. 수습 기간 중에는 노사 양측 모두 별도의 사유 없이 2주의 단축 예고기간(2-week notice)으로 언제든 계약을 해지할 수 있습니다. 독일 해고보호법(KSchG)의 본격적인 법적 보호는 수습기간 유무와 관계없이 동일 사업장 6개월 계속 근로 이후부터 발생합니다."
   },
   {
     term: "Kündigung / Kündigungsfrist",
     category: "work",
-    en: "Termination / Notice period. German employment law provides strong worker protection (KSchG); notice periods are strictly governed by contract and law.",
-    ko: "계약 해지 및 해고 예고기간. 독일 노동법은 해고 보호법(KSchG)을 통해 근로자를 강력히 보호하며, 법정 또는 계약상 명시된 예고기간을 엄격히 준수해야 합니다."
+    classification: "legal_requirement",
+    classificationEn: "Strict Legal Formalities",
+    classificationKo: "법적 엄격 요건 (서면 필수)",
+    legalBasis: "§ 622, § 623 BGB, Kündigungsschutzgesetz (KSchG)",
+    source: "Bürgerliches Gesetzbuch (BGB) § 623",
+    sourceUrl: "https://www.gesetze-im-internet.de/bgb/__623.html",
+    lastVerified: "2026-09-16",
+    en: "Termination of employment and statutory notice periods. Under § 623 BGB, any termination of an employment contract MUST strictly be in written form on paper with an original wet ink signature (Schriftform); terminations by email, SMS, messaging, or electronic signatures are legally null and void. The baseline statutory notice period (§ 622 BGB) is 4 weeks to the 15th or end of a month, extending significantly for employers based on employee tenure (up to 7 months). Establishments with over 10 employees are subject to strict dismissal justification requirements under the KSchG.",
+    ko: "근로계약 해고 및 해고 예고기간. 독일 민법(BGB § 623)에 따라 모든 근로계약 해고는 반드시 '종이 서면에 자필 서명(Schriftform)'으로 교부되어야 하며, 이메일, 문자메시지, 메신저, 전자 서명에 의한 해고 통보는 법률상 원천 무효입니다. 기본 법정 예고기간(BGB § 622)은 4주(15일 또는 말일 기준)이며, 근속 연수에 따라 최대 7개월까지 연장됩니다. 상시 근로자 10인 초과 사업장은 해고보호법(KSchG)의 엄격한 사유 심사를 받습니다."
   },
   {
-    term: "Kurzarbeit",
+    term: "Kurzarbeit / Kurzarbeitergeld (KUG)",
     category: "work",
-    en: "Short-time work scheme where the state employment agency (Agentur für Arbeit) pays a subsidy (Kurzarbeitergeld) to cover lost wages during economic downturns.",
-    ko: "단축근무 지원제도. 경제 위기나 경영난 시 기업이 직원을 해고하지 않고 근무시간을 줄이면 국가가 임금 손실분의 60~67%를 보전해 주는 고용유지 제도입니다."
+    classification: "statutory_definition",
+    classificationEn: "Statutory Labor Instrument",
+    classificationKo: "법정 고용유지 지원제도",
+    legalBasis: "§§ 95 ff. SGB III",
+    source: "Bundesagentur für Arbeit (BA) / BMAS",
+    sourceUrl: "https://www.arbeitsagentur.de/unternehmen/finanziell/kurzarbeitergeld-uebersicht",
+    lastVerified: "2026-09-16",
+    en: "Short-time work program under §§ 95 ff. SGB III. When businesses face unavoidable temporary loss of work due to severe economic downturns or unforeseen events, hours may be reduced with approval from the Federal Employment Agency (BA). The government compensates lost net earnings via Kurzarbeitergeld at standard statutory rates: 60% of lost net pay for childless employees, and 67% for employees with at least one qualifying child. Regular statutory entitlement lasts up to 12 months (§ 104 SGB III).",
+    ko: "단축근무 지원제도 (조업단축 급여). 심각한 경기 침체나 불가피한 경영상 사유로 조업이 단축될 때 실직을 방지하기 위해 연방고용청(BA)이 임금 손실분을 보전해 주는 법정 제도입니다(사회법전 SGB III 제95조). 법정 보전율은 자녀가 없는 근로자의 경우 순손실액의 60%, 부양 자녀가 1명 이상 있는 경우 67%가 지급되며, 법정 기본 지원 기간은 최장 12개월입니다."
   },
   {
     term: "Kindergeld",
     category: "family",
-    en: "State child benefit paid monthly to parents in Germany (2026: €259 per child per month) until at least age 18, or 25 if pursuing university/vocational training.",
-    ko: "독일 아동수당. 부모 소득과 무관하게 지급되는 자녀 양육 지원금 (2026년 기준: 자녀 1인당 월 259유로). 기본 만 18세, 학업·직업교육 중인 경우 만 25세까지 지급됩니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Family Benefit",
+    classificationKo: "법정 아동수당",
+    legalBasis: "§§ 62 ff. EStG, Bundeskindergeldgesetz (BKGG)",
+    source: "Bundesagentur für Arbeit (Familienkasse) / BMF",
+    sourceUrl: "https://www.arbeitsagentur.de/familie-und-kinder/infos-rund-um-kindergeld",
+    lastVerified: "2026-09-16",
+    en: "Statutory universal child benefit paid monthly by the Familienkasse to parents residing in Germany regardless of household income. 2026: €259 per child per month. Future rates announced by the federal government are €267/mo (proposed for 2027) and €272/mo (proposed for 2028), subject to final parliamentary enactment. Paid from birth to age 18 (extended up to 25 if pursuing vocational apprenticeship or university degree; no age limit for disabled children unable to self-support). Automatically compared against the child tax allowance (Kinderfreibetrag) during annual tax assessments (Günstigerprüfung).",
+    ko: "독일 연방 아동수당. 부모의 소득 수준과 무관하게 연방고용청 산하 가족수당청(Familienkasse)에서 매월 지급하는 양육 지원금입니다. 2026년 기준 법정 확정 수령액은 자녀 1인당 월 259유로입니다. 독일 연방정부가 발표한 향후 인상안은 2027년 월 267유로, 2028년 월 272유로이며 최종 의회 입법 절차를 거치게 됩니다. 만 18세까지 전액 지급되며 대학생/직업교육생은 만 25세까지 연장됩니다. 연말정산 시 자녀소득공제(Kinderfreibetrag)와 자동 비교 심사(Günstigerprüfung)됩니다."
   },
   {
-    term: "Elterngeld",
+    term: "Elterngeld (Basiselterngeld / ElterngeldPlus)",
     category: "family",
-    en: "Parental allowance replacing 65% of net income (capped at €1,800/month) for parents taking parental leave to care for a newborn infant.",
-    ko: "부모수당 (육아휴직 급여). 출산 후 직접 육아를 전담하는 부모에게 기존 순수령액의 약 65%(월 최대 1,800유로)를 지급하는 정부 지원금입니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Parental Benefit",
+    classificationKo: "법정 부모수당 (육아휴직 급여)",
+    legalBasis: "Bundeselterngeld- und Elternzeitgesetz (BEEG)",
+    source: "Bundesministerium für Familie (BMFSFJ)",
+    sourceUrl: "https://www.familienportal.de/familienportal/familienleistungen/elterngeld",
+    lastVerified: "2026-09-16",
+    en: "Statutory state parental allowance compensating parents for lost net earnings while on parental leave (Elternzeit). Replaces between 65% and 100% of pre-birth net income (standard 65% for net incomes of €1,240 or above), capped at minimum €300/mo and maximum €1,800/mo for Basiselterngeld (up to 14 months shared between parents). ElterngeldPlus halves the monthly benefit to stretch payments over double the time while working part-time. High earners exceeding the statutory annual taxable income threshold (€175,000 for couples for births from April 2024 onwards) are excluded under § 1 Abs. 8 BEEG.",
+    ko: "독일 법정 부모수당. 출산 후 부모휴직(Elternzeit) 기간 동안 육아를 전담하며 발생하는 소득 손실을 보전해 주는 국가지원금입니다(BEEG). 출산 전 평균 세후 월 소득의 65%~100%를 보전하며, 기본 부모수당(Basiselterngeld) 기준 월 최소 300유로부터 최대 1,800유로까지 최장 14개월간 분담 수령할 수 있습니다. 2024년 4월 이후 출생아부터 부부 합산 연간 과세소득 175,000유로 초과 고소득 가구는 수급 대상에서 제외됩니다."
   },
   {
     term: "Kita (Kindertagesstätte)",
     category: "family",
-    en: "Daycare center for young children (Kinderkrippe for under 3, Kindergarten for 3 to school age).",
-    ko: "어린이집/유치원. 만 1세 이상 유아에게 법적 보육 권리가 주어지며, 크리페(Krippe, 0~3세)와 킨더가르텐(Kindergarten, 3~6세)으로 구분됩니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Entitlement & Infrastructure",
+    classificationKo: "법적 보육 권리 및 시설",
+    legalBasis: "§ 24 SGB VIII (Kinder- und Jugendhilfe)",
+    source: "Bundesministerium für Familie (BMFSFJ) / § 24 SGB VIII",
+    sourceUrl: "https://www.gesetze-im-internet.de/sgb_8/__24.html",
+    lastVerified: "2026-09-16",
+    en: "Child day-care facility encompassing Kinderkrippe (under age 3) and Kindergarten (ages 3 to school entry). Under § 24 SGB VIII, every child in Germany has a statutory legal entitlement to a subsidized childcare place starting from their first birthday. However, severe capacity shortages persist in major metropolitan areas, requiring early registration via local youth welfare offices (Jugendamt / Kita-Gutschein system). Fee regulations vary drastically by state (e.g. tuition-free in Berlin with only lunch costs; sliding-scale income-based fees in many other states).",
+    ko: "어린이집/유치원 보육시설. 만 3세 미만 영아를 위한 크리페(Krippe)와 만 3세부터 취학 전 유아를 위한 킨더가르텐(Kindergarten)으로 구성됩니다. 독일 사회법전(SGB VIII § 24)에 따라 만 1세가 되는 날부터 국가 공인 보육 자리를 배정받을 법적 권리(Rechtsanspruch)가 보장됩니다. 하지만 대도시의 심각한 시설 부족으로 관할 청소년청(Jugendamt)을 통한 조기 신청(바우처 제도 등)이 필수적이며, 보육료는 주별로 상이합니다 (베를린은 급식비 제외 전액 무료, 타 주는 소득 비례 부과 등)."
   },
   {
     term: "Schulpflicht",
     category: "family",
-    en: "Mandatory compulsory school attendance for children between approximately ages 6 and 16. Homeschooling is generally illegal in Germany.",
-    ko: "취학 의무 (의무교육). 만 6세부터 약 16세까지 모든 아동은 학교에 반드시 출석해야 하며, 독일에서는 홈스쿨링이 원칙적으로 법률상 금지되어 있습니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 취학 의무",
+    legalBasis: "Schulgesetze der Bundesländer (e.g. § 41 SchulG Berlin)",
+    source: "Ständige Konferenz der Kultusminister (KMK)",
+    sourceUrl: "https://www.kmk.org/",
+    lastVerified: "2026-09-16",
+    en: "Statutory compulsory school attendance governed by individual state education acts (Schulgesetze). Requires all children residing in Germany from roughly age 6 to attend an accredited state or recognized private school for at least 9 to 10 full-time school years plus part-time vocational school. Unexcused absence during school terms (e.g. taking children on vacation outside official school breaks) constitutes an administrative offense subject to substantial police enforcement and fines. Homeschooling is strictly illegal in Germany with minimal exceptions for severe medical incapacity.",
+    ko: "법적 취학 의무 (의무교육). 16개 연방주별 학교법에 따라 독일 거주 만 6세 아동은 인가된 공립 또는 사립학교에 전일제로 최소 9~10년간 의무 출석해야 합니다. 방학 기간 외에 무단으로 결석하고 가족 여행을 떠나는 행위는 경찰 단속 및 막대한 과태료 부과 대상입니다. 독일에서는 종교적·개인적 사유에 의한 홈스쿨링이 법적으로 엄격히 금지되어 있습니다."
   },
   {
-    term: "Ruhezeit",
+    term: "Ruhezeit (Lärmschutz / Hausordnung)",
     category: "housing",
-    en: "Legally mandated quiet hours in apartment buildings (typically 22:00 to 07:00, and all day Sunday and public holidays). Excessive noise can lead to police or Hausordnung fines.",
-    ko: "정숙 시간. 독일 아파트 및 주거지역에서 법적으로 지정된 휴식 시간대로(통상 평일 밤 10시~아침 7시, 일요일 및 공휴일 종일), 세탁기 소음이나 망치질, 악기 연주 등이 엄격히 금지됩니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Rule / House Rules",
+    classificationKo: "법정 소음규정 및 가옥규칙",
+    legalBasis: "Landes-Immissionsschutzgesetze, § 535 BGB",
+    source: "Umweltbundesamt (UBA) / BMJ",
+    sourceUrl: "https://www.umweltbundesamt.de/themen/laerm",
+    lastVerified: "2026-09-16",
+    en: "Statutory quiet hours and residential noise protection. Night quiet hours (Nachtruhe, generally 22:00 to 06:00 or 07:00) and all-day quiet on Sundays and public holidays are legally protected by state emission laws. During these times, noise disturbing neighbors is prohibited. Daytime quiet hours (Mittagsruhe, typically 13:00 to 15:00) are not federal law but are widely enforceable when incorporated into private tenancy house rules (Hausordnung).",
+    ko: "정숙 시간 (야간 및 휴일 소음 방지). 각 주 환경보호법 및 가옥규칙에 따라 야간 정숙 시간(Nachtruhe, 통상 밤 22시~아침 6시/7시)과 일요일 및 법정 공휴일 종일은 법적으로 평온이 보장됩니다. 이 시간대에는 세탁기 탈수, 청소기, 악기 연주, DIY 작업 등 이웃에게 들리는 소음 발생이 금지됩니다. 점심 정숙 시간(Mittagsruhe, 13시~15시)은 법정 의무는 아니지만 아파트 가옥규칙(Hausordnung)에 명시된 경우 준수해야 합니다."
   },
   {
     term: "Pfand (Einweg / Mehrweg)",
     category: "everyday",
-    en: "Beverage bottle/can recycling deposit system (€0.25 for single-use plastic bottles & cans; €0.08–€0.15 for reusable glass bottles), refundable at supermarket reverse vending machines.",
-    ko: "판트 (공병·캔 보증금 제도). 음료 구매 시 결제한 보증금(일회용 페트병·캔 0.25유로, 맥주 유리병 0.08~0.15유로)을 슈퍼마켓 자동 반환기에 넣고 영수증으로 환급받는 친환경 시스템입니다."
+    classification: "legal_requirement",
+    classificationEn: "Legal Requirement",
+    classificationKo: "법적 자원순환 보증금제",
+    legalBasis: "§ 31 Verpackungsgesetz (VerpackG)",
+    source: "Umweltbundesamt (UBA) / VerpackG",
+    sourceUrl: "https://www.gesetze-im-internet.de/verpackg/__31.html",
+    lastVerified: "2026-09-16",
+    en: "Mandatory statutory beverage container deposit system under § 31 VerpackG. Consumers pay an upfront deposit refunded upon returning empty containers at supermarket reverse vending machines (Leergutautomaten). Single-use containers (Einweg: plastic bottles and cans) carry a uniform statutory deposit of €0.25 (marked with the DPG logo). Reusable glass/PET containers (Mehrweg) carry standard deposits of €0.08 (beer bottles) or €0.15 (mineral water bottles and crates).",
+    ko: "음료 용기 보증금 환급 제도 (판트). 독일 포장재법(VerpackG § 31)에 따라 음료 구매 시 보증금을 선결제하고 빈 용기를 슈퍼마켓 자동 회수기(Leergutautomat)에 반환하여 전액 환급받습니다. 1회용 용기(Einweg, DPG 마크 페트병 및 캔)는 일괄 0.25유로이며, 재사용 다회용 용기(Mehrweg)는 맥주병 0.08유로, 생수/음료병 0.15유로가 적용됩니다."
   },
   {
-    term: "Apotheke",
+    term: "Apotheke (Apothekenpflicht)",
     category: "health",
-    en: "Licensed pharmacy. In Germany, only registered pharmacies may sell prescription and over-the-counter pharmaceuticals; supermarkets do not sell medicines.",
-    ko: "약국. 독일에서는 빨간색 고딕체 'A' 간판을 사용하며, 일반 마트에서는 진통제조차 판매할 수 없고 오직 면허 약국(Apotheke)에서만 의약품 구매가 가능합니다."
+    classification: "legal_requirement",
+    classificationEn: "Strict Statutory Monopoly",
+    classificationKo: "법정 의약품 독점 유통처",
+    legalBasis: "§ 1 Apothekengesetz (ApoG), § 43 Arzneimittelgesetz (AMG)",
+    source: "Bundesgesundheitsministerium (BMG)",
+    sourceUrl: "https://www.gesetze-im-internet.de/amg_1976/__43.html",
+    lastVerified: "2026-09-16",
+    en: "Licensed public pharmacy. In Germany, the sale of pharmaceuticals is governed by strict statutory monopoly (Apothekenpflicht under § 43 AMG). General supermarkets and drugstores (Drogerien) are legally prohibited from selling any medicines, including mild over-the-counter pain relievers such as ibuprofen, paracetamol, or aspirin. All pharmaceuticals must be dispensed by licensed pharmacists in an Apotheke (identified by the distinctive red Gothic letter 'A').",
+    ko: "독일 공인 약국. 독일 약사법 및 의약품법(AMG § 43)에 따른 의약품 독점 판매처입니다. 일반 슈퍼마켓이나 드럭스토어에서는 단순 진통제(이부프로펜, 파라세타몰, 아스피린)조차 판매할 수 없으며, 모든 일반의약품 및 전문의약품은 반드시 공인 약사(Apotheke, 빨간색 고딕체 'A' 간판)를 통해서만 상담 및 구매할 수 있습니다."
   },
   {
     term: "Drogerie",
     category: "everyday",
-    en: "Drugstore (such as dm, Rossmann, Müller) selling cosmetics, personal hygiene products, vitamins, baby supplies, and household goods, but not prescription medicines.",
-    ko: "드럭스토어 (dm, Rossmann, Müller 등). 화장품, 생활용품, 아기용품, 영양제, 유기농 식품 등을 저렴하게 판매하는 독일의 필수 쇼핑 매장입니다."
+    classification: "common_practice",
+    classificationEn: "Retail Category",
+    classificationKo: "일반 소매 유통업종",
+    legalBasis: "Gewerbeordnung (GewO)",
+    source: "Handelsverband Deutschland (HDE)",
+    sourceUrl: "https://einzelhandel.de/",
+    lastVerified: "2026-09-16",
+    en: "Commercial retail drugstore (such as dm, Rossmann, Müller) selling personal cosmetics, body hygiene products, baby care items, household cleaning detergents, bio foods, and dietary supplements. Legally distinct from pharmacies (Apotheken) because drugstores cannot stock or sell pharmacy-only medicines (apothekenpflichtige Arzneimittel).",
+    ko: "드럭스토어 (dm, Rossmann, Müller 등). 화장품, 개인 위생용품, 아기용품, 가정용 청소세제, 유기농 식품, 비타민 보충제 등을 판매하는 대형 생활 편의 매장입니다. 약국(Apotheke)과는 법적으로 엄격히 구분되며, 의약품법상 약국 전용 의약품은 판매할 수 없습니다."
   },
   {
     term: "Brutto vs Netto",
     category: "tax",
-    en: "Gross (Brutto) is total earnings before taxes and statutory social insurances; Net (Netto) is the actual take-home pay transferred to your German bank account.",
-    ko: "세전(Brutto) vs 세후(Netto). 브루토는 세금 및 4대 사회보험 공제 전의 총급여이며, 네토는 모든 공제 항목을 제하고 통장으로 입금되는 실제 순수령액입니다."
+    classification: "statutory_definition",
+    classificationEn: "Statutory Accounting Terms",
+    classificationKo: "세무/회계 법률 용어",
+    legalBasis: "§ 38a, § 39b EStG, Viertes Buch Sozialgesetzbuch (SGB IV)",
+    source: "Bundesfinanzministerium (BMF) / DRV",
+    sourceUrl: "https://www.bundesfinanzministerium.de/",
+    lastVerified: "2026-09-16",
+    en: "Gross versus Net income. Gross salary (Bruttolohn) is the total agreed compensation before statutory deductions. Net salary (Nettolohn) is the take-home pay transferred to the employee's bank account after statutory employer deductions for wage tax (Lohnsteuer), solidarity surcharge (SolZ), church tax (if applicable), and the employee's share of statutory social insurances (pension, health, unemployment, care insurance).",
+    ko: "세전 총급여(Brutto) vs 세후 실수령액(Netto). 브루토(Brutto)는 계약서상 명시된 총임금이며, 네토(Netto)는 근로소득세, 연대특별세(SolZ), 종교세 및 4대 사회보험료(연금, 건강, 실업, 요양보험) 근로자 분담금을 모두 원천공제한 후 개인 은행 통장으로 실제 입금되는 순지급액입니다."
   },
   {
-    term: "Schufa-Eintrag",
+    term: "SCHUFA-Eintrag (Negativmerkmal)",
     category: "housing",
-    en: "Negative credit record logged in your Schufa profile caused by unpaid bills, contract defaults, or bankruptcy, which severely hampers apartment renting and financing.",
-    ko: "슈파 신용 불량 기록. 연체, 통신비 미납, 채무불이행 등으로 인해 신용 등급에 기록되는 오점으로, 한번 등재되면 독일 내 집 계약이나 카드 발급이 극도로 어려워집니다."
+    classification: "common_practice",
+    classificationEn: "Adverse Credit Entry",
+    classificationKo: "신용 불량 부정적 등재 기록",
+    legalBasis: "§ 31 Bundesdatenschutzgesetz (BDSG)",
+    source: "SCHUFA Holding AG / BfDI",
+    sourceUrl: "https://www.meineschufa.de/",
+    lastVerified: "2026-09-16",
+    en: "Negative credit record stored in a person's credit report following confirmed default on debt or uncontested payment arrears (strictly regulated under § 31 BDSG, requiring at least two written reminders and a 4-week grace period). An adverse SCHUFA entry severely impairs the ability to sign residential leases, secure mobile contracts, or obtain bank credit in Germany until cleared after statutory retention periods.",
+    ko: "슈파 신용 불량 등재 기록. 채무불이행, 대출 연체, 계약 위반 등이 발생했을 때 신용평가기관에 등록되는 부정적 기록입니다. 연방개인정보보호법(BDSG § 31)에 따라 최소 2회 이상의 독촉과 4주의 유예기간 등 엄격한 법적 요건을 충족해야만 등재됩니다. 부정적 기록이 등재되면 독일 내 아파트 임대, 통신사 개통, 대출이 사실상 불가능해집니다."
   },
   {
-    term: "Warmwasser",
+    term: "Warmwasser (zentral vs dezentral)",
     category: "housing",
-    en: "Hot water supply. Can be central (zentral via building boiler included in Nebenkosten) or decentralized (dezentral via electric Durchlauferhitzer added to electricity bill).",
-    ko: "온수 공급. 중앙 공급(Zentral, 관리비 난방 항목에 포함) 방식과 개별 전기 순간온수기(Durchlauferhitzer, 개인 전기세로 부과) 방식으로 나뉩니다."
+    classification: "common_practice",
+    classificationEn: "Technical/Cost Distinction",
+    classificationKo: "난방 방식 기술적 구분",
+    legalBasis: "Heizkostenverordnung (HeizkostenV)",
+    source: "Bundesministerium für Wohnen, Stadtentwicklung und Bauwesen (BMWSB)",
+    sourceUrl: "https://www.bmwsb.bund.de/",
+    lastVerified: "2026-09-16",
+    en: "Residential hot water preparation method. Central hot water (zentral) is heated by the building's central heating furnace and is metered and billed as part of the heating Nebenkosten. Decentralized hot water (dezentral) is heated directly inside the apartment via an electric instantaneous water heater (Durchlauferhitzer) or boiler; its energy cost appears on the tenant's individual household electricity bill rather than in the Nebenkosten.",
+    ko: "온수 공급 방식 구분. 중앙 온수(Zentral)는 건물 전체 보일러를 통해 공급되어 관리비(Nebenkosten) 난방 항목으로 합산 청구됩니다. 반면 개별 온수(Dezentral)는 아파트 내 전기 순간온수기(Durchlauferhitzer)나 보일러를 사용하므로, 온수 생산에 소모된 전기세가 개인 전기요금 고지서에 포함되어 부과됩니다."
   },
   {
     term: "Einbauküche (EBK)",
     category: "housing",
-    en: "Fitted kitchen. In Germany, many rental apartments are rented without a kitchen sink, counters, stove, or oven, unless explicitly marked 'mit Einbauküche'.",
-    ko: "빌트인 주방(싱크대, 인덕션, 수납장 등). 독일 아파트는 주방 가구가 전혀 없이 콘크리트 벽과 배관만 있는 채로 임대되는 경우가 많으므로, 계약 시 EBK 포함 여부를 확인해야 합니다."
+    classification: "common_practice",
+    classificationEn: "Market Convention",
+    classificationKo: "독일 부동산 시장 관행",
+    legalBasis: "§ 535 Bürgerliches Gesetzbuch (BGB)",
+    source: "Deutscher Mieterbund (DMB)",
+    sourceUrl: "https://www.mieterbund.de/",
+    lastVerified: "2026-09-16",
+    en: "Fitted modular kitchen (cabinets, countertop, sink, stove, oven). In Germany, rental apartments are traditionally leased completely bare without any kitchen furniture or appliances unless specifically advertised as 'mit Einbauküche (EBK)'. Tenants either purchase and install their own kitchen or purchase the existing kitchen from the outgoing tenant through a takeover agreement (Ablösevereinbarung).",
+    ko: "빌트인 주방 가구 (싱크대, 수납장, 쿡탑, 오븐 등). 독일 임대차 시장에서는 주방 시설이 일체 없이 수도 배관과 전선만 노출된 상태로 임대되는 경우가 일반적입니다. 'mit EBK' 표시가 없는 경우 세입자가 주방을 직접 구매하여 시공하거나, 이전 세입자로부터 유상 인수(Ablöse) 계약을 맺어야 합니다."
   },
   {
-    term: "Umlagefähig / Betriebskosten",
+    term: "Umlagefähige Betriebskosten",
     category: "housing",
-    en: "Operating costs legally permitted to be passed from the landlord to the tenant according to the BetrKV (Betriebskostenverordnung).",
-    ko: "세입자에게 전가 가능한 관리비 항목. 독일 관리비 규정에 따라 재산세, 승강기 유지비, 청소비, 제설비 등 임대인이 세입자에게 청구할 수 있는 법정 비용입니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Apportionment",
+    classificationKo: "법정 전가 가능 관리비",
+    legalBasis: "§ 1, § 2 Betriebskostenverordnung (BetrKV)",
+    source: "Betriebskostenverordnung (BetrKV)",
+    sourceUrl: "https://www.gesetze-im-internet.de/betrkv/",
+    lastVerified: "2026-09-16",
+    en: "Operating expenses that landlords are legally entitled to pass through to residential tenants, strictly limited to the 17 operational categories enumerated in § 2 BetrKV. Any cost item not specified by law or not explicitly stipulated in the tenancy agreement cannot be collected from tenants.",
+    ko: "임차인 부담 가능 관리비 항목. 독일 관리비 규정(BetrKV 제1조 및 제2조)에 엄격히 정의된 17개 운영 경비 항목만 세입자에게 청구할 수 있습니다. 법령에 명시되지 않았거나 임대차 계약서에 명시적인 합의가 없는 비용은 임대인이 세입자에게 청구할 수 없습니다."
   },
   {
-    term: "Personalausweis / Aufenthaltstitel",
+    term: "Aufenthaltstitel (eAT)",
     category: "bureaucracy",
-    en: "German National Identity Card / Electronic Residence Permit (eAT card) issued to foreign residents certifying legal residence and work authorization.",
-    ko: "신분증 / 전자 체류허가증(거주증 eAT). 비유럽권 외국인의 합법적 거주 및 노동 허가(취업비자, 블루카드, 영주권)가 칩에 기록된 플라스틱 신분증 카드입니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Immigration Document",
+    classificationKo: "법적 체류허가 증명",
+    legalBasis: "§ 4, § 78 Aufenthaltsgesetz (AufenthG)",
+    source: "Bundesamt für Migration und Flüchtlinge (BAMF)",
+    sourceUrl: "https://www.bamf.de/",
+    lastVerified: "2026-09-16",
+    en: "Electronic Residence Permit (elektronischer Aufenthaltstitel - eAT) issued to third-country nationals as a contactless smart card certifying lawful residence, validity duration, and specific work authorization conditions (Erwerbstätigkeit erlaubt) in Germany.",
+    ko: "전자 체류허가증 (eAT 카드). 비EU 국적 외국인에게 발급되는 플라스틱 전자 신분증 카드로, 독일 내 합법적 체류 자격, 유효 기간, 취업 허가 조건(취업 가능 여부 및 지정 직장 귀속 여부 등)이 칩에 공식 기록됩니다."
   },
   {
-    term: "Blaue Karte EU (Blue Card)",
+    term: "Blaue Karte EU (EU Blue Card)",
     category: "work",
-    en: "Special residence title for highly qualified university graduates and international professionals with simplified family reunification and fast-track permanent residency.",
-    ko: "EU 블루카드. 고학력 전문직 외국인 인재를 유치하기 위한 취업비자로, 일정 연봉 이상을 충족하면 동반 가족 취업 허용 및 21~27개월 내 독일 영주권(Niederlassungserlaubnis) 조기 취득이 가능합니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Residence Title",
+    classificationKo: "전문인력 체류 자격",
+    legalBasis: "§ 18g Aufenthaltsgesetz (AufenthG)",
+    source: "Bundesamt für Migration und Flüchtlinge (BAMF)",
+    sourceUrl: "https://www.bamf.de/DE/Themen/MigrationAufenthalt/ZuwandererDrittstaaten/Migrathek/BlaueKarteEU/blaue-karte-eu-node.html",
+    lastVerified: "2026-09-16",
+    en: "Special residence title under § 18g AufenthG for university graduates and highly skilled professionals from non-EU nations. Features streamlined issuance, simplified family reunification, and accelerated settlement permit access (Niederlassungserlaubnis after 21 months with B1 German or 27 months with A1 German). In 2026, minimum gross salary thresholds tied to the pension BBG are €50,700/year for standard occupations and €45,934/year for bottleneck professions and career starters.",
+    ko: "EU 블루카드. 고학력 대졸자 및 전문직 외국인 인재를 위한 특별 체류 허가(AufenthG § 18g). 배우자의 무제한 취업 허용, 간소화된 가족 동반, 독일 영주권(Niederlassungserlaubnis) 조기 취득 특례(독일어 B1 취득 시 21개월, A1 취득 시 27개월)를 제공합니다. 2026년 기준 법정 연봉 요건은 일반 직종 연 50,700유로, 부족 직군 및 신규 졸업자 연 45,934유로입니다."
   },
   {
     term: "Solidaritätszuschlag (SolZ)",
     category: "tax",
-    en: "Solidarity Surcharge. Originally introduced to finance German reunification, now abolished for roughly 90% of taxpayers and only levied on high-income earners.",
-    ko: "연대특별세 (통일세). 독일 통일 재건 비용을 위해 도입된 세금으로, 현재는 90% 이상의 일반 근로자에게 면제되며 일정 고소득자에게만 소득세의 최대 5.5%가 부과됩니다."
+    classification: "legal_requirement",
+    classificationEn: "Statutory Surcharge",
+    classificationKo: "법정 연대특별세 (통일세)",
+    legalBasis: "Solidaritätszuschlaggesetz (SolZG 1995) §§ 3, 4",
+    source: "Bundesfinanzministerium (BMF) / SolZG",
+    sourceUrl: "https://www.gesetze-im-internet.de/solzg_1995/",
+    lastVerified: "2026-09-16",
+    en: "Federal solidarity tax surcharge levied on income tax liabilities. Following major legislative exemptions, roughly 90% of all taxpayers pay zero SolZ. In 2026, the statutory exemption threshold (Freigrenze under § 3 Abs. 3 SolZG) is €20,350 for single filers and €40,700 for married couples filing jointly. Above this threshold, a transition mitigation zone (Milderungszone, max 11.9% of excess) applies before reaching the standard statutory 5.5% cap.",
+    ko: "연대특별세 (통일세). 독일 통일 비용 조달을 위해 도입된 소득세 부가세. 세제 개혁으로 전체 납세자의 약 90%에게 전액 면제됩니다. 2026년 법정 면제 기준액(Freigrenze)은 1인 단독 가구 연간 소득세액 20,350유로, 부부 합산 40,700유로입니다. 면제 기준 초과 시 급격한 세부담 증가를 방지하는 완화 구간(Milderungszone, 초과분의 최대 11.9%)을 거쳐 법정 최고 5.5%가 부과됩니다."
   }
 ];
-

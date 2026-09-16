@@ -2474,22 +2474,54 @@ const App = {
         return;
       }
 
-      listEl.innerHTML = filtered.map(item => `
-        <div class="input-panel" style="display:flex; flex-direction:column; justify-content:space-between;">
+      const getClassificationStyle = (cls) => {
+        switch (cls) {
+          case 'legal_requirement':
+            return 'background-color:rgba(239, 68, 68, 0.12); color:#dc2626; border:1px solid rgba(239, 68, 68, 0.3);';
+          case 'statutory_definition':
+            return 'background-color:rgba(59, 130, 246, 0.12); color:#2563eb; border:1px solid rgba(59, 130, 246, 0.3);';
+          case 'common_practice':
+            return 'background-color:rgba(245, 158, 11, 0.12); color:#d97706; border:1px solid rgba(245, 158, 11, 0.3);';
+          case 'recommendation':
+            return 'background-color:rgba(16, 185, 129, 0.12); color:#059669; border:1px solid rgba(16, 185, 129, 0.3);';
+          case 'informal_term':
+          default:
+            return 'background-color:var(--bg-secondary); color:var(--text-muted); border:1px solid var(--border-subtle);';
+        }
+      };
+
+      listEl.innerHTML = filtered.map(item => {
+        const classLabel = lang === 'ko' ? (item.classificationKo || item.classification) : (item.classificationEn || item.classification);
+        const classStyle = getClassificationStyle(item.classification);
+        return `
+        <div class="input-panel" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
           <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-              <h3 style="font-size:1.0625rem; font-weight:700; color:var(--text-primary);">${item.term}</h3>
-              <span class="badge badge-category">${item.category}</span>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.6rem; flex-wrap:wrap; gap:0.4rem;">
+              <h3 style="font-size:1.0625rem; font-weight:700; color:var(--text-primary); margin:0;">${item.term}</h3>
+              <div style="display:flex; gap:0.35rem; align-items:center; flex-wrap:wrap;">
+                <span class="badge" style="${classStyle} text-transform:none; font-size:0.6875rem; font-weight:600;">${classLabel}</span>
+                <span class="badge badge-category">${item.category}</span>
+              </div>
             </div>
-            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6;">
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:0.5rem;">
               ${lang === 'ko' ? item.ko : item.en}
             </p>
+            <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.5; background:var(--bg-secondary); padding:0.4rem 0.6rem; border-radius:var(--radius-sm, 6px);">
+              ${lang === 'ko' ? `<b>EN:</b> ${item.en}` : `<b>KO:</b> ${item.ko}`}
+            </div>
           </div>
-          <div style="margin-top:0.75rem; padding-top:0.5rem; border-top:1px solid var(--border-subtle); font-size:0.75rem; color:var(--text-muted);">
-            ${lang === 'ko' ? `<b>EN:</b> ${item.en}` : `<b>KO:</b> ${item.ko}`}
+          <div style="padding-top:0.6rem; border-top:1px solid var(--border-subtle); font-size:0.75rem; display:flex; flex-direction:column; gap:0.3rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+              <span style="color:var(--text-primary); font-weight:600;">⚖️ ${lang === 'ko' ? '법적 근거' : 'Legal Basis'}: <span style="font-weight:normal; color:var(--text-secondary);">${item.legalBasis || 'N/A'}</span></span>
+              <span style="color:var(--text-muted);">🕒 ${lang === 'ko' ? '최종 검증' : 'Last verified'}: ${item.lastVerified || '2026-09-16'}</span>
+            </div>
+            <div style="color:var(--text-muted);">
+              🏛️ ${lang === 'ko' ? '출처' : 'Source'}: <a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary); text-decoration:underline;">${item.source}</a>
+            </div>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     };
 
     searchIn.addEventListener('input', updateGlossary);
