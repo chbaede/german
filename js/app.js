@@ -2046,10 +2046,19 @@ const App = {
           <div class="form-group">
             <label class="form-label">${t('selectYear')}</label>
             <select id="sch-year" class="form-select">
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026" selected>2026</option>
-              <option value="2027">2027</option>
+              <optgroup label="${currentLang === 'ko' ? '달력 연도 (Calendar Year)' : 'Calendar Year'}">
+                <option value="2026" selected>2026</option>
+                <option value="2025">2025</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+              </optgroup>
+              <optgroup label="${currentLang === 'ko' ? '학사년도 (School Year / Schuljahr)' : 'School Year (Schuljahr)'}">
+                <option value="2025/2026">2025/2026</option>
+                <option value="2026/2027">2026/2027</option>
+                <option value="2027/2028">2027/2028</option>
+                <option value="2024/2025">2024/2025</option>
+                <option value="2028/2029">2028/2029</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group">
@@ -2058,6 +2067,8 @@ const App = {
           </div>
         </div>
       </div>
+
+      <div id="sch-meta-banner" style="margin-bottom:1rem; display:none;"></div>
 
       <div class="data-table-wrapper">
         <table class="data-table">
@@ -2070,22 +2081,69 @@ const App = {
           <tbody id="sch-table-body"></tbody>
         </table>
       </div>
+
+      <div id="sch-footnotes" style="margin-top:1rem; font-size:0.8125rem; color:var(--text-muted); line-height:1.6;"></div>
     `;
 
     const yrIn = document.getElementById('sch-year');
     const stIn = document.getElementById('sch-state');
+    const metaBanner = document.getElementById('sch-meta-banner');
+    const footnotesEl = document.getElementById('sch-footnotes');
 
     const updateSch = () => {
-      const list = FamilyTools.getSchoolHolidaysForState(parseInt(yrIn.value, 10), stIn.value);
+      const val = yrIn.value;
+      const res = FamilyTools.getSchoolHolidaysForState(val, stIn.value);
       const tbody = document.getElementById('sch-table-body');
       const lang = currentLang;
 
-      tbody.innerHTML = list.map(h => `
+      if (!res || res.unavailable || !Array.isArray(res) || res.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="2" style="text-align:center; padding:2rem; color:var(--text-muted);">
+              ⚠️ ${lang === 'ko' 
+                ? (res && res.messageKo ? res.messageKo : '선택한 연도의 공식 KMK 방학 데이터가 없습니다.')
+                : (res && res.messageEn ? res.messageEn : 'Official KMK school holiday data is unavailable for the selected year.')}
+            </td>
+          </tr>
+        `;
+        metaBanner.style.display = 'none';
+        footnotesEl.innerHTML = '';
+        return;
+      }
+
+      metaBanner.style.display = 'flex';
+      metaBanner.style.flexWrap = 'wrap';
+      metaBanner.style.gap = '0.5rem';
+      metaBanner.style.alignItems = 'center';
+
+      let badgesHtml = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:600;">🏛️ KMK Official</span>`;
+      if (res.movableDays > 0) {
+        badgesHtml += `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-secondary); border:1px solid var(--border-subtle);">
+          ${lang === 'ko' ? `이동식 자율휴교일(Bewegliche Ferientage): ${res.movableDays}일` : `Movable school-free days: ${res.movableDays}`}
+        </span>`;
+      }
+      metaBanner.innerHTML = badgesHtml;
+
+      tbody.innerHTML = res.map(h => {
+        const title = lang === 'ko' ? (h.nameKo || h.nameEn) : h.nameDe;
+        const sub = lang === 'ko' ? ` (${h.nameDe})` : ` (${h.nameEn})`;
+        const singleDayBadge = h.isSingleDay ? ` <span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted); font-size:0.65rem;">${lang === 'ko' ? '단일 휴교일' : 'Single day'}</span>` : '';
+        return `
         <tr>
-          <td style="font-weight:600; color:var(--text-primary);">${h.nameDe} (${lang === 'ko' ? h.nameEn : h.nameEn})</td>
+          <td style="font-weight:600; color:var(--text-primary);">${title}${sub}${singleDayBadge}</td>
           <td style="font-family:var(--font-mono);">${h.start} ~ ${h.end}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
+
+      let fnText = `
+        <div style="border-top:1px solid var(--border-subtle); padding-top:0.75rem; display:flex; flex-direction:column; gap:0.35rem;">
+          <div>🏛️ <b>${lang === 'ko' ? '공식 출처' : 'Official Source'}:</b> <a href="https://www.kmk.org/service/ferienregelung/ferienkalender.html" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary); text-decoration:underline;">Kultusministerkonferenz (KMK) Ferienkalender</a> • ${lang === 'ko' ? '최종 검증: 2026-09-16' : 'Last verified: 2026-09-16'}</div>
+          <div>ℹ️ ${lang === 'ko' ? '각 기간의 시작일과 종료일은 모두 방학에 포함되는 첫날과 마지막 날입니다.' : 'Dates specify the first and last vacation days inclusive.'}</div>
+          ${res.footnote ? `<div style="color:var(--warning-color); font-weight:500;">📌 <b>${lang === 'ko' ? '지역 특례' : 'Special Note'}:</b> ${res.footnote}</div>` : ''}
+        </div>
+      `;
+      footnotesEl.innerHTML = fnText;
     };
 
     yrIn.addEventListener('change', updateSch);
