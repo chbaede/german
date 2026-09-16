@@ -55,13 +55,20 @@ const SalaryCalculator = {
   },
 
   /**
-   * Evaluates the progressive tariff without the basic allowance (Grundfreibetrag = 0)
-   * Used for Tax Class V (where basic allowance was transferred to Class III spouse)
-   * and Tax Class VI (secondary employment taxed from the very first euro).
+   * Internal Tariff Estimator without Grundfreibetrag
+   *
+   * Estimation Note vs. Official BMF PAP:
+   * This function provides a simplified progressive tariff approximation for Tax Class V
+   * (where the basic tax allowance is transferred to the Class III spouse) and Tax Class VI
+   * (where second and subsequent employment relationships are taxed without personal allowances).
+   *
+   * IMPORTANT: This is an estimation model, NOT the official BMF Programmablaufplan (PAP).
+   * In official payroll, Class V uses a specialized progressive formula (subroutine MST5_6)
+   * and Class VI uses specific withholding rules. Actual employer payroll withholding may differ.
    *
    * @param {number} income - Income base in Euro
    * @param {object} yearConfig - Year-specific tax configuration
-   * @returns {number} Annual tax amount in Euro
+   * @returns {number} Estimated annual tax amount in Euro
    */
   calcTariffWithoutGrundfreibetrag(income, yearConfig) {
     const x = Math.floor(Math.max(0, income));
@@ -652,25 +659,35 @@ const SalaryCalculator = {
     const approximateZvE = Math.max(0, grossAnnual - totalStatutoryDeductions);
 
     // ========================================================================
-    // 3. WAGE TAX (Lohnsteuer) COMPUTATION
+    // 3. ESTIMATED WAGE TAX (Estimated Lohnsteuer)
     // ========================================================================
+    // Note on Lohnsteuer Methodology vs. Official BMF PAP 2026:
+    // This calculator provides an estimation model based on § 32a EStG and the BMF
+    // Lohnsteuer-Handbuch. In official employer payroll withholding, wage tax is computed
+    // via the official BMF Programmablaufplan (PAP 2026) containing hundreds of procedural
+    // steps, integer rounding, and specialized subroutines for Classes III, V, and VI.
+    // The formulas below for Class III, V, and VI are estimation approximations:
+    // - Class III: Approximates withholding using the splitting tariff on single earner zvE.
+    //   (Note: Official BMF PAP uses specialized procedural steps; mandatory annual tax return
+    //   reconciles actual joint liability on combined income under § 46 Abs. 2 Nr. 3a EStG).
+    // - Class V: Approximates withholding without Grundfreibetrag and accelerated progression.
+    //   (Note: Official BMF PAP uses subroutine MST5_6 rather than a simple bracket shift).
+    // - Class VI: Approximates secondary employment taxation where second and subsequent
+    //   employment relationships are taxed without basic personal allowances.
+    // They are ESTIMATES and must NOT be described as exact statutory payroll results.
     let incomeTaxAnnual = 0;
 
     if (taxClass === "3") {
-      // Class III (Splitting method):
-      // In accordance with § 39b Abs. 2 Satz 5 EStG, tax on half zvE doubled
+      // Class III (Splitting estimation approximation):
       incomeTaxAnnual = this.calcStatutoryTariff(approximateZvE / 2, yCfg) * 2;
     } else if (taxClass === "5") {
-      // Class V (Partner in Class III):
-      // Basic tax allowance is transferred to Class III spouse. Class V has Grundfreibetrag = 0.
+      // Class V (Progressive estimation approximation without basic allowance):
       incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(approximateZvE, yCfg);
     } else if (taxClass === "6") {
-      // Class VI (Secondary employment):
-      // Zero basic allowance, no lump sums, taxed from the very first euro earned.
+      // Class VI (Secondary employment estimation approximation without personal allowances):
       incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(grossAnnual, yCfg);
     } else {
-      // Class I, II, IV:
-      // Standard individual tariff applied to zvE
+      // Class I, II, IV (Standard statutory tariff estimation applied to estimated zvE):
       incomeTaxAnnual = this.calcStatutoryTariff(approximateZvE, yCfg);
     }
 
@@ -737,9 +754,13 @@ const SalaryCalculator = {
       netMonthly,
       netAnnual,
 
-      // Taxes
+      // Taxes & Estimated Lohnsteuer
       incomeTaxMonthly,
       incomeTaxAnnual,
+      estimatedLohnsteuerMonthly: incomeTaxMonthly,
+      estimatedLohnsteuerAnnual: incomeTaxAnnual,
+      isEstimate: true,
+      taxCalculationType: "Estimated Lohnsteuer",
       solzMonthly,
       solzAnnual,
       churchTaxMonthly,
@@ -802,9 +823,9 @@ const SalaryCalculator = {
         usingAvgZusatzbeitragWording: "Using the 2026 average Zusatzbeitrag of 2.9%",
         solzThreshold: solzThreshold,
         pkvNotice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.",
-        modelDescription: "Statutory estimation model based on BMF Lohnsteuer-Handbuch and § 32a EStG",
-        disclaimerEn: "Estimated result. Actual payroll withholding may differ based on individual health insurance additional contribution and employer parameters.",
-        disclaimerKo: "추정 계산 결과입니다. 실제 급여 명세서 원천징수액은 가입 건강보험사 추가보험료 및 사업장 설정에 따라 약간의 차이가 있을 수 있습니다."
+        modelDescription: "Estimated Lohnsteuer model based on § 32a EStG and BMF Lohnsteuer principles (Approximating official BMF PAP 2026 payroll withholding)",
+        disclaimerEn: "This is an estimate. Actual employer payroll withholding may differ.",
+        disclaimerKo: "본 계산 결과는 추정치입니다. 실제 고용주의 급여 원천징수액은 다를 수 있습니다."
       }
     };
   },

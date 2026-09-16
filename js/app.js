@@ -289,10 +289,10 @@ const App = {
               <select id="salary-taxclass" class="form-select">
                 <option value="1" selected>Class I (Single)</option>
                 <option value="2">Class II (Single Parent)</option>
-                <option value="3">Class III (Married High-Earner)</option>
-                <option value="4">Class IV (Married Equal)</option>
-                <option value="5">Class V (Married Lower-Earner)</option>
-                <option value="6">Class VI (Second Job)</option>
+                <option value="3">Class III (Married - Primary Earner)</option>
+                <option value="4">Class IV (Married - Equal)</option>
+                <option value="5">Class V (Married - Secondary Earner)</option>
+                <option value="6">Class VI (Second / Multiple Employment)</option>
               </select>
             </div>
           </div>
@@ -460,6 +460,9 @@ const App = {
               <span id="res-effective-rate" class="breakdown-value">0.0 %</span>
             </div>
           </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); padding:0.5rem 0.75rem; border-radius:6px; margin-top:0.75rem; line-height:1.45;">
+            ℹ️ <strong>${t('payrollDisclaimerTitle')}:</strong> ${t('payrollDisclaimer')}
+          </div>
         </div>
 
         <!-- Explanatory, 2026 Parameters, and Official Sources Section -->
@@ -506,7 +509,7 @@ const App = {
           <div class="info-panel">
             <h3 class="panel-title">🏛️ ${t('officialSourcesTitle')}</h3>
             <ul style="font-size:0.8125rem; color:var(--text-secondary); line-height:1.6; margin:0.5rem 0 1rem 1.25rem;">
-              <li><b>Bundesfinanzministerium (BMF):</b> Lohnsteuer-Handbuch 2026 & § 32a EStG (Einkommensteuertarif 2026).</li>
+              <li><b>Bundesfinanzministerium (BMF):</b> Programmablaufplan für den Lohnsteuerabzug 2026 (BMF PAP 2026), Lohnsteuer-Handbuch 2026 & § 32a EStG.</li>
               <li><b>Solidaritätszuschlaggesetz (SolZG):</b> §§ 3, 4 SolZG (Freigrenzen: €20.350 / €40.700; Milderungszone 11,9%).</li>
               <li><b>Bundesministerium für Gesundheit (BMG):</b> Sozialversicherungs-Rechengrößen-Verordnung 2026.</li>
               <li><b>Bundesministerium für Arbeit und Soziales (BMAS):</b> Rechengrößen der Sozialversicherung 2026.</li>

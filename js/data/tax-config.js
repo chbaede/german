@@ -50,6 +50,12 @@ const GERMAN_TAX_CONFIG = {
 
   officialSources: [
     {
+      institution: "Bundesministerium der Finanzen (BMF)",
+      reference: "Programmablaufplan für die maschinelle Berechnung der vom Arbeitslohn einzubehaltenden Lohnsteuer, des Solidaritätszuschlags und der Maßstabsteuer für die Kirchenlohnsteuer für 2026 (BMF PAP 2026)",
+      topicEn: "Official procedural flowchart (PAP) for employer wage tax (Lohnsteuer) withholding. Calculator provides an estimation model; actual employer payroll withholding may differ.",
+      topicKo: "2026년도 법정 급여원천징수세(Lohnsteuer) 공식 기계계산 절차도(BMF PAP 2026). 본 계산기는 추정 모델을 제공하며, 실제 급여 원천징수세액은 사업장 급여 소프트웨어의 공식 BMF PAP 알고리즘에 의해 산출됩니다."
+    },
+    {
       institution: "Bundesfinanzministerium (BMF)",
       reference: "BMF Lohnsteuer-Handbuch 2026 / § 32a EStG",
       topicEn: "Income tax brackets, basic allowance (€12,348), progressive tariff zones",
@@ -674,10 +680,10 @@ const GERMAN_TAX_CONFIG = {
     {
       id: "3",
       name: "Class III (Steuerklasse III)",
-      useCaseEn: "Married couples / registered civil partnerships where one partner earns significantly more (e.g. 60/40 ratio or sole earner). Partner must take Class V.",
-      useCaseKo: "부부 중 한쪽이 현저히 소득이 높은 경우(예: 외벌이 또는 60:40 이상 차이). 배우자는 반드시 5등급을 선택해야 함.",
-      featuresEn: "Applies spousal splitting (Splitting-Verfahren): double basic allowance (€24,696) applied to the earner, yielding the lowest monthly tax withholding.",
-      featuresKo: "부부 합산 기본공제(24,696 €)가 3등급 근로자에게 전액 몰아 적용되어 월 소득세 원천징수액이 가장 낮음.",
+      useCaseEn: "Married couples / registered civil partnerships where one partner earns more or is the sole earner. Partner must take Class V. (No statutory income ratio required; chosen to maximize monthly net for the primary earner).",
+      useCaseKo: "부부/등록 동반자 중 한쪽이 소득이 더 높거나 외벌이인 경우 선택 가능한 세금 등급. 배우자는 5등급을 배정받음. (법정 소득 비율 요건 없음; 연중 주 소득자의 월 실수령액을 극대화하기 위해 주로 선택).",
+      featuresEn: "Estimated spousal splitting: double basic allowance (€24,696) applied to the earner, yielding lower monthly tax withholding. Actual employer payroll withholding is governed by official BMF PAP; mandatory annual tax return reconciles combined spousal income.",
+      featuresKo: "부부 합산 기본공제(24,696 €)가 반영되어 월 소득세 원천징수 추정액이 낮아짐. 실제 급여 원천징수는 공식 BMF PAP 기준이며, 연말정산(소득세 확정신고) 시 부부 합산 소득으로 최종 정산됨.",
       limitationsEn: "Partner in Class V faces steep progressive deductions. Annual income tax return (Einkommensteuererklärung) is legally mandatory.",
       limitationsKo: "5등급 배우자의 월 원천징수율이 매우 높아짐. 연말정산(소득세 확정신고) 의무 제출 대상."
     },
@@ -696,20 +702,20 @@ const GERMAN_TAX_CONFIG = {
       name: "Class V (Steuerklasse V)",
       useCaseEn: "Married spouse whose partner has elected Class III.",
       useCaseKo: "배우자가 3등급을 선택했을 때 상대방 배우자가 자동으로 지정되는 등급.",
-      featuresEn: "Enables the high-earner partner in Class III to receive the combined basic tax allowance.",
+      featuresEn: "Enables the higher-earning partner in Class III to receive the combined basic tax allowance.",
       featuresKo: "3등급 배우자가 공제를 몰아받을 수 있도록 지원.",
-      limitationsEn: "Zero basic allowance (Grundfreibetrag = 0). Taxes apply from the very first euro earned at high progressive rates. Equalized at year-end tax filing.",
+      limitationsEn: "Estimated progressive tariff without basic allowance (Grundfreibetrag = 0). Taxes apply from the very first euro earned. Reconciled at year-end tax filing.",
       limitationsKo: "기본공제가 0유로이므로 첫 1유로부터 높은 누진세율이 즉시 원천징수됨. 연말정산 시 초과분 정산."
     },
     {
       id: "6",
       name: "Class VI (Steuerklasse VI)",
-      useCaseEn: "Secondary or multiple employment contracts (Nebenjob / Zweitjob) exceeding statutory Minijob limits.",
-      useCaseKo: "부업, 투잡, 아르바이트 중 미니잡(월 538 €) 한도를 초과하는 두 번째 이상의 직장 근로계약.",
-      featuresEn: "Applies strictly to secondary jobs while maintaining primary job benefits in other classes.",
-      featuresKo: "기존 본업의 세금 등급을 유지하면서 부차적인 두 번째 일자리에만 적용.",
-      limitationsEn: "No basic allowance (€0), no employee lump sums (€0), no Vorsorgepauschale (€0). Maximum initial withholding from €1. Deductions reconciled via annual tax return.",
-      limitationsKo: "기본공제, 필요경비, 공제 패키지가 전액 0유로 처리되어 첫 1유로부터 최고 원천징수 적용."
+      useCaseEn: "Second and subsequent employment relationships are generally taxed under Class VI.",
+      useCaseKo: "두 번째 및 그 이상의 추가 근로계약(부업/복수 고용 관계)은 일반적으로 6등급으로 과세됩니다.",
+      featuresEn: "Applies strictly to secondary jobs while primary employment maintains benefits in another tax class.",
+      featuresKo: "본업(주 직장)의 세금 등급과 분리하여, 두 번째 및 그 이상의 추가 일자리에만 적용.",
+      limitationsEn: "No basic allowance (€0), no employee lump sums (€0), no Sonderausgaben lump sum (€0). Taxed from the very first euro under the estimation model. Reconciled via mandatory annual tax return.",
+      limitationsKo: "기본공제(0 €), 근로자 필요경비(0 €), 특별지출 공제(0 €)가 전액 0유로 처리되어 첫 1유로부터 과세됨. 연말정산 시 연간 총소득으로 합산 정산."
     }
   ]
 };
