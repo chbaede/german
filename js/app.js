@@ -1601,9 +1601,13 @@ const App = {
 
   // Tool 11: Public Holidays (Feiertage)
   renderHolidaysTool(container, tool) {
-    const statesOpts = GERMAN_STATES.map(s => `
-      <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.flagEmoji} ${s.nameDe} (${s.code})</option>
-    `).join('');
+    const statesOpts = `
+      <option value="ALL">${t('allStatesOption')}</option>
+      ${GERMAN_STATES.map(s => `
+        <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.flagEmoji} ${s.nameDe} (${s.code})</option>
+      `).join('')}
+      <option value="BY-AUG">🏙️ Bayern - Augsburg (Stadt)</option>
+    `;
 
     container.innerHTML = `
       <div class="tool-topbar">
@@ -1623,59 +1627,187 @@ const App = {
               <option value="2025">2025</option>
               <option value="2026" selected>2026</option>
               <option value="2027">2027</option>
+              <option value="2028">2028</option>
             </select>
           </div>
           <div class="form-group">
             <label class="form-label">${t('selectState')}</label>
             <select id="hol-state" class="form-select">
-              <option value="ALL">${t('allStatesOption')}</option>
               ${statesOpts}
             </select>
           </div>
         </div>
       </div>
 
-      <div class="data-table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Day</th>
-              <th>German Holiday Name</th>
-              <th>English / Korean</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="hol-table-body"></tbody>
-        </table>
+      <div id="hol-special-banner" style="display:none; margin-bottom:1.5rem;"></div>
+
+      <div class="card" style="margin-bottom:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+          <h2 id="hol-section-title" style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">
+            ${t('holidaysTitle')}
+          </h2>
+          <span id="hol-count-badge" class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-size:0.85rem; font-weight:600;"></span>
+        </div>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>German Holiday Name</th>
+                <th>English / Korean</th>
+                <th>${t('scopeHeader') || 'Scope'}</th>
+              </tr>
+            </thead>
+            <tbody id="hol-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="hol-local-section" style="display:none; margin-bottom:2rem;">
+        <div class="card" style="border:1px solid rgba(217,119,6,0.25); background:rgba(217,119,6,0.03);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+              <h3 style="font-size:1.1rem; font-weight:700; color:#d97706; margin:0 0 0.25rem 0;">
+                📍 ${t('additionalLocalHolidaysTitle')}
+              </h3>
+              <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">
+                ${t('additionalLocalHolidaysDesc')}
+              </p>
+            </div>
+            <span class="badge" style="background-color:rgba(217,119,6,0.15); color:#d97706; font-weight:600;">
+              ${t('regionalNotice')}
+            </span>
+          </div>
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Day</th>
+                  <th>Holiday Name</th>
+                  <th>${t('scopeHeader') || 'Scope'}</th>
+                  <th>${t('applicableAreaHeader') || 'Applicable Area & Legal Basis'}</th>
+                </tr>
+              </thead>
+              <tbody id="hol-local-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:1.5rem; font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+        <strong>⚖️ Statutory Basis & Source Reference:</strong>
+        German public holidays are governed under state jurisdiction (Art. 74 Abs. 1 Nr. 12 GG) by individual state holiday acts (Landesfeiertagsgesetze, z.B. BayFTG, SächsSFG, FeiertG BE, FeiertagsG NW, SFG).
       </div>
     `;
 
     const yearSelect = document.getElementById('hol-year');
     const stateSelect = document.getElementById('hol-state');
+    const bannerBox = document.getElementById('hol-special-banner');
+    const sectionTitle = document.getElementById('hol-section-title');
+    const countBadge = document.getElementById('hol-count-badge');
+    const tbody = document.getElementById('hol-table-body');
+    const localSection = document.getElementById('hol-local-section');
+    const localTbody = document.getElementById('hol-local-table-body');
 
     const updateHolidays = () => {
       const year = parseInt(yearSelect.value, 10);
       const state = stateSelect.value;
-      const list = CalendarTools.getHolidaysList(year, state);
-      const tbody = document.getElementById('hol-table-body');
+      const breakdown = CalendarTools.getHolidaysBreakdown(year, state);
       const lang = currentLang;
 
-      tbody.innerHTML = list.map(h => {
-        const badge = h.nationwide
-          ? `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary);">${t('nationwideBadge')}</span>`
-          : `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${t('stateSpecificBadge')} (${h.states.join(', ')})</span>`;
+      // Augsburg special banner
+      if (breakdown.isAugsburg) {
+        bannerBox.style.display = 'block';
+        bannerBox.innerHTML = `
+          <div class="alert-box" style="background:rgba(217, 119, 6, 0.1); border-left:4px solid #d97706; padding:1rem; border-radius:8px;">
+            <strong>${t('augsburgSpecialBanner')}</strong>
+          </div>
+        `;
+        sectionTitle.textContent = lang === 'ko'
+          ? `아우크스부르크시 적용 공휴일 (${year})`
+          : `Statutory Public Holidays in Augsburg (${year})`;
+        countBadge.textContent = lang === 'ko' ? `총 14개 공휴일` : `14 Statutory Holidays`;
+      } else if (state === 'ALL') {
+        bannerBox.style.display = 'none';
+        sectionTitle.textContent = lang === 'ko'
+          ? `독일 전체 공휴일 및 지역별 현황 (${year})`
+          : `All German Public Holidays & Regional Scopes (${year})`;
+        countBadge.textContent = lang === 'ko' ? `전체 목록` : `Full Catalog`;
+      } else {
+        bannerBox.style.display = 'none';
+        const stObj = GERMAN_STATES.find(s => s.code === state);
+        const stName = stObj ? (lang === 'ko' ? stObj.nameKo : stObj.nameDe) : state;
+        sectionTitle.textContent = lang === 'ko'
+          ? `${stName} 주 전역 공휴일 (${year})`
+          : `Statewide Public Holidays in ${stName} (${year})`;
+        countBadge.textContent = lang === 'ko'
+          ? `주 전역 ${breakdown.totalStatewideCount}개`
+          : `${breakdown.totalStatewideCount} Statewide Holidays`;
+      }
 
+      const getScopeBadge = (h) => {
+        if (h.localityScope === 'nationwide') {
+          return `<span class="badge" style="background-color:rgba(37,99,235,0.15); color:#2563eb; font-weight:600;">🇩🇪 ${t('nationwideBadge')}</span>`;
+        }
+        if (h.localityScope === 'state') {
+          return `<span class="badge" style="background-color:rgba(16,185,129,0.15); color:#10b981; font-weight:600;">🏛️ ${t('statewideBadge')} (${(h.states || []).join(', ')})</span>`;
+        }
+        if (h.localityScope === 'regional') {
+          return `<span class="badge" style="background-color:rgba(245,158,11,0.15); color:#d97706; font-weight:600;">📍 ${t('regionalBadge')}</span>`;
+        }
+        if (h.localityScope === 'municipal') {
+          return `<span class="badge" style="background-color:rgba(139,92,246,0.15); color:#8b5cf6; font-weight:600;">🏙️ ${t('municipalBadge')}</span>`;
+        }
+        return `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${h.localityScope}</span>`;
+      };
+
+      // Populate primary table
+      tbody.innerHTML = breakdown.statewideHolidays.map(h => {
         return `
-          <tr style="${h.isUpcoming ? 'font-weight:600;' : 'opacity:0.8;'}">
+          <tr style="${h.isUpcoming ? 'font-weight:600;' : 'opacity:0.85;'}">
             <td style="font-family:var(--font-mono);">${h.date}</td>
             <td>${h.dayOfWeek}</td>
-            <td style="color:var(--text-primary); font-weight:600;">${h.nameDe}</td>
+            <td style="color:var(--text-primary); font-weight:600;">
+              ${h.nameDe}
+              ${h.localityScope === 'municipal' ? ' <span style="font-size:0.75rem; color:#8b5cf6;">(Augsburg)</span>' : ''}
+            </td>
             <td>${lang === 'ko' ? h.nameKo : h.nameEn}</td>
-            <td>${badge}</td>
+            <td>${getScopeBadge(h)}</td>
           </tr>
         `;
       }).join('');
+
+      // Populate additional local holidays section (if applicable)
+      if (breakdown.hasLocalExceptions && breakdown.additionalLocalHolidays.length > 0) {
+        localSection.style.display = 'block';
+        localTbody.innerHTML = breakdown.additionalLocalHolidays.map(h => {
+          const areaNote = lang === 'ko'
+            ? (h.applicableScopeKo || h.applicableScopeDe || h.notesEn)
+            : (h.applicableScopeDe || h.notesDe);
+          return `
+            <tr style="${h.isUpcoming ? 'font-weight:600;' : 'opacity:0.85;'}">
+              <td style="font-family:var(--font-mono);">${h.date}</td>
+              <td>${h.dayOfWeek}</td>
+              <td style="color:var(--text-primary); font-weight:600;">
+                ${h.nameDe}
+                <div style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">
+                  ${lang === 'ko' ? h.nameKo : h.nameEn}
+                </div>
+              </td>
+              <td>${getScopeBadge(h)}</td>
+              <td style="font-size:0.85rem; color:var(--text-secondary);">
+                <div>${areaNote}</div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">⚖️ ${h.legalBasis || ''}</div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } else {
+        localSection.style.display = 'none';
+        localTbody.innerHTML = '';
+      }
     };
 
     yearSelect.addEventListener('change', updateHolidays);
@@ -1685,9 +1817,12 @@ const App = {
 
   // Tool 12: Working Days Calculator
   renderWorkingDaysTool(container, tool) {
-    const statesOpts = GERMAN_STATES.map(s => `
-      <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.nameDe}</option>
-    `).join('');
+    const statesOpts = `
+      ${GERMAN_STATES.map(s => `
+        <option value="${s.code}" ${s.code === 'BE' ? 'selected' : ''}>${s.flagEmoji || ''} ${s.nameDe} (${s.code})</option>
+      `).join('')}
+      <option value="BY-AUG">🏙️ Bayern - Augsburg (Stadt)</option>
+    `;
 
     container.innerHTML = `
       <div class="tool-topbar">
