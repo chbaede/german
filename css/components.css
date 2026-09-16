@@ -1011,40 +1011,32 @@
   font-weight: 700;
 }
 
-.ad-container {
-  position: relative;
-  background-color: var(--bg-surface);
-  border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 0.75rem 1rem 1rem 1rem;
-  min-height: 120px;
+.ad-section {
+  display: block;
+  visibility: hidden;
+  height: 0;
+  margin: 0 auto;
+  padding: 0;
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
   overflow: hidden;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.ad-badge-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ad-section.ad-filled {
+  visibility: visible;
+  height: auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.ad-container {
+  position: relative;
   width: 100%;
-  margin-bottom: 0.5rem;
-}
-
-.ad-badge-text {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  opacity: 0.85;
+  max-width: 970px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  overflow: hidden;
 }
 
 .ad-container ins.adsbygoogle {
@@ -1060,11 +1052,19 @@
   margin: 0 auto !important;
 }
 
-.tool-ad-section {
-  margin-top: 2.5rem;
+.ad-section:empty,
+.ad-container:empty,
+ins.adsbygoogle[data-ad-status="unfilled"],
+.ad-section.ad-unfilled {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.tool-ad-section.ad-filled {
+  margin-top: 2rem;
   margin-bottom: 2rem;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* ==========================================================================

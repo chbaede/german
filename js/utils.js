@@ -109,20 +109,42 @@ const GLTUtils = {
   },
 
   /**
-   * Safe Google AdSense initialization for Single Page Applications (SPA)
-   * Safely discovers uninitialized ins.adsbygoogle slots and executes push
+   * Safe Google AdSense initialization and fill observer for Single Page Applications (SPA).
+   * Safely discovers uninitialized ins.adsbygoogle slots, executes push, and only displays
+   * the ad container (.ad-filled) when Google actually renders an ad iframe with height > 0.
+   * If unfilled or blocked, keeps container collapsed (0px height, hidden).
    */
   refreshAds() {
     try {
-      // Delay slightly to ensure DOM reflow and element visibility
       setTimeout(() => {
         try {
-          const ads = document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])');
+          const ads = document.querySelectorAll('ins.adsbygoogle');
           ads.forEach(ad => {
-            // Only push if the ad container is visible in DOM
-            if (ad.offsetParent !== null) {
+            const adSection = ad.closest('.ad-section');
+            if (!ad.getAttribute('data-adsbygoogle-status')) {
               (window.adsbygoogle = window.adsbygoogle || []).push({});
             }
+            const checkFilled = () => {
+              if (!adSection) return;
+              const status = ad.getAttribute('data-ad-status');
+              const iframe = ad.querySelector('iframe');
+              const isFilled = status === 'filled' || (iframe && (iframe.clientHeight > 0 || iframe.offsetHeight > 0 || parseInt(iframe.getAttribute('height') || '0', 10) > 0));
+              if (isFilled) {
+                adSection.classList.add('ad-filled');
+                adSection.classList.remove('ad-unfilled');
+              } else if (status === 'unfilled') {
+                adSection.classList.remove('ad-filled');
+                adSection.classList.add('ad-unfilled');
+              }
+            };
+            setTimeout(checkFilled, 500);
+            setTimeout(checkFilled, 1200);
+            setTimeout(checkFilled, 2500);
+            setTimeout(() => {
+              if (adSection && !adSection.classList.contains('ad-filled')) {
+                adSection.classList.add('ad-unfilled');
+              }
+            }, 4000);
           });
         } catch (slotErr) {
           console.debug('AdSense slot init info:', slotErr);
