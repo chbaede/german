@@ -56,6 +56,13 @@ const GERMAN_TAX_CONFIG = {
       topicKo: "2026년도 법정 급여원천징수세(Lohnsteuer) 공식 기계계산 절차도(BMF PAP 2026). 본 계산기는 추정 모델을 제공하며, 실제 급여 원천징수세액은 사업장 급여 소프트웨어의 공식 BMF PAP 알고리즘에 의해 산출됩니다."
     },
     {
+      institution: "Bundesministerium der Finanzen (BMF)",
+      reference: "BMF Amtliches Einkommensteuer-Handbuch 2025 / § 32a EStG (Einkommensteuertarif 2025)",
+      url: "https://esth.bundesfinanzministerium.de/lsth/2025/A-Einkommensteuergesetz/IV-Tarif-31-34b/Paragraf-32a/inhalt.html",
+      topicEn: "Official statutory 2025 income tax tariff: basic allowance €12,096, zone 2 limit €17,443 (coefficients 932.30 / 1,400), zone 3 limit €68,480 (coefficients 176.64 / 2,397 / 1,015.13), zone 4 top rate 42% (subtraction 10,911.92), zone 5 45% (subtraction 19,246.67)",
+      topicKo: "2025년 법정 소득세율표: 기본공제 12,096 €, 2구간 상한 17,443 €(계수 932.30 / 1,400), 3구간 상한 68,480 €(계수 176.64 / 2,397 / 1,015.13), 4구간 최고세율 42%(차감액 10,911.92), 5구간 부유세 45%(차감액 19,246.67)"
+    },
+    {
       institution: "Bundesfinanzministerium (BMF)",
       reference: "BMF Lohnsteuer-Handbuch 2026 / § 32a EStG",
       topicEn: "Income tax brackets, basic allowance (€12,348), progressive tariff zones",
@@ -93,21 +100,21 @@ const GERMAN_TAX_CONFIG = {
     // ------------------------------------------------------------------------
     2025: {
       year: 2025,
-      basicAllowance: 12096, // Grundfreibetrag 2025
+      basicAllowance: 12096, // Grundfreibetrag 2025 (§ 32a Abs. 1 Satz 2 Nr. 1 EStG)
       tariff: {
         zone1Limit: 12096,
-        zone2Limit: 17005,
-        zone3Limit: 66760,
+        zone2Limit: 17443,
+        zone3Limit: 68480,
         zone4Limit: 277825,
-        zone2A: 995.21,
+        zone2A: 932.30,
         zone2B: 1400,
-        zone3A: 208.85,
+        zone3A: 176.64,
         zone3B: 2397,
-        zone3C: 1015.51,
+        zone3C: 1015.13,
         zone4Rate: 0.42,
-        zone4Sub: 10636.31,
+        zone4Sub: 10911.92,
         zone5Rate: 0.45,
-        zone5Sub: 18971.06
+        zone5Sub: 19246.67
       },
       pension: {
         totalRate: 0.186,

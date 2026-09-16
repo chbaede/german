@@ -763,7 +763,55 @@ assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(50000, true
 assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(80000, true), 4400.00);
 console.log("[PASS] 2025 SolZ functional calculation verified across all exemption, transition, and capped zones.");
 
-// F. Full Payroll Integration for 2025
+// F. 2025 § 32a EStG Income Tax Tariff Statutory Parameters & Boundary Verification
+// Official source: https://esth.bundesfinanzministerium.de/lsth/2025/A-Einkommensteuergesetz/IV-Tarif-31-34b/Paragraf-32a/inhalt.html
+assert.strictEqual(cfg2025.tariff.zone1Limit, 12096, "2025 Grundfreibetrag must be €12,096");
+assert.strictEqual(cfg2025.tariff.zone2Limit, 17443, "2025 Zone 2 limit must be €17,443");
+assert.strictEqual(cfg2025.tariff.zone3Limit, 68480, "2025 Zone 3 limit must be €68,480");
+assert.strictEqual(cfg2025.tariff.zone4Limit, 277825, "2025 Zone 4 limit must be €277,825");
+assert.strictEqual(cfg2025.tariff.zone2A, 932.30, "2025 Zone 2A coefficient must be 932.30");
+assert.strictEqual(cfg2025.tariff.zone2B, 1400, "2025 Zone 2B coefficient must be 1400");
+assert.strictEqual(cfg2025.tariff.zone3A, 176.64, "2025 Zone 3A coefficient must be 176.64");
+assert.strictEqual(cfg2025.tariff.zone3B, 2397, "2025 Zone 3B coefficient must be 2397");
+assert.strictEqual(cfg2025.tariff.zone3C, 1015.13, "2025 Zone 3C coefficient must be 1015.13");
+assert.strictEqual(cfg2025.tariff.zone4Rate, 0.42, "2025 Zone 4 rate must be 0.42");
+assert.strictEqual(cfg2025.tariff.zone4Sub, 10911.92, "2025 Zone 4 subtraction must be 10911.92");
+assert.strictEqual(cfg2025.tariff.zone5Rate, 0.45, "2025 Zone 5 rate must be 0.45");
+assert.strictEqual(cfg2025.tariff.zone5Sub, 19246.67, "2025 Zone 5 subtraction must be 19246.67");
+
+// Negative checks against outdated 2025 draft parameters:
+assert.notStrictEqual(cfg2025.tariff.zone2Limit, 17005, "Outdated 17005 must NOT be in 2025 config");
+assert.notStrictEqual(cfg2025.tariff.zone3Limit, 66760, "Outdated 66760 must NOT be in 2025 config");
+assert.notStrictEqual(cfg2025.tariff.zone2A, 995.21, "Outdated 995.21 must NOT be in 2025 config");
+assert.notStrictEqual(cfg2025.tariff.zone3A, 208.85, "Outdated 208.85 must NOT be in 2025 config");
+assert.notStrictEqual(cfg2025.tariff.zone3C, 1015.51, "Outdated 1015.51 must NOT be in 2025 config");
+assert.notStrictEqual(cfg2025.tariff.zone4Sub, 10636.31, "Outdated 10636.31 must NOT be in 2025 config");
+assert.notStrictEqual(cfg2025.tariff.zone5Sub, 18971.06, "Outdated 18971.06 must NOT be in 2025 config");
+
+// Boundary Tests for 2025 § 32a Tariff:
+// 1. Boundary 12,096 / 12,097 (Grundfreibetrag / Zone 1 -> Zone 2)
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(12096, cfg2025), 0, "Tariff at 12096 must be 0 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(12097, cfg2025), 0, "Tariff at 12097 must floor to 0 € (0.14 € exact)");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(12103, cfg2025), 0, "Tariff at 12103 must floor to 0 € (0.98 € exact)");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(12104, cfg2025), 1, "Tariff at 12104 must reach 1 € (1.12 € exact)");
+
+// 2. Boundary 17,443 / 17,444 (Zone 2 -> Zone 3)
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(17443, cfg2025), 1015, "Tariff at 17443 (Zone 2 end) must be 1015 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(17444, cfg2025), 1015, "Tariff at 17444 (Zone 3 start) must be 1015 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(17445, cfg2025), 1015, "Tariff at 17445 must be 1015 €");
+
+// 3. Boundary 68,480 / 68,481 (Zone 3 -> Zone 4 Spitzensteuersatz 42%)
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(68480, cfg2025), 17849, "Tariff at 68480 (Zone 3 end) must be 17849 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(68481, cfg2025), 17850, "Tariff at 68481 (Zone 4 start) must be 17850 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(68482, cfg2025), 17850, "Tariff at 68482 must be 17850 €");
+
+// 4. Boundary 277,825 / 277,826 (Zone 4 -> Zone 5 Reichensteuer 45%)
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(277825, cfg2025), 105774, "Tariff at 277825 (Zone 4 end) must be 105774 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(277826, cfg2025), 105775, "Tariff at 277826 (Zone 5 start) must be 105775 €");
+assert.strictEqual(SalaryCalculator.calcStatutoryTariff(277827, cfg2025), 105775, "Tariff at 277827 must be 105775 €");
+console.log("[PASS] 2025 § 32a EStG Tariff: All parameters and exact boundaries (12096/12097, 17443/17444, 68480/68481, 277825/277826) verified with zero draft values remaining.");
+
+// G. Full Payroll Integration for 2025
 const payroll2025_single = SalaryCalculator.calculateNetSalary({
   grossMonthly: 5000,
   taxYear: 2025,
@@ -774,6 +822,9 @@ const payroll2025_single = SalaryCalculator.calculateNetSalary({
 assert.strictEqual(payroll2025_single.taxYear, 2025);
 assert.strictEqual(payroll2025_single.pvEmployeeRate, 0.024);
 assert.strictEqual(payroll2025_single.pvMonthly, Number((5000 * 0.024).toFixed(2))); // €120.00
+assert.strictEqual(payroll2025_single.gkvEmployeeRate, 0.0855, "2025 GKV employee rate with 2.5% avg Zusatz must be 8.55%");
+assert.strictEqual(payroll2025_single.incomeTaxAnnual, 9570, "2025 annual wage tax for €5k/mo under corrected § 32a tariff must be €9,570");
+assert.strictEqual(payroll2025_single.incomeTaxMonthly, 797.50, "2025 monthly wage tax must be €797.50");
 assert.strictEqual(payroll2025_single.solzMonthly, 0); // Single income tax is below €19,950
 
 const payroll2025_sn = SalaryCalculator.calculateNetSalary({
@@ -804,7 +855,7 @@ const payroll2025_kids_sn = SalaryCalculator.calculateNetSalary({
   numberOfQualifyingChildren: 2
 });
 assert.strictEqual(payroll2025_kids_sn.pvEmployeeRate, 0.0205);
-console.log("[PASS] 2025 Full payroll integration verified (Care insurance child tiers & Saxony differential, SolZ).");
+console.log("[PASS] 2025 Full payroll integration verified (Care insurance child tiers & Saxony differential, SolZ, § 32a tariff).");
 
 // === 13. BMF 2026 PROGRAMMABLAUFPLAN (PAP) AUDIT & ESTIMATOR VERIFICATION ===
 console.log("\n=== 13. BMF 2026 PROGRAMMABLAUFPLAN (PAP) AUDIT & ESTIMATOR VERIFICATION ===");

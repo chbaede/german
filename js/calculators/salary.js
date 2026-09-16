@@ -342,22 +342,24 @@ const SalaryCalculator = {
   },
 
   /**
-   * Statutory Health Insurance (GKV) Rate Calculation for 2026
-   * Statutory Basis: § 241, § 242, § 242a SGB V; BMG Bekanntmachung 2026
+   * Statutory Health Insurance (GKV) Rate Calculation for Supported Years
+   * Statutory Basis: § 241, § 242, § 242a SGB V; BMG Bekanntmachung
    *
    * - General statutory rate: 14.6% (employee base share: 7.3%)
-   * - Average Zusatzbeitrag 2026: 2.9% (employee average Zusatz share: 1.45%)
-   * - Total standard employee rate using national average: 8.75%
+   * - Average Zusatzbeitrag: 2.5% in 2025 (employee share 1.25% -> 8.55% total)
+   *                          2.9% in 2026 (employee share 1.45% -> 8.75% total)
    * - Optional custom kasseZusatzbeitrag: employee rate = 7.3% + (kasseZusatzbeitrag / 2)
    *
    * @param {object} [params]
    * @param {number|string} [params.kasseZusatzbeitrag] - Specific health fund additional rate (e.g. 2.5 or 0.025)
+   * @param {number|string} [params.taxYear] - Tax year (2025 or 2026)
    * @returns {object} Health insurance calculation details
    */
-  getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag } = {}) {
+  getEmployeeHealthInsuranceRate({ kasseZusatzbeitrag, taxYear, year } = {}) {
+    const y = parseInt(taxYear ?? year ?? 2026, 10);
     const baseRate = 0.146;
     const employeeBaseRate = 0.073;
-    const avgZusatzbeitrag = 0.029;
+    const avgZusatzbeitrag = (y === 2025) ? 0.025 : 0.029;
     let effectiveZusatzbeitrag = avgZusatzbeitrag;
     let isCustom = false;
 
@@ -382,7 +384,9 @@ const SalaryCalculator = {
       employeeZusatzRate,
       totalEmployeeRate,
       isCustom,
-      note: "Using the 2026 average Zusatzbeitrag of 2.9%"
+      note: y === 2025
+        ? "Using the 2025 average Zusatzbeitrag of 2.5%"
+        : "Using the 2026 average Zusatzbeitrag of 2.9%"
     };
   },
 
@@ -537,7 +541,8 @@ const SalaryCalculator = {
     if (healthType === "gkv") {
       gkvAssessmentMonthly = Math.min(grossMonthly, yCfg.health.bbgMonthly);
       healthRateDetails = this.getEmployeeHealthInsuranceRate({
-        kasseZusatzbeitrag: params.kasseZusatzbeitrag
+        kasseZusatzbeitrag: params.kasseZusatzbeitrag,
+        taxYear
       });
       gkvEmployeeRate = healthRateDetails.totalEmployeeRate;
       gkvMonthly = gkvAssessmentMonthly * gkvEmployeeRate;
@@ -783,7 +788,7 @@ const SalaryCalculator = {
       healthType,
       isCustomZusatzbeitrag: healthRateDetails ? healthRateDetails.isCustom : false,
       effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : null,
-      usingAvgZusatzbeitragNote: "Using the 2026 average Zusatzbeitrag of 2.9%",
+      usingAvgZusatzbeitragNote: healthRateDetails ? healthRateDetails.note : (taxYear === 2025 ? "Using the 2025 average Zusatzbeitrag of 2.5%" : "Using the 2026 average Zusatzbeitrag of 2.9%"),
 
       // Private Health & Care Insurance (PKV & PPV) Line Items
       pkvDetails: pkvDetails || (healthType === 'pkv' ? this.calculatePkvCost({
@@ -820,7 +825,7 @@ const SalaryCalculator = {
         gkvEmployeeRate,
         gkvMembershipStatus,
         effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : yCfg.health.avgZusatzbeitrag,
-        usingAvgZusatzbeitragWording: "Using the 2026 average Zusatzbeitrag of 2.9%",
+        usingAvgZusatzbeitragWording: healthRateDetails ? healthRateDetails.note : (taxYear === 2025 ? "Using the 2025 average Zusatzbeitrag of 2.5%" : "Using the 2026 average Zusatzbeitrag of 2.9%"),
         solzThreshold: solzThreshold,
         pkvNotice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.",
         modelDescription: "Estimated Lohnsteuer model based on § 32a EStG and BMF Lohnsteuer principles (Approximating official BMF PAP 2026 payroll withholding)",
