@@ -962,6 +962,71 @@ assert.ok(benchClass5.netMonthly < bmfBench2.netMonthly, "Class V net pay must b
 assert.ok(benchClass6.netMonthly < benchClass5.netMonthly, "Class VI net pay must be lowest due to lack of lump sum deductions");
 console.log("[PASS] Class III, V, VI estimation models verified with transparent disclaimers and hierarchy preservation.");
 
+// === 14. SINGLE-PARENT TAX RELIEF REGRESSION AUDIT (§ 24b EStG) ===
+console.log("\n=== 14. SINGLE-PARENT TAX RELIEF REGRESSION AUDIT (§ 24b EStG) ===");
+
+// A. Parameter verification in tax config for 2025 and 2026
+assert.strictEqual(GERMAN_TAX_CONFIG.years[2025].lumpSums.singleParentRelief, 4260, "2025 singleParentRelief must be 4260");
+assert.strictEqual(GERMAN_TAX_CONFIG.years[2025].lumpSums.singleParentAdditionalChild, 240, "2025 singleParentAdditionalChild must be 240");
+assert.notStrictEqual(GERMAN_TAX_CONFIG.years[2025].lumpSums.singleParentAdditionalChild, 852, "2025 singleParentAdditionalChild must NOT be 852");
+
+assert.strictEqual(GERMAN_TAX_CONFIG.years[2026].lumpSums.singleParentRelief, 4260, "2026 singleParentRelief must be 4260");
+assert.strictEqual(GERMAN_TAX_CONFIG.years[2026].lumpSums.singleParentAdditionalChild, 240, "2026 singleParentAdditionalChild must be 240");
+assert.notStrictEqual(GERMAN_TAX_CONFIG.years[2026].lumpSums.singleParentAdditionalChild, 852, "2026 singleParentAdditionalChild must NOT be 852");
+console.log("[PASS] 2025 and 2026 § 24b parameters verified: base €4,260, additional child €240 (852 eliminated).");
+
+// B. Regression tests for single parent relief amounts (both 2025 and 2026)
+// 1 child -> 4260
+// 2 children -> 4500
+// 3 children -> 4740
+// 4 children -> 4980
+[2025, 2026].forEach(yr => {
+  assert.strictEqual(SalaryCalculator.calculateSingleParentRelief(1, yr), 4260, `Year ${yr}: 1 child -> 4260`);
+  assert.strictEqual(SalaryCalculator.calculateSingleParentRelief(2, yr), 4500, `Year ${yr}: 2 children -> 4500`);
+  assert.strictEqual(SalaryCalculator.calculateSingleParentRelief(3, yr), 4740, `Year ${yr}: 3 children -> 4740`);
+  assert.strictEqual(SalaryCalculator.calculateSingleParentRelief(4, yr), 4980, `Year ${yr}: 4 children -> 4980`);
+});
+console.log("[PASS] § 24b EStG relief formula verified: 1 child -> 4260, 2 children -> 4500, 3 children -> 4740, 4 children -> 4980 across both 2025 and 2026.");
+
+// C. Full payroll integration tests for Class II with children
+const p2_1 = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, taxClass: "2", numChildren: 1, stateCode: "BE" });
+const p2_2 = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, taxClass: "2", numChildren: 2, stateCode: "BE" });
+const p2_3 = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, taxClass: "2", numChildren: 3, stateCode: "BE" });
+const p2_4 = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, taxClass: "2", numChildren: 4, stateCode: "BE" });
+
+assert.strictEqual(p2_1.singleParentRelief, 4260);
+assert.strictEqual(p2_2.singleParentRelief, 4500);
+assert.strictEqual(p2_3.singleParentRelief, 4740);
+assert.strictEqual(p2_4.singleParentRelief, 4980);
+
+// Each additional child increases relief by €240
+assert.strictEqual(p2_2.singleParentRelief - p2_1.singleParentRelief, 240, "Relief delta between 1 and 2 children must be 240");
+assert.strictEqual(p2_3.singleParentRelief - p2_2.singleParentRelief, 240, "Relief delta between 2 and 3 children must be 240");
+assert.strictEqual(p2_4.singleParentRelief - p2_3.singleParentRelief, 240, "Relief delta between 3 and 4 children must be 240");
+
+// zvE changes reflect both +€240 single parent relief and -€120 PV deduction due to 0.25% child discount (net €120 reduction)
+assert.strictEqual(p2_1.zvE - p2_2.zvE, 120, "zvE difference between 1 and 2 children (+€240 relief, -€120 PV deduction) must be €120");
+assert.strictEqual(p2_2.zvE - p2_3.zvE, 120, "zvE difference between 2 and 3 children (+€240 relief, -€120 PV deduction) must be €120");
+assert.strictEqual(p2_3.zvE - p2_4.zvE, 120, "zvE difference between 3 and 4 children (+€240 relief, -€120 PV deduction) must be €120");
+
+assert.ok(p2_2.netMonthly > p2_1.netMonthly, "Net monthly must increase with 2nd child");
+assert.ok(p2_3.netMonthly > p2_2.netMonthly, "Net monthly must increase with 3rd child");
+assert.ok(p2_4.netMonthly > p2_3.netMonthly, "Net monthly must increase with 4th child");
+console.log("[PASS] Class II full payroll integration verified with exact statutory relief delta of €240 per additional child.");
+
+// D. Statutory sources and metadata
+const s24b = GERMAN_TAX_CONFIG.officialSources.find(s => s.reference.includes("§ 24b EStG"));
+assert.ok(s24b, "Official source entry for § 24b EStG must exist");
+assert.strictEqual(s24b.url, "https://www.gesetze-im-internet.de/estg/__24b.html");
+assert.strictEqual(s24b.tableUrl, "https://usth.bundesfinanzministerium.de/lsth/2026/tabellarische-Uebersicht/24b.html");
+
+const class2Meta = GERMAN_TAX_CONFIG.taxClasses.find(c => c.id === "2");
+assert.ok(class2Meta.featuresEn.includes("€240"), "Class II metadata featuresEn must state €240");
+assert.ok(!class2Meta.featuresEn.includes("€852"), "Class II metadata featuresEn must NOT state €852");
+assert.ok(class2Meta.featuresKo.includes("240 €"), "Class II metadata featuresKo must state 240 €");
+assert.ok(!class2Meta.featuresKo.includes("852 €"), "Class II metadata featuresKo must NOT state 852 €");
+console.log("[PASS] Official sources and Class II metadata for § 24b EStG verified.");
+
 console.log("\n🎉 ALL 2025 & 2026 STATUTORY & BMF PAP AUDIT TESTS PASSED WITHOUT EXCEPTION!");
 
 

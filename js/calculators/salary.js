@@ -453,6 +453,32 @@ const SalaryCalculator = {
   },
 
   /**
+   * Entlastungsbetrag für Alleinerziehende (§ 24b EStG)
+   * Statutory relief: €4,260 for the first child, plus €240 for each additional qualifying child.
+   * Official sources:
+   * - https://www.gesetze-im-internet.de/estg/__24b.html
+   * - https://usth.bundesfinanzministerium.de/lsth/2026/tabellarische-Uebersicht/24b.html
+   *
+   * @param {number} numberOfChildren - Number of qualifying children
+   * @param {number} [taxYear=2026] - Applicable tax year (2025, 2026)
+   * @returns {number} Statutory relief amount in EUR per year
+   */
+  calculateSingleParentRelief(numberOfChildren, taxYear = 2026) {
+    const count = Math.max(0, Math.floor(GLTUtils.parseNumber(numberOfChildren, 0)));
+    if (count <= 0) return 0;
+    const yCfg = (typeof GERMAN_TAX_CONFIG !== 'undefined' && GERMAN_TAX_CONFIG.years && GERMAN_TAX_CONFIG.years[taxYear])
+      ? GERMAN_TAX_CONFIG.years[taxYear]
+      : (typeof GERMAN_TAX_CONFIG !== 'undefined' && GERMAN_TAX_CONFIG.years ? GERMAN_TAX_CONFIG.years[2026] : null);
+    const base = (yCfg && yCfg.lumpSums && yCfg.lumpSums.singleParentRelief !== undefined)
+      ? yCfg.lumpSums.singleParentRelief
+      : 4260;
+    const additional = (yCfg && yCfg.lumpSums && yCfg.lumpSums.singleParentAdditionalChild !== undefined)
+      ? yCfg.lumpSums.singleParentAdditionalChild
+      : 240;
+    return base + (count - 1) * additional;
+  },
+
+  /**
    * Main Gross to Net Calculator
    * Computes social insurances, statutory taxable income, wage tax, SolZ, and church tax.
    *
@@ -623,7 +649,7 @@ const SalaryCalculator = {
     //   a) 100% Pension contribution (capped at RV BBG)
     //   b) Health insurance basic coverage (8.75% * 0.96 = 8.40% capped at GKV BBG)
     //   c) Long-term care basic coverage (capped at PV BBG)
-    // - Entlastungsbetrag für Alleinerziehende (§ 24b EStG for Class II): €4,260 1st child + €852/add'l child
+    // - Entlastungsbetrag für Alleinerziehende (§ 24b EStG for Class II): €4,260 1st child + €240/add'l child
     let werbungskosten = 0;
     let sonderausgaben = 0;
     let singleParentRelief = 0;
@@ -653,10 +679,8 @@ const SalaryCalculator = {
       annualVorsorge = deductibleRvAnnual + deductibleGkvAnnual + deductiblePvAnnual;
 
       if (taxClass === "2") {
-        singleParentRelief = yCfg.lumpSums.singleParentRelief;
-        if (numChildren > 1) {
-          singleParentRelief += (numChildren - 1) * yCfg.lumpSums.singleParentAdditionalChild;
-        }
+        const effectiveChildren = Math.max(1, numChildren);
+        singleParentRelief = this.calculateSingleParentRelief(effectiveChildren, taxYear);
       }
     }
 
@@ -812,6 +836,7 @@ const SalaryCalculator = {
       // Calculation Internals & Transparency
       zvE: approximateZvE,
       annualVorsorge,
+      singleParentRelief,
       rvAssessmentMonthly,
       gkvAssessmentMonthly,
       pvAssessmentMonthly,
@@ -827,6 +852,7 @@ const SalaryCalculator = {
         effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : yCfg.health.avgZusatzbeitrag,
         usingAvgZusatzbeitragWording: healthRateDetails ? healthRateDetails.note : (taxYear === 2025 ? "Using the 2025 average Zusatzbeitrag of 2.5%" : "Using the 2026 average Zusatzbeitrag of 2.9%"),
         solzThreshold: solzThreshold,
+        singleParentRelief,
         pkvNotice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.",
         modelDescription: "Estimated Lohnsteuer model based on § 32a EStG and BMF Lohnsteuer principles (Approximating official BMF PAP 2026 payroll withholding)",
         disclaimerEn: "This is an estimate. Actual employer payroll withholding may differ.",
@@ -937,9 +963,11 @@ if (typeof globalThis !== 'undefined') {
   globalThis.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
   globalThis.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
   globalThis.calculateAnnualCompensation = SalaryCalculator.calculateAnnualCompensation.bind(SalaryCalculator);
+  globalThis.calculateSingleParentRelief = SalaryCalculator.calculateSingleParentRelief.bind(SalaryCalculator);
 } else if (typeof window !== 'undefined') {
   window.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
   window.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
   window.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
   window.calculateAnnualCompensation = SalaryCalculator.calculateAnnualCompensation.bind(SalaryCalculator);
+  window.calculateSingleParentRelief = SalaryCalculator.calculateSingleParentRelief.bind(SalaryCalculator);
 }

@@ -70,6 +70,14 @@ const GERMAN_TAX_CONFIG = {
     },
     {
       institution: "Bundesfinanzministerium (BMF) / Gesetzgeber",
+      reference: "§ 24b EStG (Entlastungsbetrag für Alleinerziehende)",
+      url: "https://www.gesetze-im-internet.de/estg/__24b.html",
+      tableUrl: "https://usth.bundesfinanzministerium.de/lsth/2026/tabellarische-Uebersicht/24b.html",
+      topicEn: "Single parent tax relief (Entlastungsbetrag für Alleinerziehende): €4,260 for the first child, plus €240 for each additional child (§ 24b Abs. 2 EStG).",
+      topicKo: "한부모 특별 소득공제(Entlastungsbetrag für Alleinerziehende, 2세무등급): 첫째 자녀 연간 4,260 €, 추가 자녀 1인당 240 € (§ 24b Abs. 2 EStG)."
+    },
+    {
+      institution: "Bundesfinanzministerium (BMF) / Gesetzgeber",
       reference: "Solidaritätszuschlaggesetz (SolZG 1995) §§ 3, 4 (Stand 2026)",
       topicEn: "SolZ Freigrenzen 2026: Single/Class I, II, IV, VI €20,350; Married Splitting/Class III €40,700; Milderungszone 11.9%; 5.5% cap",
       topicKo: "2026년 연대특별세(통일세) 면제한도: 1인 20,350 € / 부부합산 40,700 €; 완충구간(Milderungszone) 11.9%; 최고 5.5% 상한"
@@ -180,7 +188,7 @@ const GERMAN_TAX_CONFIG = {
         sonderausgabenSingle: 36,
         sonderausgabenMarried: 72,
         singleParentRelief: 4260,
-        singleParentAdditionalChild: 852
+        singleParentAdditionalChild: 240
       }
     },
 
@@ -271,8 +279,8 @@ const GERMAN_TAX_CONFIG = {
         werbungskosten: 1230,    // Employee lump-sum (€1,230/yr)
         sonderausgabenSingle: 36,// Special expenses lump-sum (€36/yr single)
         sonderausgabenMarried: 72,// Special expenses lump-sum (€72/yr married III)
-        singleParentRelief: 4260,// Entlastungsbetrag für Alleinerziehende (€4,260 1st child)
-        singleParentAdditionalChild: 852 // +€852 for each additional child
+        singleParentRelief: 4260,// Entlastungsbetrag für Alleinerziehende (§ 24b EStG: €4,260 1st child)
+        singleParentAdditionalChild: 240 // § 24b Abs. 2 Satz 2 EStG: +€240 for each additional child
       }
     }
   },
@@ -679,8 +687,8 @@ const GERMAN_TAX_CONFIG = {
       name: "Class II (Steuerklasse II)",
       useCaseEn: "Single parents living alone with at least one eligible child receiving Kindergeld.",
       useCaseKo: "만 18세 미만 또는 킨더겔트 수급 자녀와 단독 거주하는 한부모 가정.",
-      featuresEn: "Includes single parent relief allowance (Entlastungsbetrag für Alleinerziehende: €4,260/yr + €852 per additional child).",
-      featuresKo: "한부모 특별 소득공제(첫째 자녀 연간 4,260 €, 추가 자녀당 852 €) 추가 차감으로 실수령액 증가.",
+      featuresEn: "Includes single parent relief allowance (Entlastungsbetrag für Alleinerziehende: €4,260/yr + €240 per additional child).",
+      featuresKo: "한부모 특별 소득공제(첫째 자녀 연간 4,260 €, 추가 자녀당 240 €) 추가 차감으로 실수령액 증가.",
       limitationsEn: "Must not cohabit with any other adult in the same household.",
       limitationsKo: "다른 성인 동거인이 있는 경우 적용 불가."
     },
