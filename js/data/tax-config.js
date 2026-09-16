@@ -20,24 +20,49 @@ const GERMAN_TAX_REFORM_PROPOSALS = {
   "2027": {
     year: 2027,
     status: "draft_proposed",
-    statusLabelEn: "Government draft / proposed (not enacted into statutory law)",
-    statusLabelKo: "정부 입법 추진/초안 (법정 입법 미확정)",
-    officialStatus: "Government draft / proposed",
-    officialStatusDisclaimerEn: "Values are from the German government's draft tax reform proposals (e.g. Steuerfortentwicklungsgesetz) and have not been finalized or enacted into statutory law as of September 2026. They must NOT be presented or used as official statutory payroll parameters.",
-    officialStatusDisclaimerKo: "본 수치는 2026년 9월 현재 독일 연방정부의 세제 개편안(초안)에 따른 제안 수치이며, 의회 법정 입법으로 최종 확정 공포되지 않았습니다. 공식 법정 급여/세무 파라미터로 사용될 수 없습니다.",
-    source: "BMF Referentenentwurf / Regierungsentwurf (Stand: September 2026)",
+    statusLabelEn: "Government bill / Regierungsentwurf (not enacted into statutory law)",
+    statusLabelKo: "정부 입법안 / Regierungsentwurf (법정 입법 미확정)",
+    officialStatus: "government bill / Regierungsentwurf / not enacted",
+    reformAct: "Einkommensteuerreformgesetz 2027",
+    cabinetApprovalDate: "2026-09-02",
+    officialStatusDisclaimerEn: "Values are from the German government's draft bill 'Einkommensteuerreformgesetz 2027' (Cabinet approval 2026-09-02) and have not been finalized or enacted into statutory law as of September 2026. They must NOT be presented or used as official statutory payroll parameters.",
+    officialStatusDisclaimerKo: "본 수치는 2026년 9월 2일 독일 연방내각이 의결한 '소득세 개혁법 2027(Einkommensteuerreformgesetz 2027)' 정부안 기준이며, 의회 법정 입법으로 최종 확정 공포되지 않았습니다. 공식 법정 급여/세무 파라미터로 사용될 수 없습니다.",
+    source: "Regierungsentwurf Einkommensteuerreformgesetz 2027 (Kabinettbeschluss vom 02.09.2026)",
     sourceUrl: "https://www.bundesfinanzministerium.de/",
     lastVerified: "2026-09-16",
     draftTariff: {
-      proposedBasicAllowance: 12500,
-      proposedZone2Limit: 18000,
-      note: "Proposed tariff adjustments are under parliamentary review and subject to change."
+      proposedBasicAllowance: 12564,
+      proposedArbeitnehmerPauschbetrag: 1430,
+      proposedProgressionLimit: 70600,
+      proposedKindergeldMonthly: 267,
+      note: "Draft income tax tariff parameters under the Einkommensteuerreformgesetz 2027 (progression curve up to ~€70,600). Subject to Bundestag/Bundesrat parliamentary approval."
     },
     draftSocialSecurity: {
-      proposedBbgRvMonthly: 8650,
-      proposedBbgGkvMonthly: 5950,
-      proposedJaegMonthly: 6600,
-      note: "Social insurance contribution ceilings (Rechengrößen 2027) will be officially enacted in late autumn 2026 via ministerial ordinance."
+      status: "not_yet_official",
+      note: "2027 social-insurance contribution ceilings are not yet officially enacted."
+    }
+  },
+  "2028": {
+    year: 2028,
+    status: "draft_proposed",
+    statusLabelEn: "Government bill / Regierungsentwurf (not enacted into statutory law)",
+    statusLabelKo: "정부 입법안 / Regierungsentwurf (법정 입법 미확정)",
+    officialStatus: "government bill / Regierungsentwurf / not enacted",
+    reformAct: "Einkommensteuerreformgesetz 2027 (Stufe 2028)",
+    cabinetApprovalDate: "2026-09-02",
+    officialStatusDisclaimerEn: "Values are from the German government's draft bill for the 2028 tier and have not been enacted into statutory law. They must NOT be presented or used as official statutory payroll parameters.",
+    officialStatusDisclaimerKo: "본 수치는 2028년 단계 정부 입법 개혁안 초안 기준이며, 의회 법정 입법으로 최종 확정 공포되지 않았습니다. 공식 법정 파라미터로 사용될 수 없습니다.",
+    source: "Regierungsentwurf Einkommensteuerreformgesetz 2027 (Stufe 2028)",
+    sourceUrl: "https://www.bundesfinanzministerium.de/",
+    lastVerified: "2026-09-16",
+    draftTariff: {
+      proposedBasicAllowance: 12900,
+      proposedKindergeldMonthly: 272,
+      note: "Proposed 2028 Grundfreibetrag (€12,900) and Kindergeld (€272) under government draft."
+    },
+    draftSocialSecurity: {
+      status: "not_yet_official",
+      note: "2028 social-insurance contribution ceilings are not yet officially enacted."
     }
   }
 };

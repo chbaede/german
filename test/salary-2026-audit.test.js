@@ -370,12 +370,14 @@ kg2026.announcedRates.forEach(r => {
 // D. Wording check for announced rates
 const item2027 = FamilyTools.RATES_TIMELINE.find(i => i.periodEn.includes("2027"));
 const item2028 = FamilyTools.RATES_TIMELINE.find(i => i.periodEn.includes("2028"));
-if (!item2027.statusEn.includes("announced / proposed for 2027")) {
-  throw new Error(`2027 wording must include 'announced / proposed for 2027', got: ${item2027.statusEn}`);
+if (!item2027.statusEn.includes("government bill / announced proposal / not yet enacted")) {
+  throw new Error(`2027 wording must include 'government bill / announced proposal / not yet enacted', got: ${item2027.statusEn}`);
 }
-if (!item2028.statusEn.includes("announced / proposed for 2028")) {
-  throw new Error(`2028 wording must include 'announced / proposed for 2028', got: ${item2028.statusEn}`);
+if (!item2028.statusEn.includes("government bill / announced proposal / not yet enacted")) {
+  throw new Error(`2028 wording must include 'government bill / announced proposal / not yet enacted', got: ${item2028.statusEn}`);
 }
+assert.strictEqual(kg2027.status, "government bill / announced proposal / not yet enacted");
+assert.strictEqual(kg2028.status, "government bill / announced proposal / not yet enacted");
 
 // E. Source check
 if (kg2026.source !== "BMF / Familienkasse" || FamilyTools.source.institution !== "BMF / Familienkasse") {
@@ -386,9 +388,48 @@ console.log(`[PASS] Kindergeld: 2026 Enacted=€${kg2026.ratePerChild}, 2027 Ann
 // Enacted 2025 rate check (€255)
 const kg2025 = FamilyTools.calculateKindergeld(1, 2025);
 assert.strictEqual(kg2025.ratePerChild, 255, "2025 Kindergeld rate must be €255");
+assert.strictEqual(kg2025.monthlyTotal, 255);
+assert.strictEqual(kg2025.annualTotal, 3060);
 assert.strictEqual(kg2025.isEnacted, true, "2025 rate must be marked enacted");
 
-// Critical: Unsupported years must NOT return fake / guessed numbers (e.g. 2029, 2030, 2018)
+// Tiered Kindergeld 2021 & 2022 verification (1 to 5 children)
+// Child 1: €219, Child 2: €219, Child 3: €225, Child 4+: €250 each
+const kg2021_1 = FamilyTools.calculateKindergeld(1, 2021);
+assert.strictEqual(kg2021_1.monthlyTotal, 219, "2021 1 child must be €219");
+assert.strictEqual(kg2021_1.annualTotal, 2628);
+assert.strictEqual(kg2021_1.isTiered, true);
+
+const kg2021_2 = FamilyTools.calculateKindergeld(2, 2021);
+assert.strictEqual(kg2021_2.monthlyTotal, 438, "2021 2 children must be €438 (219+219)");
+assert.strictEqual(kg2021_2.annualTotal, 5256);
+
+const kg2021_3 = FamilyTools.calculateKindergeld(3, 2021);
+assert.strictEqual(kg2021_3.monthlyTotal, 663, "2021 3 children must be €663 (219+219+225)");
+assert.strictEqual(kg2021_3.annualTotal, 7956);
+
+const kg2021_4 = FamilyTools.calculateKindergeld(4, 2021);
+assert.strictEqual(kg2021_4.monthlyTotal, 913, "2021 4 children must be €913 (219+219+225+250)");
+assert.strictEqual(kg2021_4.annualTotal, 10956);
+
+const kg2021_5 = FamilyTools.calculateKindergeld(5, 2021);
+assert.strictEqual(kg2021_5.monthlyTotal, 1163, "2021 5 children must be €1,163 (219+219+225+250+250)");
+assert.strictEqual(kg2021_5.annualTotal, 13956);
+
+// Verify 2022 has exact same statutory tiers
+const kg2022_3 = FamilyTools.calculateKindergeld(3, 2022);
+assert.strictEqual(kg2022_3.monthlyTotal, 663, "2022 3 children must be €663");
+const kg2022_4 = FamilyTools.calculateKindergeld(4, 2022);
+assert.strictEqual(kg2022_4.monthlyTotal, 913, "2022 4 children must be €913");
+const kg2022_5 = FamilyTools.calculateKindergeld(5, 2022);
+assert.strictEqual(kg2022_5.monthlyTotal, 1163, "2022 5 children must be €1,163");
+
+console.log("[PASS] Kindergeld: 2021 & 2022 tiered multi-child calculations verified (1 child: €219, 2: €438, 3: €663, 4: €913, 5: €1,163).");
+
+// Critical: Unsupported years must NOT return fake / guessed numbers (e.g. 2020, 2029, 2030, 2018)
+const kg2020 = FamilyTools.calculateKindergeld(1, 2020);
+assert.strictEqual(kg2020.unavailable, true, "2020 Kindergeld must return unavailable");
+assert.strictEqual(kg2020.error, "KINDERGELD_DATA_UNAVAILABLE");
+
 const kg2029 = FamilyTools.calculateKindergeld(1, 2029);
 assert.strictEqual(kg2029.unavailable, true, "2029 Kindergeld must return unavailable");
 assert.strictEqual(kg2029.error, "KINDERGELD_DATA_UNAVAILABLE");
@@ -398,7 +439,7 @@ assert.strictEqual(kg2030.unavailable, true, "2030 Kindergeld must return unavai
 
 const kg2018 = FamilyTools.calculateKindergeld(1, 2018);
 assert.strictEqual(kg2018.unavailable, true, "2018 Kindergeld must return unavailable");
-console.log("[PASS] Kindergeld: Verified enacted 2025 (€255) and strict rejection of unsupported years (2018, 2029, 2030).");
+console.log("[PASS] Kindergeld: Verified enacted 2025 (€255) and strict rejection of unsupported years (2018, 2020, 2029, 2030).");
 
 // F. Glossary Entry Verification
 const kgGlossary = GERMAN_GLOSSARY.find(t => t.term === "Kindergeld");
@@ -673,9 +714,21 @@ console.log("[PASS] Architecture: SUPPORTED_OFFICIAL_SALARY_YEARS = [2025, 2026]
 
 // B. GERMAN_TAX_REFORM_PROPOSALS verification
 assert.ok(GERMAN_TAX_REFORM_PROPOSALS["2027"], "Reform proposals for 2027 must exist in separate object");
-assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].officialStatus, "Government draft / proposed");
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].officialStatus, "government bill / Regierungsentwurf / not enacted");
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].draftTariff.proposedBasicAllowance, 12564);
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].draftTariff.proposedArbeitnehmerPauschbetrag, 1430);
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].draftTariff.proposedProgressionLimit, 70600);
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].draftTariff.proposedKindergeldMonthly, 267);
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].draftSocialSecurity.status, "not_yet_official");
+
+assert.ok(GERMAN_TAX_REFORM_PROPOSALS["2028"], "Reform proposals for 2028 must exist in separate object");
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2028"].officialStatus, "government bill / Regierungsentwurf / not enacted");
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2028"].draftTariff.proposedBasicAllowance, 12900);
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2028"].draftTariff.proposedKindergeldMonthly, 272);
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2028"].draftSocialSecurity.status, "not_yet_official");
+
 assert.ok(GERMAN_TAX_REFORM_PROPOSALS["2027"].officialStatusDisclaimerEn.includes("must NOT be presented or used as official statutory payroll parameters"));
-console.log("[PASS] GERMAN_TAX_REFORM_PROPOSALS: clearly labeled 'Government draft / proposed' with statutory disclaimer.");
+console.log("[PASS] GERMAN_TAX_REFORM_PROPOSALS: clearly labeled 'government bill / Regierungsentwurf / not enacted' for 2027 & 2028 with statutory disclaimer.");
 
 // C. Rejection of 2027 in calculateNetSalary (no silent calculation!)
 const res2027 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2027 });
@@ -691,12 +744,22 @@ const res2027Str = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, tax
 assert.strictEqual(res2027Str.unavailable, true);
 assert.strictEqual(res2027Str.error, "TAX_DATA_UNAVAILABLE");
 
-// E. Rejection of 2027 in calculateNetToGross
+// E. Rejection of 2027 and 2028 in calculateNetToGross & calculateNetSalary
 const rev2027 = SalaryCalculator.calculateNetToGross(3000, { taxYear: 2027 });
 assert.strictEqual(rev2027.unavailable, true);
 assert.strictEqual(rev2027.error, "TAX_DATA_UNAVAILABLE");
 assert.strictEqual(rev2027.year, 2027);
-console.log("[PASS] SalaryCalculator.calculateNetToGross(taxYear=2027) returns structured DATA_UNAVAILABLE.");
+
+const res2028 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2028 });
+assert.strictEqual(res2028.unavailable, true);
+assert.strictEqual(res2028.error, "TAX_DATA_UNAVAILABLE");
+assert.strictEqual(res2028.year, 2028);
+
+const res2024 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2024 });
+assert.strictEqual(res2024.unavailable, true);
+assert.strictEqual(res2024.error, "TAX_DATA_UNAVAILABLE");
+assert.strictEqual(res2024.year, 2024);
+console.log("[PASS] SalaryCalculator: Rejection of draft proposals (2027, 2028) and unsupported years (2024) verified.");
 
 // F. Legitimate years 2025 and 2026 continue to calculate accurately
 const res2025 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2025 });

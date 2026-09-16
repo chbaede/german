@@ -18,9 +18,9 @@
 const SalaryCalculator = {
   /**
    * Evaluates the statutory German Einkommensteuertarif (§ 32a EStG)
-   * Calculates annual income tax for a given taxable income (zvE) based on year configuration.
+   * Calculates annual income tax for a given estimated taxable income / estimated tax base based on year configuration.
    *
-   * @param {number} zve - Taxable income (zu versteuerndes Einkommen) in Euro
+   * @param {number} zve - Estimated taxable income / estimated tax base in Euro
    * @param {object} yearConfig - Year-specific tax configuration from GERMAN_TAX_CONFIG
    * @returns {number} Annual tax amount in Euro
    */

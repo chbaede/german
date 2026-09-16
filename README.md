@@ -45,7 +45,7 @@ Part of the **[yocto.co.kr](https://main.yocto.co.kr)** web ecosystem.
 
 ### 👨‍👩‍👧 Family & School
 13. **Child Benefit Reference (Kindergeld)**: Current statutory €259/child/month estimator (enacted for 2026), historical evolution timeline (2021–2025), and announced future changes for 2027 (€267) & 2028 (€272; Source: BMF / Familienkasse).
-14. **School Holiday Finder (Schulferien)**: Official school vacation schedules (KMK) by federal state and year (2024–2027).
+14. **School Holiday Finder (Schulferien)**: Official school vacation schedules (KMK) by federal state and year (2024–2029 / school years 2024/25–2028/29).
 
 ### 🧾 Everyday Utilities
 15. **Date Difference Calculator**: Exact days, weeks, months, and years between any two dates.
@@ -193,8 +193,8 @@ Edit `js/data/tax-config.js`:
 ## ⚖️ Statutory Data & Estimation Model Principles
 
 ### 1. Officially Supported Tax & Payroll Years
-- **Enacted Statutory Years**: **2025** and **2026**.
-- **2027+ Draft Policy Notice**: The German government introduces periodic tax reform proposals (e.g. *Steuerfortentwicklungsgesetz*), but future years are NOT legally finalized until parliamentary enactment. Proposed/announced numbers are strictly marked as drafts and cannot silently calculate in the payroll engine.
+- **Enacted Statutory Years**: **2025** and **2026** (statutory § 32a EStG tariffs and enacted social-security contribution parameters).
+- **2027 / 2028 Government Reform Draft Notice**: The German Cabinet approved a draft tax reform (*Einkommensteuerreformgesetz 2027*, Kabinettbeschluss vom 02.09.2026), but future years are NOT legally finalized until parliamentary enactment. Proposed/announced draft numbers (e.g. 2027 Grundfreibetrag €12,564, 2028 €12,900; 2027 Kindergeld €267, 2028 €272) are strictly separated as proposals and cannot silently calculate in the payroll engine.
 
 ### 2. Salary Calculator Estimation Model Disclaimer
 - **Estimation Model**: The salary calculator implements an estimation model based on § 32a EStG and German social insurance legislation. **It is NOT the official BMF Lohnsteuer calculation engine (Programmablaufplan - PAP).**
@@ -212,7 +212,7 @@ Edit `js/data/tax-config.js`:
 | **Care (PV) Child Scale**| § 55 SGB XI | **2.40% (0) → 0.80% (5+)** | **2.40% (0) → 0.80% (5+)** | Saxony employee +0.50% |
 | **SolZ Freigrenze** | §§ 3, 4 SolZG | **€19,950** (Single) / **€39,900** | **€20,350** (Single) / **€40,700** | 11.9% Milderung; 5.5% cap |
 | **Single-Parent Relief**| § 24b EStG | **€4,260** (+€240/add'l child) | **€4,260** (+€240/add'l child) | Requires ≥1 child in household |
-| **Kindergeld** | BMF / Familienkasse | **€255/child/mo** | **€259/child/mo** | 2027 (€267) & 2028 (€272) announced |
+| **Kindergeld** | BMF / Familienkasse | **€255/child/mo** | **€259/child/mo** | 2027 (€267) & 2028 (€272) government proposal |
 | **Rundfunkbeitrag** | RBStV §§ 2, 8 | **€18.36/mo** (€220.32/yr) | **€18.36/mo** (€220.32/yr) | Levied per dwelling, not per person |
 
 ---
