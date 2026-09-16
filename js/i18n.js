@@ -403,6 +403,405 @@ const I18N = {
     footerLinkedIn: "LinkedIn"
   },
 
+  de: {
+  // Brand & Header
+  appTitle: "German Life Toolkit",
+  appSubtitle: "Smarte Tools für Alltag und Beruf in Deutschland",
+  navHome: "Startseite",
+  navMoney: "Gehalt & Steuern",
+  navHousing: "Wohnen & Miete",
+  navTransport: "Verkehr & Auto",
+  navCalendar: "Kalender & Arbeit",
+  navFamily: "Familie & Schule",
+  navEveryday: "Alltagstools",
+  navReference: "Nachschlagewerk",
+  toggleTheme: "Dunkelmodus umschalten",
+  toggleLanguage: "Sprache wechseln",
+  yoctoPortal: "Yocto Portal",
+  backToDashboard: "← Zurück zur Übersicht",
+  privacyBanner: "100 % Client-Side. Ihre Finanz- und Personendaten verlassen niemals Ihren Browser.",
+
+  // Dashboard & Home
+  heroTitle: "German Life Toolkit",
+  heroDesc: "Praktische Rechner, Konverter und Nachschlagewerke für Expats, Fachkräfte, Familien und alle, die in Deutschland leben.",
+  searchPlaceholder: "Tools durchsuchen (z. B. Gehalt, Miete, Auto, Feiertage, Anmeldung...)",
+  allCategories: "Alle Kategorien",
+  popularTools: "Beliebte Tools",
+  recentlyUsed: "Kürzlich verwendet",
+  noResults: "Keine passenden Tools gefunden. Bitte versuchen Sie es mit anderen Begriffen.",
+  openTool: "Tool öffnen",
+  categoryLabel: "Kategorie",
+
+  // Common Calculator Actions
+  calculate: "Berechnen",
+  reset: "Zurücksetzen",
+  copied: "In die Zwischenablage kopiert!",
+  copyResult: "Zusammenfassung kopieren",
+  estimatedNotice: "Geschätzte Berechnung",
+  taxDisclaimer: "Tatsächliche Gehaltsabzüge und Steuern können je nach individueller Veranlagung, Freibeträgen und Krankenkasse abweichen.",
+  infoHeading: "So funktioniert die Berechnung",
+  faqHeading: "Häufig gestellte Fragen (FAQ)",
+  resultsHeading: "Ergebnisse & Aufschlüsselung",
+
+  // Salary Calculator (1)
+  salaryTitle: "Deutscher Brutto-Netto-Rechner",
+  salaryDesc: "Berechnen Sie Ihr geschätztes monatliches und jährliches Nettoeinkommen nach Steuern und gesetzlichen Sozialabgaben.",
+  grossSalaryMonthly: "Monatliches Bruttogehalt",
+  grossSalaryAnnual: "Jährliches Bruttogehalt",
+  salaryPeriod: "Zeitraum",
+  monthly: "Monatlich",
+  annual: "Jährlich",
+  taxClass: "Steuerklasse",
+  bundesland: "Bundesland",
+  churchTax: "Kirchensteuer",
+  yes: "Ja",
+  no: "Nein",
+  numChildren: "Kinderfreibetrag / Kinderanzahl",
+  healthInsurance: "Krankenversicherung",
+  statutoryHealth: "Gesetzlich (GKV: 14,6 % + 2,9 % durchschn. Zusatzbeitrag 2026)",
+  privateHealth: "Privat (PKV: Pauschalbetrag separat angegeben)",
+  pkvMonthlyAmount: "Monatlicher PKV-Beitrag (€/Monat)",
+  careInsurance: "Pflegeversicherung (PV)",
+  pensionInsurance: "Rentenversicherung (RV)",
+  unemploymentInsurance: "Arbeitslosenversicherung (ALV)",
+  netMonthly: "Geschätztes monatliches Nettoeinkommen",
+  netAnnual: "Geschätztes jährliches Nettoeinkommen",
+  grossSalary: "Bruttogehalt",
+  incomeTax: "Geschätzte Lohnsteuer",
+  estimatedLohnsteuer: "Geschätzte Lohnsteuer",
+  payrollDisclaimerTitle: "Hinweis",
+  payrollDisclaimer: "Dies ist eine Schätzung. Der tatsächliche Lohnsteuerabzug des Arbeitgebers kann abweichen.",
+  solz: "Solidaritätszuschlag (SolZ)",
+  churchTaxAmount: "Kirchensteuer",
+  healthContribution: "Krankenversicherung (GKV ca. 8,75 % AN)",
+  pensionContribution: "Rentenversicherung (RV 9,3 % AN)",
+  unemploymentContribution: "Arbeitslosenversicherung (ALV 1,3 % AN)",
+  careContribution: "Pflegeversicherung (PV AN)",
+  totalDeductions: "Gesamtabzüge (Steuern & Sozialabgaben)",
+  effectiveDeductionRate: "Effektive Abgabenquote",
+  taxYearLabel: "Steuerjahr",
+  activeTaxYearBadge: "Steuerjahr: 2026",
+  statutoryParams2026Title: "Berechnungsparameter 2026",
+  kasseZusatzbeitragLabel: "Individueller Zusatzbeitrag der Krankenkasse (%)",
+  usingAvgZusatzbeitrag2026: "Verwendet den durchschnittlichen Zusatzbeitrag 2026 von 2,9 %",
+  kasseZusatzbeitragNote: "Die gesetzlichen Krankenkassen erheben unterschiedliche Zusatzbeiträge (ca. 1,2 % bis 3,8 %). Geben Sie den Satz Ihrer Kasse ein, falls bekannt (Arbeitnehmer zahlt die Hälfte).",
+  gkvMandatoryBadge: "GKV-pflichtversichert",
+  gkvVoluntaryBadge: "Freiwillig GKV-versichert (gedeckelt bei 5.812,50 €/Monat BBG)",
+  pkvEstimatorTitle: "PKV- und PPV-Schätzung (Private Krankenversicherung)",
+  pkvEstimatorNotice: "Private Versicherungsbeiträge hängen vom individuellen Tarif ab und lassen sich nicht rein aus dem Gehalt ableiten.",
+  pkvMonthlyPremiumLabel: "Monatlicher PKV-Beitrag (€/Monat)",
+  ppvMonthlyPremiumLabel: "Monatlicher PPV-Beitrag (Pflegepflichtversicherung €/Monat)",
+  pkvHasSubsidyLabel: "Steuerfreien Arbeitgeberzuschuss einbeziehen (§ 257 SGB V / § 61 SGB XI)",
+  pkvEmployerSubsidyLabel: "Monatlicher Arbeitgeberzuschuss (€/Monat, optional manuell)",
+  pkvSubsidyAutoNote: "Standard: Gesetzlicher 50 %-Zuschuss, maximal ca. 613,22 €/Monat (GKV max. 508,59 € + PV max. 104,63 €)",
+  pkvEmployeeCostLabel: "Eigenanteil des Arbeitnehmers",
+  careChildrenProofNote: "Nur berücksichtigungsfähige Kinder nach gesetzlichen Vorschriften mindern den PV-Beitragssatz (berücksichtigungsfähige Kinder bis Vollendung des 25. Lebensjahres; Nachweis erforderlich).",
+  officialSourcesTitle: "Offizielle Rechtsquellen & Grundlagen",
+  lastUpdatedDate: "Stand: 16. September 2026",
+  estimatedDisclaimerText: "Geschätztes Ergebnis. Der tatsächliche Gehaltsabzug kann abweichen.",
+
+  // Net to Gross Calculator (2)
+  netToGrossTitle: "Netto-zu-Brutto-Rechner (Gehaltsrechner umgekehrt)",
+  netToGrossDesc: "Ermitteln Sie das erforderliche Bruttogehalt, um Ihr gewünschtes monatliches Nettoeinkommen zu erzielen.",
+  desiredNet: "Gewünschtes monatliches Netto (€/Monat)",
+  desiredNetAnnual: "Gewünschtes jährliches Netto (€/Jahr)",
+  requiredGross: "Geschätztes erforderliches Bruttogehalt",
+  requiredGrossAnnual: "Geschätztes erforderliches Jahresbrutto",
+  reverseExplain: "Nutzt ein iteratives Bisektionsverfahren auf Basis der deutschen Einkommensteuertarife und Beitragsbemessungsgrenzen.",
+
+  // Annual Compensation Calculator (3)
+  annualSalaryTitle: "Jahresgehalts- & Gesamtvergütungsrechner",
+  annualSalaryDesc: "Berechnen Sie Ihre jährliche Gesamtvergütung inklusive Grundgehalt, fixer Sonderzahlungen, Leistungsbonus und sonstiger Jahresleistungen.",
+  baseSalarySection: "Grundgehalt",
+  fixedAdditionalSection: "Feste Sonderzahlungen",
+  performanceBonusSection: "Leistungsbonus",
+  otherAnnualSection: "Sonstige jährliche Zahlungen",
+  monthlyGross: "Monatliches Brutto-Grundgehalt (€)",
+  additionalMonthlyCountLabel: "Zusätzliche Monatsgehälter",
+  additionalMonthlyCountSub: "z. B. 1,0 = ein zusätzliches Monatsgehalt (z. B. 13. Gehalt / Weihnachtsgeld)",
+  performanceBonusPctLabel: "Prozentualer Leistungsbonus (%)",
+  performanceBonusPctSub: "% des Jahres-Grundgehalts",
+  fixedAnnualBonusLabel: "Fester Jahresbonus (€)",
+  fixedAnnualBonusSub: "Vertraglich vereinbarter fixer Jahresbonus oder Einmalzahlung",
+  baseAnnual: "Grundgehalt (12 × Basis)",
+  additionalMonthlyBreakdown: "Feste Sonderzahlungen",
+  performanceBonusBreakdown: "Leistungsbonus",
+  otherAnnualBreakdown: "Sonstige jährliche Zahlungen",
+  totalAnnualComp: "Gesamte Jahresvergütung",
+  monthlyAverageComp: "Rechnerisches Monatsbrutto (Durchschnitt)",
+  annualCompStatutoryNote: "Sonderzahlungen sind arbeitgeber- bzw. vertragsabhängig und stellen keinen gesetzlichen Anspruch dar.",
+
+  // Tax Class Comparison (4)
+  taxClassTitle: "Vergleich der deutschen Steuerklassen (I bis VI)",
+  taxClassDesc: "Vergleichen Sie die Steuerklassen I bis VI, um zu verstehen, wie sich Familienstand und Einkommensunterschiede auf den monatlichen Lohnsteuerabzug auswirken.",
+  classCol: "Steuerklasse",
+  useCaseCol: "Typischer Anwendungsfall",
+  featuresCol: "Hauptmerkmale & Freibeträge",
+  limitationsCol: "Einschränkungen & Steuererklärung",
+  marriedGuideTitle: "Leitfaden für Ehepaare: 3/5 vs. 4/4 vs. 4 mit Faktor",
+  marriedGuideText: "In Deutschland erhalten Ehepaare bei Heirat automatisch die Steuerklasse 4/4. Verdient ein Partner deutlich mehr (z. B. 60 % oder mehr des Haushaltseinkommens), maximiert der Wechsel zu 3/5 das monatliche Netto des Hauptverdieners, führt jedoch zu einer Pflicht zur Abgabe einer Einkommensteuererklärung, bei der zu wenig gezahlte Steuern nachberechnet werden.",
+
+  // Rent Calculator (5)
+  rentTitle: "Mietkosten- & Warmmietenrechner",
+  rentDesc: "Ermitteln Sie die tatsächlichen Gesamtwohnkosten in Deutschland: Kaltmiete, Nebenkosten, Heizung, Strom, Internet und Rundfunkbeitrag (früher GEZ).",
+  kaltmiete: "Kaltmiete (Grundmiete ohne Nebenkosten)",
+  nebenkosten: "Nebenkostenvorauszahlung (Betriebskosten)",
+  heatingIncluded: "Sind Heizkosten in den Nebenkosten enthalten?",
+  extraHeating: "Separate Heizung / Warmwasser (€/Monat)",
+  electricity: "Haushaltsstrom (€/Monat)",
+  internet: "Internet / Festnetz (€/Monat)",
+  rundfunkbeitragLabel: "Rundfunkbeitrag (früher umgangssprachlich GEZ)",
+  rundfunkPayDwelling: "Für diese Wohnung zahlen (18,36 €/Monat)",
+  rundfunkCoveredOrExempt: "Bereits durch Mitbewohner/Partner abgedeckt oder befreit (0,00 €)",
+  rundfunkLegalNotice: "Nach § 2 RBStV wird der gesetzliche Beitrag (18,36 €/Monat) einmal pro Wohnung erhoben, unabhängig von der Anzahl der Bewohner. Wenn ein Mitbewohner (WG), Ehepartner oder Partner in derselben Wohnung bereits unter seiner Beitragsnummer zahlt oder eine gesetzliche Befreiung vorliegt (§ 4 RBStV), fällt kein weiterer Beitrag an.",
+  rundfunkbeitragBreakdown: "Rundfunkbeitrag (früher GEZ)",
+  gezFee: "Rundfunkbeitrag (früher umgangssprachlich GEZ)",
+  otherHousing: "Sonstige monatliche Wohnkosten",
+  netMonthlyIncome: "Monatliches Nettoeinkommen (optional zur Budgetprüfung)",
+  warmmiete: "Warmmiete (Miete inkl. Nebenkosten)",
+  totalHousingMonthly: "Gesamte monatliche Wohnkosten",
+  totalHousingAnnual: "Gesamte jährliche Wohnkosten",
+  rentIncomeRatio: "Wohnkostenanteil am Nettoeinkommen",
+  rentHealthyNote: "Faustregel: Die gesamten Wohnkosten sollten idealerweise 30 % bis maximal 35 % des monatlichen Nettoeinkommens nicht übersteigen.",
+  kaltmieteExplainTitle: "Wichtige deutsche Mietbegriffe",
+  kaltmieteExplain: "• <b>Kaltmiete (Grundmiete):</b> Der reine Preis für die Überlassung des Wohnraums.<br>• <b>Nebenkosten (Betriebskosten):</b> Vorauszahlungen für Gebäudeversicherung, Müllabfuhr, Treppenhausreinigung, Wasser und Aufzugswartung.<br>• <b>Warmmiete:</b> Kaltmiete + Nebenkosten (inkl. Heizung, falls enthalten).<br>• <b>Strom & Internet:</b> Werden fast immer direkt vom Mieter mit den jeweiligen Versorgern und Anbietern abgeschlossen.<br>• <b>Rundfunkbeitrag (früher GEZ):</b> Gesetzlicher Beitrag von 18,36 €/Monat pro Wohnung. In WGs oder Mehrpersonenhaushalten zahlt nur eine Person für die gesamte Wohnung.",
+
+  // Rental Deposit Calculator (6)
+  depositTitle: "Mietkautionsrechner",
+  depositDesc: "Berechnen Sie die gesetzliche Höchstgrenze der Mietkaution (maximal 3 Nettokaltmieten) und den gesetzlichen 3-Raten-Zahlungsplan.",
+  maxKaution: "Gesetzliche Höchstkaution (3 × Kaltmiete)",
+  firstMonthLiquidity: "Benötigte Liquidität beim Einzug",
+  installment1: "1. Rate (Fällig zu Beginn des Mietverhältnisses mit der 1. Monatsmiete)",
+  installment2: "2. Rate (Fällig im 2. Monat)",
+  installment3: "3. Rate (Fällig im 3. Monat)",
+  kautionLegalNote: "Nach § 551 BGB darf die Kaution höchstens das Dreifache der monatlichen Nettokaltmiete (ohne Nebenkosten) betragen. Mieter haben das gesetzliche Recht, die Kaution in 3 gleichen monatlichen Raten zu zahlen.",
+
+  // Moving Cost Calculator (7)
+  movingTitle: "Umzugskostenrechner",
+  movingDesc: "Kalkulieren Sie das gesamte Umzugsbudget für Ihren Wohnungswechsel in oder nach Deutschland.",
+  movingCompany: "Umzugsunternehmen / Möbelpacker (€)",
+  truckRental: "Transporter- / LKW-Miete (Sixt, Miles, CarlundCarla)",
+  boxesPacking: "Umzugskartons & Verpackungsmaterial",
+  cleaningRenovation: "Endreinigung / Schönheitsreparaturen",
+  depositAmount: "Mietkaution (Kaution)",
+  newFurniture: "Neue Möbel / Einbauküche (EBK)",
+  mailForwarding: "Nachsendeauftrag (Deutsche Post)",
+  totalMovingCost: "Geschätztes Gesamtumzugsbudget",
+
+  // Car Cost Calculator (8)
+  carTitle: "Gesamtkosten Auto (TCO - Total Cost of Ownership)",
+  carDesc: "Berechnen Sie die tatsächlichen monatlichen Kosten und Kilometerkosten für die Haltung eines Fahrzeugs in Deutschland.",
+  carPurchasePrice: "Fahrzeugkaufpreis (€)",
+  monthlyFinancing: "Monatliche Rate / Leasing / Wertverlust (€)",
+  annualKm: "Jährliche Fahrleistung (km/Jahr)",
+  powertrain: "Antriebsart",
+  petrol: "Benzin (Ottokraftstoff)",
+  diesel: "Diesel",
+  hybrid: "Hybrid (PHEV / HEV)",
+  ev: "Elektrofahrzeug (BEV)",
+  fuelConsumption: "Verbrauch (l/100 km oder kWh/100 km)",
+  fuelPricePerUnit: "Kraftstoff- / Strompreis (€/l oder €/kWh)",
+  carInsurance: "Jährliche Kfz-Versicherung (Haftpflicht + Vollkasko)",
+  carTax: "Jährliche Kfz-Steuer",
+  carMaintenance: "Jährliche Wartung, Inspektion & TÜV (HU/AU)",
+  carParking: "Monatlicher Stellplatz / Anwohnerparkausweis (€)",
+  carTires: "Jährliche Reifenkosten (Sommer-/Winterradwechsel)",
+  monthlyCarCost: "Monatliche Gesamtkosten Auto",
+  annualCarCost: "Jährliche Gesamtkosten Auto",
+  costPerKm: "Gesamtkosten pro Kilometer",
+  threeYearCost: "Gesamtkosten über 3 Jahre",
+  fiveYearCost: "Gesamtkosten über 5 Jahre",
+  tcoComparisonTitle: "TCO-Vergleich nach Antriebsart",
+
+  // Fuel Cost Calculator (9)
+  fuelTitle: "Spritkostenrechner",
+  fuelDesc: "Berechnen Sie die Kraftstoffkosten für Fahrstrecken und vergleichen Sie Verbrauchswerte.",
+  tripDistance: "Fahrstrecke (km)",
+  fuelUnit: "Verbrauchsangabe",
+  literPer100Km: "Liter pro 100 Kilometer (l/100 km)",
+  kmPerLiter: "Kilometer pro Liter (km/l)",
+  fuelRequired: "Benötigter Kraftstoff",
+  totalFuelCost: "Gesamte Kraftstoffkosten",
+  costPer100km: "Kosten pro 100 km",
+
+  // EV Charging Cost Calculator (10)
+  evTitle: "Ladekostenrechner für Elektroautos",
+  evDesc: "Simulieren Sie Ladevorgänge für Ihr E-Auto, vergleichen Sie Heim-Wallbox mit Schnellladestationen und berechnen Sie die Stromkosten pro 100 km.",
+  batteryCapacity: "Nutzbare Batteriekapazität (kWh)",
+  chargeStartPct: "Akkustand zu Beginn (%)",
+  chargeTargetPct: "Ziel-Akkustand (%)",
+  chargerType: "Ladestandort / Tarif",
+  homeWallbox: "Heimische Wallbox (~0,32 €/kWh)",
+  publicAC: "Öffentliches AC-Laden 11–22 kW (~0,45 €/kWh)",
+  publicDC: "Öffentliches DC-Schnellladen / Ionity (~0,65 €/kWh)",
+  customTariff: "Individueller Stromtarif (€/kWh)",
+  evConsumption: "Fahrzeugverbrauch (kWh/100 km)",
+  energyAdded: "Nachgeladene Energie",
+  sessionCost: "Kosten des Ladevorgangs",
+  costPer100KmEV: "Stromkosten pro 100 km",
+  combustionCompare: "Im Vergleich zu 7 l/100 km Benzin (bei 1,75 €/l = 12,25 €/100 km)",
+
+  // Holidays (11)
+  holidaysTitle: "Gesetzliche Feiertage in Deutschland",
+  holidaysDesc: "Übersicht aller bundesweiten und länderspezifischen gesetzlichen Feiertage mit automatischer Osterformel-Berechnung für jedes Jahr.",
+  selectYear: "Jahr auswählen",
+  selectState: "Bundesland auswählen",
+  allStatesOption: "Alle Bundesländer (Bundesweiter & regionaler Vergleich)",
+  nationwideBadge: "Bundesweit",
+  stateSpecificBadge: "Länderspezifisch",
+  statewideBadge: "Landesweit",
+  regionalBadge: "Regional",
+  municipalBadge: "Städtisch",
+  scopeHeader: "Geltungsbereich",
+  additionalLocalHolidaysTitle: "Zusätzliche regionale Feiertage (Gemeinden / Regionen)",
+  additionalLocalHolidaysDesc: "Diese Feiertage gelten nur in bestimmten Gemeinden, Landkreisen oder überwiegend katholischen Gebieten und sind nicht landesweit arbeitsfrei.",
+  regionalNotice: "Einige Feiertage gelten nur in ausgewählten Gemeinden oder Regionen.",
+  augsburgSpecialBanner: "🏆 Die Stadt Augsburg hat mit 14 gesetzlichen Feiertagen die meisten aller Städte und Gemeinden in Deutschland.",
+  applicableAreaHeader: "Geltungsbereich & Rechtsgrundlage",
+  upcomingHolidays: "Nächste Feiertage",
+
+  // Working Days (12)
+  workingDaysTitle: "Arbeitstage-Rechner für Deutschland",
+  workingDaysDesc: "Ermitteln Sie die genaue Anzahl der Arbeitstage zwischen zwei Daten unter präzisem Ausschluss von Wochenenden und Feiertagen des Bundeslandes.",
+  startDate: "Startdatum",
+  endDate: "Enddatum",
+  excludeHolidays: "Gesetzliche Feiertage abziehen?",
+  calendarDays: "Kalendertage gesamt",
+  saturdaysCount: "Samstage",
+  sundaysCount: "Sonntage",
+  weekendDays: "Wochenendtage (Samstag & Sonntag)",
+  publicHolidaysTotal: "Feiertage im Zeitraum",
+  weekdayHolidaysCount: "Feiertage an Wochentagen (Mo–Fr)",
+  weekendHolidaysCount: "Feiertage am Wochenende (kein Abzug)",
+  holidaysCount: "Feiertage an Wochentagen",
+  netWorkingDays: "Tatsächliche Arbeitstage",
+  workingDaysLegalNote: "Arbeitsrechtlicher Hinweis: 'Arbeitstage' bezeichnet vertragliche Arbeitstage (Montag bis Freitag, ohne Feiertage). Davon abweichend definiert das Bundesurlaubsgesetz (§ 3 Abs. 2 BUrlG) 'Werktage' als Tage von Montag bis Samstag (6-Tage-Woche) für den gesetzlichen Mindesturlaub. Feiertage, die auf ein Wochenende fallen, werden im deutschen Recht nicht am folgenden Montag nachgeholt.",
+
+  // Vacation Days (13)
+  vacationTitle: "Urlaubsplaner & Brückentage-Rechner",
+  vacationDesc: "Verwalten Sie Ihren Resturlaub und finden Sie geschickte Brückentage rund um gesetzliche Feiertage.",
+  annualEntitlement: "Jährlicher Urlaubsanspruch (Tage)",
+  daysAlreadyUsed: "Bereits genommene Urlaubstage",
+  plannedLeaveStart: "Geplanter Urlaubsbeginn",
+  plannedLeaveEnd: "Geplantes Urlaubsende",
+  daysNeededForTrip: "Benötigte Urlaubstage",
+  remainingLeave: "Verbleibende Urlaubstage",
+  bridgeDayTipTitle: "Brückentage-Strategie",
+  bridgeDayTipText: "Als 'Brückentage' bezeichnet man Arbeitstage, die zwischen einem gesetzlichen Feiertag (z. B. Christi Himmelfahrt am Donnerstag) und dem Wochenende liegen. Ein einziger Urlaubstag am Freitag ergibt 4 freie Tage am Stück.",
+
+  // Child Benefit (14)
+  kindergeldTitle: "Kindergeld-Übersicht & Anspruch",
+  kindergeldDesc: "Aktueller gesetzlicher Satz von 259 €/Monat pro Kind (2026), bisherige Entwicklung und geplante Anhebungen für 2027 (267 €) und 2028 (272 €).",
+  kindergeldAmountCard: "259 € pro Monat",
+  perChildMonthly: "Aktueller gesetzlicher Satz 2026 pro anspruchsberechtigtem Kind (zuvor 250 € 2023–2024 und 255 € 2025)",
+  kindergeldEligibilityTitle: "Anspruch & Altersgrenzen",
+  kindergeldEligibilityText: "• <b>Geburt bis 18 Jahre:</b> Alle in Deutschland lebenden Kinder.<br>• <b>18 bis 21 Jahre:</b> Wenn arbeitsuchend gemeldet.<br>• <b>18 bis 25 Jahre:</b> In Ausbildung, Studium oder Freiwilligendienst (FSJ/BFD).<br>• <b>Kinder mit Behinderung:</b> Unter bestimmten Voraussetzungen auch über das 25. Lebensjahr hinaus.",
+  kindergeldVsFreibetrag: "Kindergeld vs. Kinderfreibetrag: Das Finanzamt prüft bei der jährlichen Einkommensteuererklärung automatisch im Rahmen der Günstigerprüfung, ob das ausgezahlte Kindergeld oder der steuerliche Kinderfreibetrag für Sie günstiger ist.",
+  kindergeldTimelineTitle: "Entwicklung der Kindergeldsätze (Gesetzlich & geplante Vorhaben)",
+  kindergeldAnnounced2027Label: "angekündigt / Entwurf für 2027 (267 €/Kind)",
+  kindergeldAnnounced2028Label: "angekündigt / Entwurf für 2028 (272 €/Kind)",
+  kindergeldSourceNotice: "Quelle: BMF / Familienkasse. Sätze bis 2026 sind gesetzlich verabschiedet. Die Beträge für 2027 und 2028 sind Regierungsankündigungen unter Vorbehalt der parlamentarischen Beschlussfassung.",
+  numKidsInput: "Anzahl der anspruchsberechtigten Kinder",
+  monthlyKindergeldTotal: "Monatlicher Kindergeldanspruch gesamt (2026)",
+  annualKindergeldTotal: "Jährlicher Kindergeldanspruch gesamt (2026)",
+
+  // School Holidays (15)
+  schoolHolidaysTitle: "Schulferien-Planer für Deutschland",
+  schoolHolidaysDesc: "Offizielle Ferientermine aller 16 Bundesländer und Schuljahre nach KMK-Beschluss zur perfekten Urlaubs- und Reiseplanung.",
+  holidayPeriod: "Ferienabschnitt",
+  dates: "Termin",
+  duration: "Dauer",
+
+  // Date Diff (16)
+  dateDiffTitle: "Datumsdifferenz & Fristenrechner",
+  dateDiffDesc: "Berechnen Sie die genaue Zeitspanne in Tagen, Wochen, Monaten und Jahren zwischen zwei beliebigen Daten.",
+  dateOne: "Startdatum",
+  dateTwo: "Enddatum",
+  totalDays: "Tage gesamt",
+  totalWeeks: "Wochen & Tage",
+  totalMonths: "Monate & Tage",
+  totalYears: "Jahre, Monate & Tage",
+
+  // Age Calculator (17)
+  ageTitle: "Exakter Altersrechner",
+  ageDesc: "Ermitteln Sie Ihr genaues Alter auf den Tag, gelebte Tage und die verbleibende Zeit bis zum nächsten Geburtstag.",
+  birthDate: "Geburtsdatum",
+  exactAge: "Exaktes Alter",
+  totalDaysLived: "Gelebte Tage gesamt",
+  nextBirthday: "Nächster Geburtstag",
+  bornOnDay: "Wochentag der Geburt",
+
+  // Percentage Calculator (18)
+  percentageTitle: "Prozentrechner",
+  percentageDesc: "Schnelle Alltagsberechnungen für Rabatte, Anteile, prozentuale Zu- und Abnahmen.",
+  mode1Title: "Wie viel sind X % von Y?",
+  mode2Title: "Wie viel Prozent sind X von Y?",
+  mode3Title: "Prozentuale Zu- oder Abnahme",
+  mode4Title: "Prozentualer Unterschied",
+
+  // Unit Converter (19)
+  unitTitle: "Einheiten-Konverter für Alltag & Expat",
+  unitDesc: "Rechnen Sie Längen, Gewichte, Temperaturen, Volumina und Wohnflächen unkompliziert um.",
+  lengthDist: "Länge & Entfernung (km ↔ Meilen)",
+  weightMass: "Gewicht & Masse (kg ↔ Pfund/lb)",
+  temperature: "Temperatur (°C ↔ °F)",
+  volume: "Volumen (Liter ↔ US-Gallonen)",
+  areaApartment: "Wohnfläche (m² ↔ sq ft)",
+
+  // Address & PLZ (20)
+  addressTitle: "Deutsche Adress- & PLZ-Übersicht",
+  addressDesc: "Übersicht der 16 Bundesländer, Hauptstädte, Postleitzahlenbereiche und korrekter Aufbau deutscher Postanschriften.",
+  addressGuideTitle: "So adressieren Sie Briefe in Deutschland korrekt",
+  addressGuideText: "In Deutschland steht die Hausnummer IMMER nach dem Straßennamen, gefolgt von der 5-stelligen PLZ und dem Ort in der nächsten Zeile:<br><pre class='code-block'>Herr/Frau Max Mustermann\nMusterstraße 42\n10115 Berlin\nDEUTSCHLAND</pre>",
+  stateCol: "Bundesland",
+  capitalCol: "Landeshauptstadt",
+  popCol: "Einwohner",
+  majorCitiesCol: "Größte Städte",
+  plzRangeCol: "PLZ-Leitzonen",
+
+  // Glossary (21)
+  glossaryTitle: "Glossar für das Leben in Deutschland & Abkürzungen",
+  glossaryDesc: "Durchsuchbares Nachschlagewerk mit über 40 wichtigen Begriffen zu Behörden, Recht, Steuern, Wohnen und Alltag.",
+  searchGlossary: "Begriffe filtern (z. B. Anmeldung, Schufa, TÜV, Rundfunkbeitrag...)",
+  allGlossaryCats: "Alle Kategorien",
+  catBureaucracy: "Behörden & Aufenthalt",
+  catHousing: "Wohnen & Miete",
+  catTax: "Steuern & Finanzen",
+  catWork: "Arbeit & Beruf",
+  catHealth: "Gesundheit & Versicherung",
+  catTransport: "Verkehr & Mobilität",
+  catEveryday: "Alltag & Leben",
+
+  // Ads & Sponsored
+  adLabel: "ANZEIGE",
+  adSponsored: "Gesponsert",
+
+  // SEO Guide & FAQ Section
+  seoGuideTitle: "Leben in Deutschland: Wichtige Hinweise & Häufige Fragen",
+  seoGuideSubtitle: "Antworten zu Gehaltsabrechnungen, Kindergeldsätzen 2026, Feiertagen und Mietverträgen.",
+  faq1Q: "Wie wird das Nettogehalt in Deutschland aus dem Bruttogehalt berechnet?",
+  faq1A: "Das monatliche Nettoeinkommen in Deutschland errechnet sich durch Abzug der gesetzlichen Sozialversicherungsbeiträge (Krankenversicherung 14,6 % + ca. 2,9 % durchschnittlicher Zusatzbeitrag, Rentenversicherung 18,6 %, Arbeitslosenversicherung 2,6 %, Pflegeversicherung 4,0 % mit kinderlosen Zuschlägen bzw. Abschlägen) und der Lohnsteuer nach dem progressiven Steuertarif (§ 32a EStG) gemäß Ihrer Steuerklasse (I bis VI). Sofern Sie einer steuererhebenden Religionsgemeinschaft angehören, fällt zusätzlich Kirchensteuer an (in Bayern und Baden-Württemberg 8 %, in den übrigen Bundesländern 9 % der Lohnsteuer).",
+  faq2Q: "Wie hoch ist das gesetzliche Kindergeld im Jahr 2026?",
+  faq2A: "Im Jahr 2026 beträgt das gesetzlich festgelegte Kindergeld <b>259 € pro Monat und Kind</b> (zuvor 250 € in 2023–2024 und 255 € in 2025). Für künftige Jahre hat die Bundesregierung Steigerungen auf <b>267 € pro Kind/Monat für 2027</b> und <b>272 € pro Kind/Monat für 2028</b> angekündigt (unter Vorbehalt der endgültigen parlamentarischen Gesetzgebung; Quelle: BMF / Familienkasse). Die Familienkasse zahlt das Kindergeld einkommensunabhängig für alle anspruchsberechtigten Kinder bis zum 18. Lebensjahr (bzw. bis zum 25. Lebensjahr bei Ausbildung oder Studium) aus.",
+  faq3Q: "Welche gesetzlichen Feiertage gelten in Berlin im Jahr 2026?",
+  faq3A: "Berlin hat 10 gesetzliche Feiertage: Neujahr (1. Januar), Internationaler Frauentag (8. März), Karfreitag, Ostermontag, Christi Himmelfahrt, Pfingstmontag, Tag der Deutschen Einheit (3. Oktober) sowie der 1. und 2. Weihnachtsfeiertag (25. und 26. Dezember). Anders als beispielsweise Bayern oder Baden-Württemberg feiert Berlin weder Heilige Drei Könige noch Fronleichnam, hat dafür jedoch den Internationalen Frauentag als gesetzlichen Feiertag verankert.",
+  faq4Q: "Was ist der Unterschied zwischen Kaltmiete und Warmmiete?",
+  faq4A: "Die <b>Kaltmiete (Grundmiete)</b> ist die reine Nettomiete für die Überlassung der Wohnräume. Die <b>Warmmiete (Gesamtmiete)</b> setzt sich aus der Kaltmiete und den <b>Nebenkosten (Betriebskosten)</b> zusammen, die Heizung, Wasser, Müllabfuhr, Treppenhausreinigung und Aufzug umfassen. Haushaltsstrom, Telefon/Internet und der gesetzliche <b>Rundfunkbeitrag</b> (früher umgangssprachlich GEZ, 18,36 €/Monat pro Wohnung) werden separat bezahlt. Gemäß § 2 Rundfunkbeitragsstaatsvertrag (RBStV) ist der Beitrag wohnungsbezogen geschuldet – in einer Wohngemeinschaft (WG) oder bei Paaren zahlt somit nur ein Bewohner für die gesamte gemeinsame Wohnung.",
+  faq5Q: "Speichert das German Life Toolkit meine finanziellen oder persönlichen Daten?",
+  faq5A: "<b>Nein, zu keinem Zeitpunkt.</b> Das German Life Toolkit basiert auf einer strikten 100 % Client-Side-Architektur. Sämtliche Berechnungen – einschließlich Gehalt, Miete, Boni und familiärer Angaben – finden ausschließlich im lokalen Arbeitsspeicher Ihres Webbrowsers statt. Es existieren keinerlei Server-Datenbanken, Cookies zur Nachverfolgung oder externe Tracking-Dienste.",
+
+  // Footer
+  footerBrand: "German Life Toolkit",
+  footerTagline: "Smarte Tools für Alltag und Beruf in Deutschland",
+  footerPartOf: "Teil des yocto.co.kr Web-Ökosystems",
+  footerLegal: "Alle Berechnungen dienen unverbindlichen Informations- und Orientierungszwecken und ersetzen keine Rechts- oder Steuerberatung.",
+  footerPrivacy: "Datenschutz",
+  footerDisclaimer: "Haftungsausschluss",
+  footerEcosystem: "Yocto-Ökosystem",
+  footerGithub: "GitHub-Repository",
+  footerLinkedIn: "LinkedIn"
+},
+
   ko: {
     // Brand & Header
     appTitle: "독일 생활 툴킷 (German Life Toolkit)",
@@ -803,11 +1202,19 @@ const I18N = {
   }
 };
 
-let currentLang = localStorage.getItem('glt_lang') || 'en';
+const SUPPORTED_LANGUAGES = ['de', 'en', 'ko'];
+
+let currentLang = (typeof localStorage !== 'undefined' && localStorage.getItem('glt_lang')) || 'en';
+if (!SUPPORTED_LANGUAGES.includes(currentLang)) {
+  currentLang = 'en';
+}
 
 function t(key) {
   if (I18N[currentLang] && I18N[currentLang][key]) {
     return I18N[currentLang][key];
+  }
+  if (I18N.de && I18N.de[key]) {
+    return I18N.de[key];
   }
   if (I18N.en && I18N.en[key]) {
     return I18N.en[key];
@@ -815,33 +1222,83 @@ function t(key) {
   return key;
 }
 
+function getNextLanguage(lang) {
+  switch (lang) {
+    case 'de': return 'en';
+    case 'en': return 'ko';
+    case 'ko': return 'de';
+    default: return 'de';
+  }
+}
+
+function cycleLanguage() {
+  const nextLang = getNextLanguage(currentLang);
+  setLanguage(nextLang);
+}
+
 function setLanguage(lang) {
-  if (lang !== 'en' && lang !== 'ko') lang = 'en';
+  if (!SUPPORTED_LANGUAGES.includes(lang)) lang = 'en';
   currentLang = lang;
-  localStorage.setItem('glt_lang', lang);
-  document.documentElement.lang = lang;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('glt_lang', lang);
+  }
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.lang = lang;
+  }
+  if (typeof window !== 'undefined') {
+    window.currentLang = lang;
+  }
   
   // Update toggle button text if exists
-  const langToggleBtn = document.getElementById('lang-toggle');
-  if (langToggleBtn) {
-    langToggleBtn.textContent = lang === 'en' ? 'KO' : 'EN';
-    langToggleBtn.setAttribute('title', lang === 'en' ? '한국어로 전환' : 'Switch to English');
+  if (typeof document !== 'undefined') {
+    const langToggleBtn = document.getElementById('lang-toggle');
+    if (langToggleBtn) {
+      langToggleBtn.textContent = lang.toUpperCase();
+      const next = getNextLanguage(lang);
+      const titleMap = {
+        de: 'Zu Englisch wechseln (DE → EN)',
+        en: 'Switch to Korean (EN → KO)',
+        ko: '독일어로 전환 (KO → DE)'
+      };
+      langToggleBtn.setAttribute('title', titleMap[lang] || 'Sprache wechseln / Switch Language');
+    }
+
+    // Update all elements with data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const translated = t(key);
+      if (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'search')) {
+        el.placeholder = translated;
+      } else {
+        el.innerHTML = translated;
+      }
+    });
   }
 
-  // Update all elements with data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const translated = t(key);
-    if (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'search')) {
-      el.placeholder = translated;
-    } else {
-      el.innerHTML = translated;
-    }
-  });
-
   // Trigger app re-render for dynamic content
-  if (window.onLanguageChanged) {
+  if (typeof window !== 'undefined' && window.onLanguageChanged) {
     window.onLanguageChanged(lang);
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.I18N = I18N;
+  window.t = t;
+  window.currentLang = currentLang;
+  window.setLanguage = setLanguage;
+  window.cycleLanguage = cycleLanguage;
+  window.getNextLanguage = getNextLanguage;
+  window.SUPPORTED_LANGUAGES = SUPPORTED_LANGUAGES;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    I18N,
+    t,
+    currentLang,
+    setLanguage,
+    cycleLanguage,
+    getNextLanguage,
+    SUPPORTED_LANGUAGES
+  };
+}

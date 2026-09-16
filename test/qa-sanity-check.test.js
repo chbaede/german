@@ -655,6 +655,86 @@ assert.strictEqual(rentPartnerPays.rundfunkbeitrag, 0);
 
 console.log("[PASS] Rundfunkbeitrag verified (€18.36/mo per dwelling, not multiplied by number of occupants).");
 
+
+// ============================================================================
+// SUITE 17: FULL TRI-LINGUAL LOCALIZATION PARITY (DE, EN, KO)
+// ============================================================================
+console.log("\n--- Suite 17: Full Tri-lingual Localization Parity (DE, EN, KO) ---");
+
+const { I18N, t, setLanguage, cycleLanguage, getNextLanguage, SUPPORTED_LANGUAGES } = require('../js/i18n.js');
+const { CATEGORIES_DATA, TOOLS_DATA } = require('../js/data.js');
+
+totalScenariosExecuted += 7;
+
+// 1. Supported languages
+assert.deepStrictEqual(SUPPORTED_LANGUAGES, ['de', 'en', 'ko']);
+assert.strictEqual(getNextLanguage('de'), 'en');
+assert.strictEqual(getNextLanguage('en'), 'ko');
+assert.strictEqual(getNextLanguage('ko'), 'de');
+
+// 2. I18N catalogs exist
+assert.ok(I18N.en && typeof I18N.en === 'object');
+assert.ok(I18N.de && typeof I18N.de === 'object');
+assert.ok(I18N.ko && typeof I18N.ko === 'object');
+
+const enKeys = Object.keys(I18N.en).sort();
+const deKeys = Object.keys(I18N.de).sort();
+const koKeys = Object.keys(I18N.ko).sort();
+
+assert.strictEqual(enKeys.length, deKeys.length, `Key count mismatch: EN has ${enKeys.length}, DE has ${deKeys.length}`);
+assert.strictEqual(enKeys.length, koKeys.length, `Key count mismatch: EN has ${enKeys.length}, KO has ${koKeys.length}`);
+
+// 3. Exact key match (0 missing)
+const missingInDe = enKeys.filter(k => !I18N.de[k]);
+const missingInKo = enKeys.filter(k => !I18N.ko[k]);
+assert.strictEqual(missingInDe.length, 0, `Missing keys in DE: ${missingInDe.join(', ')}`);
+assert.strictEqual(missingInKo.length, 0, `Missing keys in KO: ${missingInKo.join(', ')}`);
+
+// 4. Non-empty string values for all 343 keys in all 3 languages
+for (const k of enKeys) {
+  assert.strictEqual(typeof I18N.en[k], 'string', `EN key ${k} is not a string`);
+  assert.ok(I18N.en[k].trim().length > 0, `EN key ${k} is empty`);
+  assert.strictEqual(typeof I18N.de[k], 'string', `DE key ${k} is not a string`);
+  assert.ok(I18N.de[k].trim().length > 0, `DE key ${k} is empty`);
+  assert.strictEqual(typeof I18N.ko[k], 'string', `KO key ${k} is not a string`);
+  assert.ok(I18N.ko[k].trim().length > 0, `KO key ${k} is empty`);
+}
+
+// 5. Switching and translation retrieval
+setLanguage('de');
+assert.strictEqual(t('salaryTitle'), 'Deutscher Brutto-Netto-Rechner');
+setLanguage('en');
+assert.strictEqual(t('salaryTitle'), 'German Salary Calculator (Brutto → Netto)');
+setLanguage('ko');
+assert.strictEqual(t('salaryTitle'), '독일 월급 실수령액 계산기 (세전 → 세후)');
+
+// 6. Categories Data completeness
+assert.strictEqual(CATEGORIES_DATA.length, 7);
+for (const cat of CATEGORIES_DATA) {
+  assert.ok(cat.title.en && cat.title.en.trim().length > 0);
+  assert.ok(cat.title.de && cat.title.de.trim().length > 0);
+  assert.ok(cat.title.ko && cat.title.ko.trim().length > 0);
+  assert.ok(cat.desc.en && cat.desc.en.trim().length > 0);
+  assert.ok(cat.desc.de && cat.desc.de.trim().length > 0);
+  assert.ok(cat.desc.ko && cat.desc.ko.trim().length > 0);
+}
+
+// 7. Tools Data completeness
+assert.strictEqual(TOOLS_DATA.length, 20);
+for (const tool of TOOLS_DATA) {
+  assert.ok(tool.title.en && tool.title.en.trim().length > 0);
+  assert.ok(tool.title.de && tool.title.de.trim().length > 0);
+  assert.ok(tool.title.ko && tool.title.ko.trim().length > 0);
+  assert.ok(tool.desc.en && tool.desc.en.trim().length > 0);
+  assert.ok(tool.desc.de && tool.desc.de.trim().length > 0);
+  assert.ok(tool.desc.ko && tool.desc.ko.trim().length > 0);
+  assert.ok(Array.isArray(tool.tags.en) && tool.tags.en.length > 0);
+  assert.ok(Array.isArray(tool.tags.de) && tool.tags.de.length > 0);
+  assert.ok(Array.isArray(tool.tags.ko) && tool.tags.ko.length > 0);
+}
+
+console.log(`[PASS] Tri-lingual localization verified: 100% parity across ${enKeys.length} keys (EN, DE, KO); categories, tools, and cycle logic verified.`);
+
 console.log("\n================================================================");
 console.log(`🎉 ALL ${totalScenariosExecuted} QA / SANITY SCENARIOS COMPLETED AND PASSED WITHOUT EXCEPTION!`);
 console.log("================================================================\n");

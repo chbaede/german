@@ -5668,6 +5668,7 @@ const GERMAN_SCHOOL_HOLIDAYS = {
         unavailable: true,
         error: "MISSING_STATE",
         messageEn: "State code is required (e.g., 'BE', 'BY', 'NW').",
+        messageDe: "Bundesland-Kürzel ist erforderlich (z. B. 'BE', 'BY', 'NW').",
         messageKo: "연방 주 코드가 필요합니다 (예: 'BE', 'BY', 'NW')."
       };
     }
@@ -5678,6 +5679,7 @@ const GERMAN_SCHOOL_HOLIDAYS = {
         unavailable: true,
         error: "INVALID_STATE",
         messageEn: `Invalid state code: "${stateCode}". Must be one of the 16 German Bundesländer.`,
+        messageDe: `Ungültiges Bundesland-Kürzel: "${stateCode}". Es muss eines der 16 deutschen Bundesländer sein.`,
         messageKo: `유효하지 않은 주 코드: "${stateCode}". 독일 16개 연방 주 코드 중 하나여야 합니다.`,
         validStates: [...this.allStateCodes]
       };
@@ -5688,6 +5690,7 @@ const GERMAN_SCHOOL_HOLIDAYS = {
         unavailable: true,
         error: "MISSING_YEAR",
         messageEn: "Year or school year is required.",
+        messageDe: "Kalenderjahr oder Schuljahr ist erforderlich.",
         messageKo: "연도 또는 학년도 정보가 필요합니다."
       };
     }
@@ -5753,6 +5756,7 @@ const GERMAN_SCHOOL_HOLIDAYS = {
       error: "DATA_UNAVAILABLE",
       yearRequested: yearOrSchoolYear,
       messageEn: `Official KMK school holiday data is unavailable for "${yearOrSchoolYear}".`,
+      messageDe: `Offizielle KMK-Schulferientermine sind für "${yearOrSchoolYear}" nicht verfügbar.`,
       messageKo: `"${yearOrSchoolYear}" 연도에 대한 공식 KMK 학사일정 방학 데이터를 찾을 수 없습니다.`,
       availableYears: this.getAvailableYears()
     };

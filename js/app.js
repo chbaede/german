@@ -110,7 +110,9 @@ const App = {
       const homeTitle = `${t('appTitle')} — ${t('appSubtitle')}`;
       const homeDesc = currentLang === 'ko'
         ? "독일 거주자 및 직장인을 위한 100% 클라이언트 사이드 유틸리티: 2026 독일 월급 실수령액(Brutto-Netto), 밤미테 주거비, 킨더겔트(259€), 베를린 및 주별 공휴일, 근무일수, 생활 용어 사전. 서버 전송 없는 완벽한 개인정보 보호."
-        : "100% Client-side utility platform for expats, professionals, and residents in Germany. German salary calculator (Brutto-Netto 2026), rent & Nebenkosten, Kindergeld (€259), Berlin & state holidays, working days, and expat glossary.";
+        : (currentLang === 'de'
+          ? "100 % client-seitige Plattform für Alltag und Beruf in Deutschland: Brutto-Netto-Rechner 2026, Warmmiete, Kindergeld (259 €), Feiertage aller Bundesländer, Arbeitstage und Behörden-Glossar. Vollständiger Datenschutz ohne Server-Übertragung."
+          : "100% Client-side utility platform for expats, professionals, and residents in Germany. German salary calculator (Brutto-Netto 2026), rent & Nebenkosten, Kindergeld (€259), Berlin & state holidays, working days, and expat glossary.");
 
       document.title = homeTitle;
       if (metaDescEl) metaDescEl.setAttribute('content', homeDesc);
@@ -280,19 +282,19 @@ const App = {
             <div class="form-group">
               <label class="form-label">${t('taxYearLabel')}</label>
               <select id="salary-taxyear" class="form-select">
-                <option value="2026" selected>2026 (${currentLang === 'ko' ? '현재 법정 기준' : 'Current Statutory'})</option>
+                <option value="2026" selected>2026 (${currentLang === 'ko' ? '현재 법정 기준' : (currentLang === 'de' ? 'Aktuelle gesetzliche Vorgabe' : 'Current Statutory')})</option>
                 <option value="2025">2025</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">${t('taxClass')}</label>
               <select id="salary-taxclass" class="form-select">
-                <option value="1" selected>Class I (Single)</option>
-                <option value="2">Class II (Single Parent)</option>
-                <option value="3">Class III (Married - Primary Earner)</option>
-                <option value="4">Class IV (Married - Equal)</option>
-                <option value="5">Class V (Married - Secondary Earner)</option>
-                <option value="6">Class VI (Second / Multiple Employment)</option>
+                <option value="1" selected>${currentLang === 'ko' ? '1등급 (미혼/단독)' : (currentLang === 'de' ? 'Klasse I (Alleinstehend)' : 'Class I (Single)')}</option>
+                <option value="2">${currentLang === 'ko' ? '2등급 (한부모)' : (currentLang === 'de' ? 'Klasse II (Alleinerziehend)' : 'Class II (Single Parent)')}</option>
+                <option value="3">${currentLang === 'ko' ? '3등급 (기혼 - 주소득자)' : (currentLang === 'de' ? 'Klasse III (Verheiratet - Allein-/Hauptverdiener)' : 'Class III (Married - Primary Earner)')}</option>
+                <option value="4">${currentLang === 'ko' ? '4등급 (기혼 - 동등소득)' : (currentLang === 'de' ? 'Klasse IV (Verheiratet - Doppelverdiener)' : 'Class IV (Married - Equal)')}</option>
+                <option value="5">${currentLang === 'ko' ? '5등급 (기혼 - 보조소득자)' : (currentLang === 'de' ? 'Klasse V (Verheiratet - Zweitverdiener)' : 'Class V (Married - Secondary Earner)')}</option>
+                <option value="6">${currentLang === 'ko' ? '6등급 (부업/이중근로)' : (currentLang === 'de' ? 'Klasse VI (Zweites / Mehrfach-Dienstverhältnis)' : 'Class VI (Second / Multiple Employment)')}</option>
               </select>
             </div>
           </div>
@@ -549,7 +551,9 @@ const App = {
       if (syncInfoEl) {
         syncInfoEl.innerHTML = currentLang === 'ko'
           ? `💡 세전 월급 <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ 세전 연봉 <b>${GLTUtils.formatEuro(aVal)}</b> (월급 × 12)`
-          : `💡 Monthly <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Annual <b>${GLTUtils.formatEuro(aVal)}</b> (Monthly × 12)`;
+          : (currentLang === 'de'
+            ? `💡 Monatlich <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Jährlich <b>${GLTUtils.formatEuro(aVal)}</b> (Monat × 12)`
+            : `💡 Monthly <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Annual <b>${GLTUtils.formatEuro(aVal)}</b> (Monthly × 12)`);
       }
     };
 
@@ -581,15 +585,15 @@ const App = {
 
       if (res && res.unavailable) {
         document.getElementById('res-net-monthly').textContent = 'N/A';
-        document.getElementById('res-net-annual').textContent = currentLang === 'ko' ? res.messageKo : res.messageEn;
+        document.getElementById('res-net-annual').textContent = currentLang === 'ko' ? res.messageKo : (currentLang === 'de' ? (res.messageDe || res.messageEn) : res.messageEn);
         if (yearBadgeEl) {
-          yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.year}`;
+          yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : (currentLang === 'de' ? 'Steuerjahr' : 'Tax year')}: ${res.year}`;
         }
         return;
       }
 
       if (yearBadgeEl) {
-        yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.taxYear}`;
+        yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : (currentLang === 'de' ? 'Steuerjahr' : 'Tax year')}: ${res.taxYear}`;
       }
 
       // Update PKV live breakdown card
@@ -615,7 +619,7 @@ const App = {
         if (labelHealthEl) {
           labelHealthEl.textContent = currentLang === 'ko'
             ? `건강보험 (GKV ${ratePct}%)`
-            : `Health Insurance (GKV ${ratePct}%)`;
+            : (currentLang === 'de' ? `Krankenversicherung (GKV ${ratePct} %)` : `Health Insurance (GKV ${ratePct}%)`);
         }
         if (badgeHealthEl) {
           const statusText = (res.gkvMembershipStatus === 'voluntary')
@@ -630,30 +634,30 @@ const App = {
           labelCareEl.textContent = t('careContribution');
         }
         if (badgeCareEl) {
-          badgeCareEl.textContent = `Rate: ${(res.pvEmployeeRate * 100).toFixed(2)}%`;
+          badgeCareEl.textContent = `${currentLang === 'de' ? 'Beitragssatz' : 'Rate'}: ${(res.pvEmployeeRate * 100).toFixed(2)}%`;
         }
       } else {
         if (labelHealthEl) {
           labelHealthEl.textContent = currentLang === 'ko'
             ? '민간 건강보험 (PKV 본인부담)'
-            : 'Private Health Insurance (PKV Out-of-Pocket)';
+            : (currentLang === 'de' ? 'Private Krankenversicherung (PKV Eigenanteil)' : 'Private Health Insurance (PKV Out-of-Pocket)');
         }
         if (badgeHealthEl) {
           const pkvPre = res.pkvDetails ? res.pkvDetails.pkvMonthlyPremium : 0;
           badgeHealthEl.textContent = currentLang === 'ko'
             ? `총 계약보험료 ${GLTUtils.formatEuro(pkvPre)} (지원금 차감 후)`
-            : `Gross premium ${GLTUtils.formatEuro(pkvPre)} (net of subsidy)`;
+            : (currentLang === 'de' ? `Vertragsbeitrag ${GLTUtils.formatEuro(pkvPre)} (abzgl. Zuschuss)` : `Gross premium ${GLTUtils.formatEuro(pkvPre)} (net of subsidy)`);
         }
         if (labelCareEl) {
           labelCareEl.textContent = currentLang === 'ko'
             ? '민간 요양의무보험 (PPV 본인부담)'
-            : 'Private Care Insurance (PPV Out-of-Pocket)';
+            : (currentLang === 'de' ? 'Pflegepflichtversicherung (PPV Eigenanteil)' : 'Private Care Insurance (PPV Out-of-Pocket)');
         }
         if (badgeCareEl) {
           const ppvPre = res.pkvDetails ? res.pkvDetails.ppvMonthlyPremium : 0;
           badgeCareEl.textContent = currentLang === 'ko'
             ? `총 계약보험료 ${GLTUtils.formatEuro(ppvPre)} (지원금 차감 후)`
-            : `Gross premium ${GLTUtils.formatEuro(ppvPre)} (net of subsidy)`;
+            : (currentLang === 'de' ? `Vertragsbeitrag ${GLTUtils.formatEuro(ppvPre)} (abzgl. Zuschuss)` : `Gross premium ${GLTUtils.formatEuro(ppvPre)} (net of subsidy)`);
         }
       }
 
@@ -757,17 +761,17 @@ const App = {
             <div class="form-group">
               <label class="form-label">${t('taxYearLabel')}</label>
               <select id="rev-taxyear" class="form-select">
-                <option value="2026" selected>2026 (${currentLang === 'ko' ? '법정 기준' : 'Statutory'})</option>
+                <option value="2026" selected>2026 (${currentLang === 'ko' ? '법정 기준' : (currentLang === 'de' ? 'Gesetzliche Vorgabe' : 'Statutory')})</option>
                 <option value="2025">2025</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">${t('taxClass')}</label>
               <select id="rev-taxclass" class="form-select">
-                <option value="1" selected>Class I</option>
-                <option value="3">Class III</option>
-                <option value="4">Class IV</option>
-                <option value="5">Class V</option>
+                <option value="1" selected>${currentLang === 'ko' ? '1등급' : (currentLang === 'de' ? 'Klasse I' : 'Class I')}</option>
+                <option value="3">${currentLang === 'ko' ? '3등급' : (currentLang === 'de' ? 'Klasse III' : 'Class III')}</option>
+                <option value="4">${currentLang === 'ko' ? '4등급' : (currentLang === 'de' ? 'Klasse IV' : 'Class IV')}</option>
+                <option value="5">${currentLang === 'ko' ? '5등급' : (currentLang === 'de' ? 'Klasse V' : 'Class V')}</option>
               </select>
             </div>
           </div>
@@ -816,14 +820,16 @@ const App = {
       if (syncInfoEl) {
         syncInfoEl.innerHTML = currentLang === 'ko'
           ? `💡 목표 실수령 월 <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ 연간 <b>${GLTUtils.formatEuro(aVal)}</b> (월 실수령액 × 12)`
-          : `💡 Target Monthly Net <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Annual Net <b>${GLTUtils.formatEuro(aVal)}</b> (Monthly × 12)`;
+          : (currentLang === 'de'
+            ? `💡 Ziel-Netto monatlich <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ jährlich <b>${GLTUtils.formatEuro(aVal)}</b> (Monatsnetto × 12)`
+            : `💡 Target Monthly Net <b>${GLTUtils.formatEuro(mVal)}</b> ⇄ Annual Net <b>${GLTUtils.formatEuro(aVal)}</b> (Monthly × 12)`);
       }
     };
 
     const updateRev = () => {
       const taxYear = yearIn ? yearIn.value : 2026;
       if (revYearBadge) {
-        revYearBadge.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${taxYear}`;
+        revYearBadge.textContent = `${currentLang === 'ko' ? '세무 연도' : (currentLang === 'de' ? 'Steuerjahr' : 'Tax year')}: ${taxYear}`;
       }
       const gross = SalaryCalculator.calculateNetToGross(netIn.value, {
         taxYear: taxYear,
@@ -834,15 +840,15 @@ const App = {
 
       if (typeof gross === 'object' && gross && gross.unavailable) {
         document.getElementById('res-rev-gross').textContent = 'N/A';
-        document.getElementById('res-rev-annual').textContent = currentLang === 'ko' ? gross.messageKo : gross.messageEn;
+        document.getElementById('res-rev-annual').textContent = currentLang === 'ko' ? gross.messageKo : (currentLang === 'de' ? (gross.messageDe || gross.messageEn) : gross.messageEn);
         if (explEl) {
-          explEl.innerHTML = currentLang === 'ko' ? gross.messageKo : gross.messageEn;
+          explEl.innerHTML = currentLang === 'ko' ? gross.messageKo : (currentLang === 'de' ? (gross.messageDe || gross.messageEn) : gross.messageEn);
         }
         return;
       }
 
       document.getElementById('res-rev-gross').textContent = `${GLTUtils.formatEuro(gross)} / mo`;
-      document.getElementById('res-rev-annual').textContent = `Annual Gross: ${GLTUtils.formatEuro(gross * 12)} / yr`;
+      document.getElementById('res-rev-annual').textContent = `${currentLang === 'de' ? 'Jahresbrutto' : 'Annual Gross'}: ${GLTUtils.formatEuro(gross * 12)} / yr`;
 
       const targetM = GLTUtils.formatEuro(GLTUtils.parseNumber(netIn.value, 0));
       const targetA = GLTUtils.formatEuro(GLTUtils.parseNumber(netAnnualIn.value, 0));
@@ -852,7 +858,9 @@ const App = {
       if (explEl) {
         explEl.innerHTML = currentLang === 'ko'
           ? `목표 실수령액 <b>${targetM} / 월</b> (연간 <b>${targetA}</b>)을 받으려면, 연봉 협상 시 <b>필요 세전 월급 약 ${reqM}</b>, <b>필요 세전 연봉 약 ${reqA}</b>를 요구해야 합니다. (세무 연도: ${taxYear}년)`
-          : `To achieve a monthly take-home pay of <b>${targetM}</b> (annual net <b>${targetA}</b>), you should negotiate a gross salary of approximately <b>${reqM} / month</b> (<b>${reqA} / year</b>) with your employer. (Tax year: ${taxYear})`;
+          : (currentLang === 'de'
+            ? `Um ein monatliches Netto von <b>${targetM}</b> (jährlich netto <b>${targetA}</b>) zu erzielen, ist ein Bruttogehalt von ca. <b>${reqM} / Monat</b> (<b>${reqA} / Jahr</b>) erforderlich. (Steuerjahr: ${taxYear})`
+            : `To achieve a monthly take-home pay of <b>${targetM}</b> (annual net <b>${targetA}</b>), you should negotiate a gross salary of approximately <b>${reqM} / month</b> (<b>${reqA} / year</b>) with your employer. (Tax year: ${taxYear})`);
       }
     };
 
@@ -1018,14 +1026,19 @@ const App = {
   // Tool 4: Tax Class Comparison
   renderTaxClassTool(container, tool) {
     const lang = currentLang;
-    const rows = GERMAN_TAX_CONFIG.taxClasses.map(tc => `
+    const rows = GERMAN_TAX_CONFIG.taxClasses.map(tc => {
+      const className = lang === 'ko'
+        ? `${tc.id}등급 (Steuerklasse ${['I','II','III','IV','V','VI'][parseInt(tc.id)-1]})`
+        : (lang === 'de' ? `Steuerklasse ${['I','II','III','IV','V','VI'][parseInt(tc.id)-1]}` : tc.name);
+      return `
       <tr>
-        <td style="font-weight:700; color:var(--text-primary);">${tc.name}</td>
-        <td>${lang === 'ko' ? tc.useCaseKo : tc.useCaseEn}</td>
-        <td>${lang === 'ko' ? tc.featuresKo : tc.featuresEn}</td>
-        <td style="color:var(--warning-color);">${lang === 'ko' ? tc.limitationsKo : tc.limitationsEn}</td>
+        <td style="font-weight:700; color:var(--text-primary);">${className}</td>
+        <td>${lang === 'ko' ? tc.useCaseKo : (lang === 'de' ? (tc.useCaseDe || tc.useCaseEn) : tc.useCaseEn)}</td>
+        <td>${lang === 'ko' ? tc.featuresKo : (lang === 'de' ? (tc.featuresDe || tc.featuresEn) : tc.featuresEn)}</td>
+        <td style="color:var(--warning-color);">${lang === 'ko' ? tc.limitationsKo : (lang === 'de' ? (tc.limitationsDe || tc.limitationsEn) : tc.limitationsEn)}</td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
 
     container.innerHTML = `
       <div class="tool-topbar">
@@ -1813,24 +1826,24 @@ const App = {
         `;
         sectionTitle.textContent = lang === 'ko'
           ? `아우크스부르크시 적용 공휴일 (${year})`
-          : `Statutory Public Holidays in Augsburg (${year})`;
-        countBadge.textContent = lang === 'ko' ? `총 14개 공휴일` : `14 Statutory Holidays`;
+          : (lang === 'de' ? `Gesetzliche Feiertage in der Stadt Augsburg (${year})` : `Statutory Public Holidays in Augsburg (${year})`);
+        countBadge.textContent = lang === 'ko' ? `총 14개 공휴일` : (lang === 'de' ? `14 gesetzliche Feiertage` : `14 Statutory Holidays`);
       } else if (state === 'ALL') {
         bannerBox.style.display = 'none';
         sectionTitle.textContent = lang === 'ko'
           ? `독일 전체 공휴일 및 지역별 현황 (${year})`
-          : `All German Public Holidays & Regional Scopes (${year})`;
-        countBadge.textContent = lang === 'ko' ? `전체 목록` : `Full Catalog`;
+          : (lang === 'de' ? `Alle gesetzlichen Feiertage in Deutschland (${year})` : `All German Public Holidays & Regional Scopes (${year})`);
+        countBadge.textContent = lang === 'ko' ? `전체 목록` : (lang === 'de' ? `Gesamtübersicht` : `Full Catalog`);
       } else {
         bannerBox.style.display = 'none';
         const stObj = GERMAN_STATES.find(s => s.code === state);
         const stName = stObj ? (lang === 'ko' ? stObj.nameKo : stObj.nameDe) : state;
         sectionTitle.textContent = lang === 'ko'
           ? `${stName} 주 전역 공휴일 (${year})`
-          : `Statewide Public Holidays in ${stName} (${year})`;
+          : (lang === 'de' ? `Landesweite gesetzliche Feiertage in ${stName} (${year})` : `Statewide Public Holidays in ${stName} (${year})`);
         countBadge.textContent = lang === 'ko'
           ? `주 전역 ${breakdown.totalStatewideCount}개`
-          : `${breakdown.totalStatewideCount} Statewide Holidays`;
+          : (lang === 'de' ? `${breakdown.totalStatewideCount} Feiertage` : `${breakdown.totalStatewideCount} Statewide Holidays`);
       }
 
       const getScopeBadge = (h) => {
@@ -1859,7 +1872,7 @@ const App = {
               ${h.nameDe}
               ${h.localityScope === 'municipal' ? ' <span style="font-size:0.75rem; color:#8b5cf6;">(Augsburg)</span>' : ''}
             </td>
-            <td>${lang === 'ko' ? h.nameKo : h.nameEn}</td>
+            <td>${lang === 'ko' ? h.nameKo : (lang === 'de' ? (h.nameEn ? `<span style="font-size:0.85rem; color:var(--text-muted);">EN: ${h.nameEn}</span>` : '') : h.nameEn)}</td>
             <td>${getScopeBadge(h)}</td>
           </tr>
         `;
@@ -1871,7 +1884,7 @@ const App = {
         localTbody.innerHTML = breakdown.additionalLocalHolidays.map(h => {
           const areaNote = lang === 'ko'
             ? (h.applicableScopeKo || h.applicableScopeDe || h.notesEn)
-            : (h.applicableScopeDe || h.notesDe);
+            : (lang === 'de' ? (h.applicableScopeDe || h.notesDe || h.applicableScopeEn) : (h.applicableScopeEn || h.notesEn || h.applicableScopeDe));
           return `
             <tr style="${h.isUpcoming ? 'font-weight:600;' : 'opacity:0.85;'}">
               <td style="font-family:var(--font-mono);">${h.date}</td>
@@ -1879,7 +1892,7 @@ const App = {
               <td style="color:var(--text-primary); font-weight:600;">
                 ${h.nameDe}
                 <div style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">
-                  ${lang === 'ko' ? h.nameKo : h.nameEn}
+                  ${lang === 'ko' ? h.nameKo : (lang === 'de' ? (h.nameEn ? `<span style="font-size:0.8rem; color:var(--text-muted);">EN: ${h.nameEn}</span>` : '') : h.nameEn)}
                 </div>
               </td>
               <td>${getScopeBadge(h)}</td>
@@ -2132,15 +2145,15 @@ const App = {
           </div>
           <div class="breakdown-list">
             <div class="breakdown-row" style="color:var(--text-secondary);">
-              <span class="breakdown-label">2023–2024 Past Baseline (250 €/child)</span>
+              <span class="breakdown-label">${currentLang === 'ko' ? '2023–2024년 이전 기준 (250 €/인)' : (currentLang === 'de' ? '2023–2024 Frühere Basis (250 €/Kind)' : '2023–2024 Past Baseline (250 €/child)')}</span>
               <span id="res-kg-past-echo" class="breakdown-value">€ 0,00</span>
             </div>
             <div class="breakdown-row" style="color:var(--text-secondary);">
-              <span class="breakdown-label">2025 Past Amount (255 €/child)</span>
+              <span class="breakdown-label">${currentLang === 'ko' ? '2025년 이전 수령액 (255 €/인)' : (currentLang === 'de' ? '2025 Früherer Betrag (255 €/Kind)' : '2025 Past Amount (255 €/child)')}</span>
               <span id="res-kg-2025-echo" class="breakdown-value">€ 0,00</span>
             </div>
             <div class="breakdown-row" style="font-weight:700; color:var(--success-color);">
-              <span class="breakdown-label">${currentLang === 'ko' ? '2026년 법정 확정 수령액 (259 €/인)' : '2026 Current Enacted Rate (259 €/child)'}</span>
+              <span class="breakdown-label">${currentLang === 'ko' ? '2026년 법정 확정 수령액 (259 €/인)' : (currentLang === 'de' ? 'Gesetzlicher Satz 2026 (259 €/Kind)' : '2026 Current Enacted Rate (259 €/child)')}</span>
               <span id="res-kg-curr-echo" class="breakdown-value positive">€ 0,00</span>
             </div>
             <div class="breakdown-row" style="color:var(--accent-primary);">
@@ -2161,22 +2174,26 @@ const App = {
             <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:0.75rem;">
               ${currentLang === 'ko'
                 ? '독일 연방정부(BMF / Familienkasse)에 따른 아동수당(Kindergeld)은 <b>2026년 기준 법정 확정 월 259유로</b>입니다. 향후 일정에 대해 <b>2027년 월 267유로</b> 및 <b>2028년 월 272유로</b> 인상안이 공식 발표/추진 중입니다.'
-                : 'According to official guidelines (BMF / Familienkasse), German child benefit (Kindergeld) is legally enacted at <b>€259 per month per child for 2026</b>. Government proposals have announced planned increases to <b>€267/month for 2027</b> and <b>€272/month for 2028</b>.'}
+                : (currentLang === 'de'
+                  ? 'Nach offiziellen Vorgaben (BMF / Familienkasse) beträgt das gesetzliche Kindergeld <b>im Jahr 2026 monatlich 259 € pro Kind</b>. Für 2027 ist eine Anhebung auf <b>267 €/Monat</b> und für 2028 auf <b>272 €/Monat</b> geplant (Regierungsentwurf).'
+                  : 'According to official guidelines (BMF / Familienkasse), German child benefit (Kindergeld) is legally enacted at <b>€259 per month per child for 2026</b>. Government proposals have announced planned increases to <b>€267/month for 2027</b> and <b>€272/month for 2028</b>.')}
             </p>
             <div class="notice-box" style="margin-bottom:1rem; font-size:0.8125rem;">
-              <strong>🏛️ Legal Status & Source (BMF / Familienkasse):</strong>
+              <strong>🏛️ ${currentLang === 'ko' ? '법적 상태 및 출처' : (currentLang === 'de' ? 'Gesetzlicher Status & Quelle' : 'Legal Status & Source')} (BMF / Familienkasse):</strong>
               ${currentLang === 'ko'
                 ? '과거 및 2026년 수령액(259 €)은 법률로 확정된(Enacted) 기준입니다. 2027년(267 €) 및 2028년(272 €) 금액은 정부 발표/법안 기준 추진안(announced / proposed)이며, 최종 의회 입법 절차 완료 전까지는 법적 확정 수치가 아닙니다.'
-                : 'Past rates and the 2026 rate (€259) are legally enacted. Future rates for 2027 (€267) and 2028 (€272) are announced / proposed figures subject to final parliamentary enactment.'}
+                : (currentLang === 'de'
+                  ? 'Die Sätze der Vorjahre sowie für 2026 (259 €) sind gesetzlich beschlossen. Die künftigen Sätze für 2027 (267 €) und 2028 (272 €) sind angekündigte Vorhaben unter Vorbehalt der gesetzgeberischen Verabschiedung.'
+                  : 'Past rates and the 2026 rate (€259) are legally enacted. Future rates for 2027 (€267) and 2028 (€272) are announced / proposed figures subject to final parliamentary enactment.')}
             </div>
             <div class="data-table-wrapper">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>연도 / 기간 (Period)</th>
-                    <th>자녀 1인당 월 지급액</th>
-                    <th id="th-kg-family-col">우리가구 월 수령액</th>
-                    <th>법적 상태 (Status)</th>
+                    <th>${currentLang === 'ko' ? '연도 / 기간' : (currentLang === 'de' ? 'Zeitraum' : 'Period')}</th>
+                    <th>${currentLang === 'ko' ? '자녀 1인당 월 지급액' : (currentLang === 'de' ? 'Monatlicher Satz pro Kind' : 'Monthly Rate per Child')}</th>
+                    <th id="th-kg-family-col">${currentLang === 'ko' ? '우리가구 월 수령액' : (currentLang === 'de' ? 'Auszahlungsbetrag Familie' : 'Monthly Payout for Family')}</th>
+                    <th>${currentLang === 'ko' ? '법적 상태' : (currentLang === 'de' ? 'Status' : 'Status')}</th>
                   </tr>
                 </thead>
                 <tbody id="kg-timeline-tbody"></tbody>
@@ -2214,7 +2231,7 @@ const App = {
 
       const thFam = document.getElementById('th-kg-family-col');
       if (thFam) {
-        thFam.textContent = lang === 'ko' ? `자녀 ${count}명 가구 월 수령액` : `Monthly Payout for ${count} Child${count > 1 ? 'ren' : ''}`;
+        thFam.textContent = lang === 'ko' ? `자녀 ${count}명 가구 월 수령액` : (lang === 'de' ? `Monatlicher Betrag für ${count} Kind${count > 1 ? 'er' : ''}` : `Monthly Payout for ${count} Child${count > 1 ? 'ren' : ''}`);
       }
 
       const tbody = document.getElementById('kg-timeline-tbody');
@@ -2227,8 +2244,8 @@ const App = {
           if (item.statusCategory !== lastCategory) {
             lastCategory = item.statusCategory;
             const categoryTitle = item.statusCategory === 'enacted'
-              ? (lang === 'ko' ? '📌 법정 확정 지급액 (Enacted / Current Rates)' : '📌 Enacted / Current Rates')
-              : (lang === 'ko' ? '📢 향후 인상 발표/추진안 (Announced Future Changes — Pending Enactment)' : '📢 Announced Future Changes (Pending Enactment)');
+              ? (lang === 'ko' ? '📌 법정 확정 지급액 (Enacted / Current Rates)' : (lang === 'de' ? '📌 Gesetzlich beschlossene Sätze' : '📌 Enacted / Current Rates'))
+              : (lang === 'ko' ? '📢 향후 인상 발표/추진안 (Announced Future Changes — Pending Enactment)' : (lang === 'de' ? '📢 Künftige Vorhaben (Regierungsentwurf)' : '📢 Announced Future Changes (Pending Enactment)'));
             rowsHtml += `
               <tr style="background-color:var(--bg-secondary); border-top:2px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
                 <td colspan="4" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:0.5rem 0.75rem;">
@@ -2243,18 +2260,18 @@ const App = {
 
           if (item.isCurrent) {
             rowStyle = "background-color: rgba(16, 185, 129, 0.08); font-weight:700;";
-            badge = `<span class="badge" style="background-color:var(--success-light); color:var(--success-color); font-weight:700;">${lang === 'ko' ? '★ 법정 확정 / 현재 (2026)' : '★ Enacted / Current Rate (2026)'}</span>`;
+            badge = `<span class="badge" style="background-color:var(--success-light); color:var(--success-color); font-weight:700;">${lang === 'ko' ? '★ 법정 확정 / 현재 (2026)' : (lang === 'de' ? '★ Gesetzlich gültig (2026)' : '★ Enacted / Current Rate (2026)')}</span>`;
           } else if (item.statusCategory === 'announced') {
             rowStyle = "background-color: rgba(99, 102, 241, 0.08); font-weight:600;";
-            badge = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:600;">${lang === 'ko' ? item.statusKo : item.statusEn}</span>`;
+            badge = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:600;">${lang === 'ko' ? item.statusKo : (lang === 'de' ? (item.statusDe || item.statusEn) : item.statusEn)}</span>`;
           } else {
-            badge = `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${lang === 'ko' ? '이전 확정' : 'Past Enacted'}</span>`;
+            badge = `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${lang === 'ko' ? '이전 확정' : (lang === 'de' ? 'Früherer Satz' : 'Past Enacted')}</span>`;
           }
 
           rowsHtml += `
             <tr style="${rowStyle}">
-              <td style="font-weight:600;">${lang === 'ko' ? item.periodKo : item.periodEn}</td>
-              <td style="font-family:var(--font-mono);">${lang === 'ko' ? item.rateDescKo : item.rateDescEn}</td>
+              <td style="font-weight:600;">${lang === 'ko' ? item.periodKo : (lang === 'de' ? (item.periodDe || item.periodEn) : item.periodEn)}</td>
+              <td style="font-family:var(--font-mono);">${lang === 'ko' ? item.rateDescKo : (lang === 'de' ? (item.rateDescDe || item.rateDescEn) : item.rateDescEn)}</td>
               <td style="font-family:var(--font-mono); font-weight:700; ${item.isCurrent ? 'color:var(--success-color);' : item.isFuture ? 'color:var(--accent-primary);' : ''}">
                 ${GLTUtils.formatEuro(item.monthlyFamilyTotal)} / mo (${GLTUtils.formatEuro(item.annualFamilyTotal)} / yr)
               </td>
@@ -2291,13 +2308,13 @@ const App = {
           <div class="form-group">
             <label class="form-label">${t('selectYear')}</label>
             <select id="sch-year" class="form-select">
-              <optgroup label="${currentLang === 'ko' ? '달력 연도 (Calendar Year)' : 'Calendar Year'}">
+              <optgroup label="${currentLang === 'ko' ? '달력 연도 (Calendar Year)' : (currentLang === 'de' ? 'Kalenderjahr' : 'Calendar Year')}">
                 <option value="2026" selected>2026</option>
                 <option value="2025">2025</option>
                 <option value="2027">2027</option>
                 <option value="2028">2028</option>
               </optgroup>
-              <optgroup label="${currentLang === 'ko' ? '학사년도 (School Year / Schuljahr)' : 'School Year (Schuljahr)'}">
+              <optgroup label="${currentLang === 'ko' ? '학사년도 (School Year / Schuljahr)' : (currentLang === 'de' ? 'Schuljahr' : 'School Year (Schuljahr)')}">
                 <option value="2025/2026">2025/2026</option>
                 <option value="2026/2027">2026/2027</option>
                 <option value="2027/2028">2027/2028</option>
@@ -2347,7 +2364,9 @@ const App = {
             <td colspan="2" style="text-align:center; padding:2rem; color:var(--text-muted);">
               ⚠️ ${lang === 'ko' 
                 ? (res && res.messageKo ? res.messageKo : '선택한 연도의 공식 KMK 방학 데이터가 없습니다.')
-                : (res && res.messageEn ? res.messageEn : 'Official KMK school holiday data is unavailable for the selected year.')}
+                : (lang === 'de'
+                  ? (res && res.messageDe ? res.messageDe : 'Für das ausgewählte Jahr liegen keine offiziellen KMK-Feriendaten vor.')
+                  : (res && res.messageEn ? res.messageEn : 'Official KMK school holiday data is unavailable for the selected year.'))}
             </td>
           </tr>
         `;
@@ -2364,15 +2383,15 @@ const App = {
       let badgesHtml = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:600;">🏛️ KMK Official</span>`;
       if (res.movableDays > 0) {
         badgesHtml += `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-secondary); border:1px solid var(--border-subtle);">
-          ${lang === 'ko' ? `이동식 자율휴교일(Bewegliche Ferientage): ${res.movableDays}일` : `Movable school-free days: ${res.movableDays}`}
+          ${lang === 'ko' ? `이동식 자율휴교일(Bewegliche Ferientage): ${res.movableDays}일` : (lang === 'de' ? `Bewegliche Ferientage: ${res.movableDays} Tage` : `Movable school-free days: ${res.movableDays}`)}
         </span>`;
       }
       metaBanner.innerHTML = badgesHtml;
 
       tbody.innerHTML = res.map(h => {
         const title = lang === 'ko' ? (h.nameKo || h.nameEn) : h.nameDe;
-        const sub = lang === 'ko' ? ` (${h.nameDe})` : ` (${h.nameEn})`;
-        const singleDayBadge = h.isSingleDay ? ` <span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted); font-size:0.65rem;">${lang === 'ko' ? '단일 휴교일' : 'Single day'}</span>` : '';
+        const sub = lang === 'ko' ? ` (${h.nameDe})` : (lang === 'de' ? '' : ` (${h.nameEn})`);
+        const singleDayBadge = h.isSingleDay ? ` <span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted); font-size:0.65rem;">${lang === 'ko' ? '단일 휴교일' : (lang === 'de' ? 'Einzelner Ferientag' : 'Single day')}</span>` : '';
         return `
         <tr>
           <td style="font-weight:600; color:var(--text-primary);">${title}${sub}${singleDayBadge}</td>
@@ -2383,9 +2402,9 @@ const App = {
 
       let fnText = `
         <div style="border-top:1px solid var(--border-subtle); padding-top:0.75rem; display:flex; flex-direction:column; gap:0.35rem;">
-          <div>🏛️ <b>${lang === 'ko' ? '공식 출처' : 'Official Source'}:</b> <a href="https://www.kmk.org/service/ferienregelung/ferienkalender.html" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary); text-decoration:underline;">Kultusministerkonferenz (KMK) Ferienkalender</a> • ${lang === 'ko' ? '최종 검증: 2026-09-16' : 'Last verified: 2026-09-16'}</div>
-          <div>ℹ️ ${lang === 'ko' ? '각 기간의 시작일과 종료일은 모두 방학에 포함되는 첫날과 마지막 날입니다.' : 'Dates specify the first and last vacation days inclusive.'}</div>
-          ${res.footnote ? `<div style="color:var(--warning-color); font-weight:500;">📌 <b>${lang === 'ko' ? '지역 특례' : 'Special Note'}:</b> ${res.footnote}</div>` : ''}
+          <div>🏛️ <b>${lang === 'ko' ? '공식 출처' : (lang === 'de' ? 'Offizielle Quelle' : 'Official Source')}:</b> <a href="https://www.kmk.org/service/ferienregelung/ferienkalender.html" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary); text-decoration:underline;">Kultusministerkonferenz (KMK) Ferienkalender</a> • ${lang === 'ko' ? '최종 검증: 2026-09-16' : (lang === 'de' ? 'Zuletzt geprüft: 16.09.2026' : 'Last verified: 2026-09-16')}</div>
+          <div>ℹ️ ${lang === 'ko' ? '각 기간의 시작일과 종료일은 모두 방학에 포함되는 첫날과 마지막 날입니다.' : (lang === 'de' ? 'Die angegebenen Termine umfassen jeweils den ersten und letzten Ferientag (einschließlich).' : 'Dates specify the first and last vacation days inclusive.')}</div>
+          ${res.footnote ? `<div style="color:var(--warning-color); font-weight:500;">📌 <b>${lang === 'ko' ? '지역 특례' : (lang === 'de' ? 'Besonderer Hinweis' : 'Special Note')}:</b> ${res.footnote}</div>` : ''}
         </div>
       `;
       footnotesEl.innerHTML = fnText;
@@ -2793,8 +2812,20 @@ const App = {
         }
       };
 
+      const deClassMap = {
+        legal_requirement: 'Gesetzliche Pflicht',
+        statutory_definition: 'Gesetzliche Definition',
+        common_practice: 'Übliche Praxis',
+        recommendation: 'Empfehlung',
+        informal_term: 'Umgangssprachlich'
+      };
+
       listEl.innerHTML = filtered.map(item => {
-        const classLabel = lang === 'ko' ? (item.classificationKo || item.classification) : (item.classificationEn || item.classification);
+        const classLabel = lang === 'ko'
+          ? (item.classificationKo || item.classification)
+          : (lang === 'de'
+            ? (item.classificationDe || deClassMap[item.classification] || item.classificationEn || item.classification)
+            : (item.classificationEn || item.classification));
         const classStyle = getClassificationStyle(item.classification);
         return `
         <div class="input-panel" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
@@ -2807,19 +2838,19 @@ const App = {
               </div>
             </div>
             <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:0.5rem;">
-              ${lang === 'ko' ? item.ko : item.en}
+              ${lang === 'ko' ? item.ko : (lang === 'de' ? (item.de || item.en) : item.en)}
             </p>
             <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.5; background:var(--bg-secondary); padding:0.4rem 0.6rem; border-radius:var(--radius-sm, 6px);">
-              ${lang === 'ko' ? `<b>EN:</b> ${item.en}` : `<b>KO:</b> ${item.ko}`}
+              ${lang === 'ko' ? `<b>EN:</b> ${item.en}` : (lang === 'de' ? `<b>EN:</b> ${item.en} • <b>KO:</b> ${item.ko}` : `<b>KO:</b> ${item.ko}`)}
             </div>
           </div>
           <div style="padding-top:0.6rem; border-top:1px solid var(--border-subtle); font-size:0.75rem; display:flex; flex-direction:column; gap:0.3rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-              <span style="color:var(--text-primary); font-weight:600;">⚖️ ${lang === 'ko' ? '법적 근거' : 'Legal Basis'}: <span style="font-weight:normal; color:var(--text-secondary);">${item.legalBasis || 'N/A'}</span></span>
-              <span style="color:var(--text-muted);">🕒 ${lang === 'ko' ? '최종 검증' : 'Last verified'}: ${item.lastVerified || '2026-09-16'}</span>
+              <span style="color:var(--text-primary); font-weight:600;">⚖️ ${lang === 'ko' ? '법적 근거' : (lang === 'de' ? 'Rechtsgrundlage' : 'Legal Basis')}: <span style="font-weight:normal; color:var(--text-secondary);">${item.legalBasis || 'N/A'}</span></span>
+              <span style="color:var(--text-muted);">🕒 ${lang === 'ko' ? '최종 검증' : (lang === 'de' ? 'Zuletzt geprüft' : 'Last verified')}: ${item.lastVerified || '2026-09-16'}</span>
             </div>
             <div style="color:var(--text-muted);">
-              🏛️ ${lang === 'ko' ? '출처' : 'Source'}: <a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary); text-decoration:underline;">${item.source}</a>
+              🏛️ ${lang === 'ko' ? '출처' : (lang === 'de' ? 'Quelle' : 'Source')}: <a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary); text-decoration:underline;">${item.source}</a>
             </div>
           </div>
         </div>

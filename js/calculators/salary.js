@@ -521,6 +521,9 @@ const SalaryCalculator = {
         messageEn: is2027
           ? "Official statutory payroll parameters for 2027 are not legally finalized as of September 2026. The German federal government has introduced a tax reform draft, but final statutory § 32a EStG tax tariff coefficients and 2027 social-security contribution ceilings (Rechengrößen 2027) have not been enacted. Salary calculation for 2027 is unavailable."
           : `Official statutory payroll parameters for ${requestedYear} are unavailable. Supported official years: ${supportedYears.join(', ')}.`,
+        messageDe: is2027
+          ? "Die offiziellen gesetzlichen Lohnsteuer- und Sozialversicherungsparameter für 2027 sind mit Stand September 2026 noch nicht gesetzlich verabschiedet. Die Bundesregierung hat zwar einen Steuerreform-Entwurf vorgelegt, aber die endgültigen Koeffizienten des § 32a EStG und die Rechengrößen der Sozialversicherung 2027 sind noch nicht in Kraft getreten. Eine Gehaltsberechnung für 2027 steht daher nicht zur Verfügung."
+          : `Offizielle gesetzliche Steuerparameter für ${requestedYear} sind nicht verfügbar. Unterstützte offizielle Jahre: ${supportedYears.join(', ')}.`,
         messageKo: is2027
           ? "2026년 9월 현재 2027년도 공식 법정 급여 및 세무 파라미터는 아직 법률로 최종 확정되지 않았습니다. 독일 연방정부의 세제 개편 초안이 발표되었으나, 공식 소득세율(§ 32a EStG) 계수 및 2027년도 사회보험 부과상한선(Rechengrößen 2027)은 법정 입법 전이므로 2027년도 급여 계산을 제공하지 않습니다."
           : `${requestedYear}년도 공식 법정 세무 데이터가 지원되지 않습니다. 지원 연도: ${supportedYears.join(', ')}.`
