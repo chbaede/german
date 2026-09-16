@@ -883,7 +883,10 @@
    Google AdSense Placements & CLS Protection
    ========================================================================== */
 .ad-section {
-  margin: 2rem 0;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
   width: 100%;
 }
 
@@ -917,6 +920,9 @@
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem 1rem 1rem;
   min-height: 120px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -947,12 +953,20 @@
   display: block !important;
   width: 100% !important;
   min-width: 250px;
-  margin: 0 auto;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+
+.ad-container ins.adsbygoogle iframe,
+.ad-container ins.adsbygoogle > div {
+  margin: 0 auto !important;
 }
 
 .tool-ad-section {
   margin-top: 2.5rem;
   margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ==========================================================================
