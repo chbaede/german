@@ -2,7 +2,7 @@
  * German Salary & Tax Calculation Engine (Brutto → Netto, Netto → Brutto, Annual + Bonus)
  * Architecture: Year-Aware Engine with Statutory Estimation Model
  *
- * Supported Calendar Years: 2025, 2026, 2027
+ * Supported Calendar Years: 2025, 2026 (Official Enacted)
  * Default Tax Year: 2026
  *
  * Statutory Legal Bases:
@@ -344,7 +344,7 @@ const SalaryCalculator = {
    *
    * @param {object} params
    * @param {number|string} params.grossMonthly - Monthly gross salary
-   * @param {number|string} [params.taxYear=2026] - Tax year (2025, 2026, 2027)
+   * @param {number|string} [params.taxYear=2026] - Tax year (2025, 2026)
    * @param {string} [params.taxClass="1"] - Steuerklasse (1, 2, 3, 4, 5, 6)
    * @param {string} [params.stateCode="BE"] - Bundesland 2-letter code (e.g. BE, BY, NW, SN)
    * @param {boolean} [params.hasChurchTax=false] - Whether subject to church tax
@@ -359,10 +359,34 @@ const SalaryCalculator = {
     const grossMonthly = Math.max(0, GLTUtils.parseNumber(params.grossMonthly, 0));
     const grossAnnual = grossMonthly * 12;
 
-    // Resolve active tax year configuration
+    // Resolve active tax year & enforce supported enacted years
+    const supportedYears = (typeof SUPPORTED_OFFICIAL_SALARY_YEARS !== 'undefined')
+      ? SUPPORTED_OFFICIAL_SALARY_YEARS
+      : (typeof GERMAN_TAX_CONFIG !== 'undefined' && GERMAN_TAX_CONFIG.supportedYears ? GERMAN_TAX_CONFIG.supportedYears : [2025, 2026]);
+
+    const hasExplicitYear = (params.taxYear !== undefined && params.taxYear !== null && String(params.taxYear).trim() !== '');
+    const requestedYear = hasExplicitYear
+      ? parseInt(params.taxYear, 10)
+      : (typeof GERMAN_TAX_CONFIG !== 'undefined' ? GERMAN_TAX_CONFIG.defaultYear : 2026);
+
+    // Explicit rejection: Do NOT allow silent calculation of 2027 or unsupported years
+    if (requestedYear === 2027 || !supportedYears.includes(requestedYear)) {
+      const is2027 = (requestedYear === 2027);
+      return {
+        unavailable: true,
+        error: "TAX_DATA_UNAVAILABLE",
+        year: requestedYear,
+        messageEn: is2027
+          ? "Official statutory payroll parameters for 2027 are not legally finalized as of September 2026. The German federal government has introduced a tax reform draft, but final statutory § 32a EStG tax tariff coefficients and 2027 social-security contribution ceilings (Rechengrößen 2027) have not been enacted. Salary calculation for 2027 is unavailable."
+          : `Official statutory payroll parameters for ${requestedYear} are unavailable. Supported official years: ${supportedYears.join(', ')}.`,
+        messageKo: is2027
+          ? "2026년 9월 현재 2027년도 공식 법정 급여 및 세무 파라미터는 아직 법률로 최종 확정되지 않았습니다. 독일 연방정부의 세제 개편 초안이 발표되었으나, 공식 소득세율(§ 32a EStG) 계수 및 2027년도 사회보험 부과상한선(Rechengrößen 2027)은 법정 입법 전이므로 2027년도 급여 계산을 제공하지 않습니다."
+          : `${requestedYear}년도 공식 법정 세무 데이터가 지원되지 않습니다. 지원 연도: ${supportedYears.join(', ')}.`
+      };
+    }
+
     const cfg = GERMAN_TAX_CONFIG;
-    const requestedYear = parseInt(params.taxYear || cfg.defaultYear, 10);
-    const taxYear = cfg.years[requestedYear] ? requestedYear : cfg.defaultYear;
+    const taxYear = requestedYear;
     const yCfg = cfg.years[taxYear];
 
     const taxClass = String(params.taxClass || "1");
@@ -683,6 +707,12 @@ const SalaryCalculator = {
   calculateNetToGross(desiredNetMonthly, params) {
     const targetNet = Math.max(0, GLTUtils.parseNumber(desiredNetMonthly, 0));
     if (targetNet <= 0) return 0;
+
+    // Verify statutory payroll parameters are available for requested year
+    const checkRes = this.calculateNetSalary({ ...params, grossMonthly: 1000 });
+    if (checkRes && checkRes.unavailable) {
+      return checkRes;
+    }
 
     let low = targetNet;
     let high = targetNet * 3.5;

@@ -282,7 +282,6 @@ const App = {
               <select id="salary-taxyear" class="form-select">
                 <option value="2026" selected>2026 (${currentLang === 'ko' ? '현재 법정 기준' : 'Current Statutory'})</option>
                 <option value="2025">2025</option>
-                <option value="2027">2027 (${currentLang === 'ko' ? '예정' : 'Projected'})</option>
               </select>
             </div>
             <div class="form-group">
@@ -577,6 +576,15 @@ const App = {
         employerSubsidy: (pkvSubsidyEl && pkvSubsidyEl.value.trim() !== '') ? pkvSubsidyEl.value : null
       });
 
+      if (res && res.unavailable) {
+        document.getElementById('res-net-monthly').textContent = 'N/A';
+        document.getElementById('res-net-annual').textContent = currentLang === 'ko' ? res.messageKo : res.messageEn;
+        if (yearBadgeEl) {
+          yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.year}`;
+        }
+        return;
+      }
+
       if (yearBadgeEl) {
         yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.taxYear}`;
       }
@@ -748,7 +756,6 @@ const App = {
               <select id="rev-taxyear" class="form-select">
                 <option value="2026" selected>2026 (${currentLang === 'ko' ? '법정 기준' : 'Statutory'})</option>
                 <option value="2025">2025</option>
-                <option value="2027">2027</option>
               </select>
             </div>
             <div class="form-group">
@@ -821,6 +828,16 @@ const App = {
         numChildren: chIn.value,
         stateCode: "BE"
       });
+
+      if (typeof gross === 'object' && gross && gross.unavailable) {
+        document.getElementById('res-rev-gross').textContent = 'N/A';
+        document.getElementById('res-rev-annual').textContent = currentLang === 'ko' ? gross.messageKo : gross.messageEn;
+        if (explEl) {
+          explEl.innerHTML = currentLang === 'ko' ? gross.messageKo : gross.messageEn;
+        }
+        return;
+      }
+
       document.getElementById('res-rev-gross').textContent = `${GLTUtils.formatEuro(gross)} / mo`;
       document.getElementById('res-rev-annual').textContent = `Annual Gross: ${GLTUtils.formatEuro(gross * 12)} / yr`;
 

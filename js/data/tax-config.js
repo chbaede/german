@@ -1,6 +1,6 @@
 /**
  * German Tax & Social Security Configuration Parameters
- * Architecture: Year-Aware Multi-Year Configuration System (2025, 2026, 2027)
+ * Architecture: Year-Aware Multi-Year Configuration System (Official Enacted: 2025, 2026)
  * Default Tax Year: 2026
  * Last Updated: 2026-09-16
  *
@@ -11,10 +11,42 @@
  * 4. Deutsche Rentenversicherung: Beitragssätze und Beitragsbemessungsgrenzen 2026
  */
 
+const SUPPORTED_OFFICIAL_SALARY_YEARS = [2025, 2026];
+
+/**
+ * Separate Reform Proposals & Draft Values (Not Enacted / Not Statutory Payroll Parameters)
+ */
+const GERMAN_TAX_REFORM_PROPOSALS = {
+  "2027": {
+    year: 2027,
+    status: "draft_proposed",
+    statusLabelEn: "Government draft / proposed (not enacted into statutory law)",
+    statusLabelKo: "정부 입법 추진/초안 (법정 입법 미확정)",
+    officialStatus: "Government draft / proposed",
+    officialStatusDisclaimerEn: "Values are from the German government's draft tax reform proposals (e.g. Steuerfortentwicklungsgesetz) and have not been finalized or enacted into statutory law as of September 2026. They must NOT be presented or used as official statutory payroll parameters.",
+    officialStatusDisclaimerKo: "본 수치는 2026년 9월 현재 독일 연방정부의 세제 개편안(초안)에 따른 제안 수치이며, 의회 법정 입법으로 최종 확정 공포되지 않았습니다. 공식 법정 급여/세무 파라미터로 사용될 수 없습니다.",
+    source: "BMF Referentenentwurf / Regierungsentwurf (Stand: September 2026)",
+    sourceUrl: "https://www.bundesfinanzministerium.de/",
+    lastVerified: "2026-09-16",
+    draftTariff: {
+      proposedBasicAllowance: 12500,
+      proposedZone2Limit: 18000,
+      note: "Proposed tariff adjustments are under parliamentary review and subject to change."
+    },
+    draftSocialSecurity: {
+      proposedBbgRvMonthly: 8650,
+      proposedBbgGkvMonthly: 5950,
+      proposedJaegMonthly: 6600,
+      note: "Social insurance contribution ceilings (Rechengrößen 2027) will be officially enacted in late autumn 2026 via ministerial ordinance."
+    }
+  }
+};
+
 const GERMAN_TAX_CONFIG = {
   lastUpdated: "2026-09-16",
   defaultYear: 2026,
-  supportedYears: [2025, 2026, 2027],
+  supportedYears: SUPPORTED_OFFICIAL_SALARY_YEARS,
+  reformProposals: GERMAN_TAX_REFORM_PROPOSALS,
 
   officialSources: [
     {
@@ -210,77 +242,6 @@ const GERMAN_TAX_CONFIG = {
         sonderausgabenMarried: 72,// Special expenses lump-sum (€72/yr married III)
         singleParentRelief: 4260,// Entlastungsbetrag für Alleinerziehende (€4,260 1st child)
         singleParentAdditionalChild: 852 // +€852 for each additional child
-      }
-    },
-
-    // ------------------------------------------------------------------------
-    // CALENDAR YEAR 2027 PARAMETERS (PROJECTED STATUTORY EVOLUTION)
-    // ------------------------------------------------------------------------
-    2027: {
-      year: 2027,
-      basicAllowance: 12500, // Projected Grundfreibetrag 2027
-      tariff: {
-        zone1Limit: 12500,
-        zone2Limit: 18000,
-        zone3Limit: 70500,
-        zone4Limit: 280000,
-        zone2A: 910.00,
-        zone2B: 1400,
-        zone3A: 170.00,
-        zone3B: 2397,
-        zone3C: 1045.00,
-        zone4Rate: 0.42,
-        zone4Sub: 11250.00,
-        zone5Rate: 0.45,
-        zone5Sub: 19650.00
-      },
-      pension: {
-        totalRate: 0.186,
-        employeeRate: 0.093,
-        bbgMonthly: 8650,
-        bbgAnnual: 103800
-      },
-      unemployment: {
-        totalRate: 0.026,
-        employeeRate: 0.013,
-        bbgMonthly: 8650,
-        bbgAnnual: 103800
-      },
-      health: {
-        baseRate: 0.146,
-        employeeBaseRate: 0.073,
-        avgZusatzbeitrag: 0.030,
-        employeeZusatzRate: 0.015,
-        totalEmployeeRate: 0.088,
-        bbgMonthly: 5950,
-        bbgAnnual: 71400,
-        jaegMonthly: 6600,
-        jaegAnnual: 79200
-      },
-      care: {
-        baseRate: 0.036,
-        employeeBaseRate: 0.018,
-        employeeBaseRateSachsen: 0.023,
-        childlessSurcharge: 0.006,
-        childDiscountPerChild: 0.0025,
-        maxChildDiscount: 0.010,
-        minEmployeeRate: 0.008,
-        minEmployeeRateSachsen: 0.013,
-        bbgMonthly: 5950,
-        bbgAnnual: 71400
-      },
-      solz: {
-        thresholdSingle: 20500,
-        thresholdMarried: 41000,
-        rate: 0.055,
-        milderungRate: 0.119
-      },
-      lumpSums: {
-        werbungskosten: 1230,
-        sonderausgabenSingle: 36,
-        sonderausgabenMarried: 72,
-        singleParentRelief: 4260,
-        singleParentAdditionalChild: 852
       }
     }
   },
@@ -617,3 +578,9 @@ const GERMAN_TAX_CONFIG = {
     }
   ]
 };
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.SUPPORTED_OFFICIAL_SALARY_YEARS = SUPPORTED_OFFICIAL_SALARY_YEARS;
+  globalThis.GERMAN_TAX_REFORM_PROPOSALS = GERMAN_TAX_REFORM_PROPOSALS;
+  globalThis.GERMAN_TAX_CONFIG = GERMAN_TAX_CONFIG;
+}

@@ -640,6 +640,52 @@ assert.strictEqual(rentLegacyTrue.gezFee, 18.36);
 assert.strictEqual(rentLegacyTrue.totalHousingMonthly, 968.36);
 console.log("[PASS] Legacy includeGez / gezFee backward compatibility verified.");
 
+// === 11. REMOVAL OF INVENTED 2027 PAYROLL PARAMETERS & DATA_UNAVAILABLE ARCHITECTURE ===
+console.log("\n=== 11. REMOVAL OF 2027 PAYROLL PARAMETERS & DATA_UNAVAILABLE ARCHITECTURE ===");
+
+// A. Architecture verification
+assert.deepStrictEqual(SUPPORTED_OFFICIAL_SALARY_YEARS, [2025, 2026]);
+assert.deepStrictEqual(GERMAN_TAX_CONFIG.supportedYears, [2025, 2026]);
+assert.strictEqual(GERMAN_TAX_CONFIG.years[2027], undefined, "2027 must NOT exist in GERMAN_TAX_CONFIG.years");
+console.log("[PASS] Architecture: SUPPORTED_OFFICIAL_SALARY_YEARS = [2025, 2026] and GERMAN_TAX_CONFIG.years[2027] is undefined.");
+
+// B. GERMAN_TAX_REFORM_PROPOSALS verification
+assert.ok(GERMAN_TAX_REFORM_PROPOSALS["2027"], "Reform proposals for 2027 must exist in separate object");
+assert.strictEqual(GERMAN_TAX_REFORM_PROPOSALS["2027"].officialStatus, "Government draft / proposed");
+assert.ok(GERMAN_TAX_REFORM_PROPOSALS["2027"].officialStatusDisclaimerEn.includes("must NOT be presented or used as official statutory payroll parameters"));
+console.log("[PASS] GERMAN_TAX_REFORM_PROPOSALS: clearly labeled 'Government draft / proposed' with statutory disclaimer.");
+
+// C. Rejection of 2027 in calculateNetSalary (no silent calculation!)
+const res2027 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2027 });
+assert.strictEqual(res2027.unavailable, true);
+assert.strictEqual(res2027.error, "TAX_DATA_UNAVAILABLE");
+assert.strictEqual(res2027.year, 2027);
+assert.ok(res2027.messageEn.includes("not legally finalized as of September 2026"));
+assert.ok(res2027.messageKo.includes("2026년 9월 현재"));
+console.log("[PASS] SalaryCalculator.calculateNetSalary(taxYear=2027) returns structured DATA_UNAVAILABLE without silent calculation.");
+
+// D. Rejection of 2027 string in calculateNetSalary
+const res2027Str = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: "2027" });
+assert.strictEqual(res2027Str.unavailable, true);
+assert.strictEqual(res2027Str.error, "TAX_DATA_UNAVAILABLE");
+
+// E. Rejection of 2027 in calculateNetToGross
+const rev2027 = SalaryCalculator.calculateNetToGross(3000, { taxYear: 2027 });
+assert.strictEqual(rev2027.unavailable, true);
+assert.strictEqual(rev2027.error, "TAX_DATA_UNAVAILABLE");
+assert.strictEqual(rev2027.year, 2027);
+console.log("[PASS] SalaryCalculator.calculateNetToGross(taxYear=2027) returns structured DATA_UNAVAILABLE.");
+
+// F. Legitimate years 2025 and 2026 continue to calculate accurately
+const res2025 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2025 });
+assert.ok(res2025.netMonthly > 0);
+assert.strictEqual(res2025.taxYear, 2025);
+
+const res2026 = SalaryCalculator.calculateNetSalary({ grossMonthly: 5000, taxYear: 2026 });
+assert.ok(res2026.netMonthly > 0);
+assert.strictEqual(res2026.taxYear, 2026);
+console.log("[PASS] Enacted official years (2025 & 2026) calculate accurately without regressions.");
+
 console.log("\n🎉 ALL 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");
 
 
