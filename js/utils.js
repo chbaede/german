@@ -92,8 +92,8 @@ const GLTUtils = {
       // Remove if already exists to push to front
       recent = recent.filter(id => id !== toolId);
       recent.unshift(toolId);
-      // Keep top 6
-      if (recent.length > 6) recent = recent.slice(0, 6);
+      // Keep top 3 for single-line display
+      if (recent.length > 3) recent = recent.slice(0, 3);
       localStorage.setItem('glt_recent_tools', JSON.stringify(recent));
     } catch (e) {
       console.warn('Failed to save recent tools', e);

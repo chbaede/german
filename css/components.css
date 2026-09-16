@@ -402,6 +402,39 @@
   gap: 0.5rem;
 }
 
+.recent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .recent-grid {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 0.875rem;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .recent-grid .tool-card {
+    flex: 0 0 260px;
+    min-width: 260px;
+    scroll-snap-align: start;
+  }
+
+  .recent-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .recent-grid::-webkit-scrollbar-thumb {
+    background-color: var(--border-subtle);
+    border-radius: var(--radius-full);
+  }
+}
+
 .tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

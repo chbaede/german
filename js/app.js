@@ -63,7 +63,8 @@ const App = {
 
     const recentTools = recentIds
       .map(id => TOOLS_DATA.find(t => t.id === id))
-      .filter(Boolean);
+      .filter(Boolean)
+      .slice(0, 3);
 
     if (recentTools.length === 0) {
       section.style.display = 'none';
