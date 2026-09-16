@@ -391,8 +391,7 @@ const App = {
             </div>
           </div>
 
-          <div class="form-actions">
-            <button id="btn-salary-calc" class="btn-primary">⚡ ${t('calculate')}</button>
+          <div class="form-actions" style="justify-content: flex-end;">
             <button id="btn-salary-reset" class="btn-secondary">↺ ${t('reset')}</button>
           </div>
 
@@ -694,7 +693,10 @@ const App = {
       el.addEventListener('change', updateCalc);
     });
 
-    document.getElementById('btn-salary-calc').addEventListener('click', updateCalc);
+    const calcBtn = document.getElementById('btn-salary-calc');
+    if (calcBtn) {
+      calcBtn.addEventListener('click', updateCalc);
+    }
     document.getElementById('btn-salary-reset').addEventListener('click', () => {
       grossEl.value = "4500";
       grossAnnualEl.value = "54000";
