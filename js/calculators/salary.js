@@ -167,9 +167,10 @@ const SalaryCalculator = {
     let opt = options;
 
     if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
-      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? paramsOrTax.annualIncomeTax ?? 0);
       isSplitting = Boolean(
         paramsOrTax.isSplitting ??
+        paramsOrTax.isJointAssessment ??
         (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
       );
       opt = paramsOrTax;
@@ -256,9 +257,10 @@ const SalaryCalculator = {
     let opt = options;
 
     if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
-      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? paramsOrTax.annualIncomeTax ?? 0);
       isSplitting = Boolean(
         paramsOrTax.isSplitting ??
+        paramsOrTax.isJointAssessment ??
         (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
       );
       opt = paramsOrTax;
@@ -331,9 +333,9 @@ const SalaryCalculator = {
   calculateSolidaritySurcharge(paramsOrTax, isSplittingOrClass, options = {}) {
     let year = 2026;
     if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
-      year = parseInt(paramsOrTax.taxYear ?? paramsOrTax.year ?? 2026, 10);
+      year = parseInt(paramsOrTax.taxYear ?? paramsOrTax.year ?? (paramsOrTax.yearConfig ? paramsOrTax.yearConfig.year : null) ?? 2026, 10);
     } else if (typeof options === 'object' && options !== null) {
-      year = parseInt(options.taxYear ?? options.year ?? 2026, 10);
+      year = parseInt(options.taxYear ?? options.year ?? (options.yearConfig ? options.yearConfig.year : null) ?? 2026, 10);
     }
     if (year === 2025) {
       return this.calculateSolidaritySurcharge2025(paramsOrTax, isSplittingOrClass, options);

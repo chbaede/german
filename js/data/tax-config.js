@@ -610,9 +610,10 @@ const GERMAN_TAX_CONFIG = {
     let opt = options;
 
     if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
-      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? paramsOrTax.annualIncomeTax ?? 0);
       isSplitting = Boolean(
         paramsOrTax.isSplitting ??
+        paramsOrTax.isJointAssessment ??
         (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
       );
       opt = paramsOrTax;
