@@ -44,7 +44,7 @@ Part of the **[yocto.co.kr](https://main.yocto.co.kr)** web ecosystem.
 12. **Vacation Days & Bridge Day Planner**: Paid leave tracker and smart "Brückentage" strategy advice.
 
 ### 👨‍👩‍👧 Family & School
-13. **Child Benefit Reference (Kindergeld)**: Current statutory €259/child/month estimator, historical evolution timeline (2021–2025), and 2027 planned increase (€263).
+13. **Child Benefit Reference (Kindergeld)**: Current statutory €259/child/month estimator (enacted for 2026), historical evolution timeline (2021–2025), and announced future changes for 2027 (€267) & 2028 (€272; Source: BMF / Familienkasse).
 14. **School Holiday Finder (Schulferien)**: Official school vacation schedules (KMK) by federal state and year (2024–2027).
 
 ### 🧾 Everyday Utilities

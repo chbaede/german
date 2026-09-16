@@ -14,6 +14,9 @@ global.currentLang = 'en';
 
 vm.runInThisContext(fs.readFileSync('./js/data/tax-config.js', 'utf8'));
 vm.runInThisContext(fs.readFileSync('./js/calculators/salary.js', 'utf8'));
+vm.runInThisContext("global.GERMAN_SCHOOL_HOLIDAYS = { getSchoolHolidays: () => [] };");
+vm.runInThisContext(fs.readFileSync('./js/calculators/family-tools.js', 'utf8'));
+vm.runInThisContext(fs.readFileSync('./js/data/glossary.js', 'utf8'));
 
 console.log("=== COMPREHENSIVE 2026 SALARY AUDIT VERIFICATION ===");
 
@@ -328,5 +331,65 @@ console.log(`[PASS] Zero-tax region verified at €1,100/mo: zvE=€${zero.zvE.t
 const rich = SalaryCalculator.calculateNetSalary({ grossMonthly: 30000, taxYear: 2026, taxClass: "1", stateCode: "BE" });
 if (rich.zvE <= 277826) throw new Error("Top tax bracket income should exceed €277,826");
 console.log(`[PASS] Top tax bracket (45% Reichensteuer) reached at €30,000/mo: zvE=€${rich.zvE.toFixed(2)}, Annual Tax=€${rich.incomeTaxAnnual.toFixed(2)}`);
+
+// ========================================================================
+// 7. KINDERGELD 2026 ENACTED & ANNOUNCED TIMELINE VERIFICATION
+// ========================================================================
+console.log("\n--- Kindergeld Timeline & Statutory Source Verification ---");
+
+// A. Enacted 2026 rate (€259)
+const kg2026 = FamilyTools.calculateKindergeld(2, 2026);
+if (kg2026.ratePerChild !== 259) throw new Error(`2026 Kindergeld rate must be €259, got ${kg2026.ratePerChild}`);
+if (kg2026.monthlyTotal !== 518) throw new Error(`2026 monthly total for 2 kids must be €518, got ${kg2026.monthlyTotal}`);
+if (kg2026.annualTotal !== 6216) throw new Error(`2026 annual total for 2 kids must be €6,216, got ${kg2026.annualTotal}`);
+
+// B. Announced / proposed 2027 rate (€267) and 2028 rate (€272)
+const kg2027 = FamilyTools.calculateKindergeld(1, 2027);
+if (kg2027.ratePerChild !== 267) throw new Error(`2027 announced rate must be €267, got ${kg2027.ratePerChild}`);
+
+const kg2028 = FamilyTools.calculateKindergeld(1, 2028);
+if (kg2028.ratePerChild !== 272) throw new Error(`2028 announced rate must be €272, got ${kg2028.ratePerChild}`);
+
+// C. Separation of enacted/current rates vs announced future changes
+if (!Array.isArray(kg2026.enactedRates) || kg2026.enactedRates.length === 0) {
+  throw new Error("Must separate and provide enactedRates list");
+}
+if (!Array.isArray(kg2026.announcedRates) || kg2026.announcedRates.length === 0) {
+  throw new Error("Must separate and provide announcedRates list");
+}
+kg2026.enactedRates.forEach(r => {
+  if (r.statusCategory !== "enacted") throw new Error("enactedRates must only contain enacted items");
+});
+kg2026.announcedRates.forEach(r => {
+  if (r.statusCategory !== "announced") throw new Error("announcedRates must only contain announced items");
+  if (r.isEnacted !== false) throw new Error("announced items must not be marked as enacted");
+});
+
+// D. Wording check for announced rates
+const item2027 = FamilyTools.RATES_TIMELINE.find(i => i.periodEn.includes("2027"));
+const item2028 = FamilyTools.RATES_TIMELINE.find(i => i.periodEn.includes("2028"));
+if (!item2027.statusEn.includes("announced / proposed for 2027")) {
+  throw new Error(`2027 wording must include 'announced / proposed for 2027', got: ${item2027.statusEn}`);
+}
+if (!item2028.statusEn.includes("announced / proposed for 2028")) {
+  throw new Error(`2028 wording must include 'announced / proposed for 2028', got: ${item2028.statusEn}`);
+}
+
+// E. Source check
+if (kg2026.source !== "BMF / Familienkasse" || FamilyTools.source.institution !== "BMF / Familienkasse") {
+  throw new Error("Source must be 'BMF / Familienkasse'");
+}
+console.log(`[PASS] Kindergeld: 2026 Enacted=€${kg2026.ratePerChild}, 2027 Announced=€${kg2027.ratePerChild}, 2028 Announced=€${kg2028.ratePerChild}, Source: ${kg2026.source}`);
+
+// F. Glossary Entry Verification
+const kgGlossary = GERMAN_GLOSSARY.find(t => t.term === "Kindergeld");
+if (!kgGlossary) throw new Error("Kindergeld glossary entry missing");
+if (!kgGlossary.en.includes("2026: €259 per child per month")) {
+  throw new Error(`Glossary EN must say '2026: €259 per child per month', got: ${kgGlossary.en}`);
+}
+if (kgGlossary.en.includes("€250 per child as of 2025/2026")) {
+  throw new Error("Glossary must not contain stale €250 wording");
+}
+console.log(`[PASS] Kindergeld Glossary Entry Verified: "${kgGlossary.en.slice(0, 75)}..."`);
 
 console.log("\n🎉 ALL 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");

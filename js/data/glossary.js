@@ -150,8 +150,8 @@ const GERMAN_GLOSSARY = [
   {
     term: "Kindergeld",
     category: "family",
-    en: "State child benefit paid monthly to parents in Germany (€250 per child as of 2025/2026) until at least age 18, or 25 if pursuing university/vocational training.",
-    ko: "독일 아동수당. 부모의 소득과 무관하게 자녀 1인당 월 250유로(2025/2026년 기준)가 지급되며, 기본 만 18세, 학업·직업교육 중인 경우 만 25세까지 지원됩니다."
+    en: "State child benefit paid monthly to parents in Germany (2026: €259 per child per month) until at least age 18, or 25 if pursuing university/vocational training.",
+    ko: "독일 아동수당. 부모 소득과 무관하게 지급되는 자녀 양육 지원금 (2026년 기준: 자녀 1인당 월 259유로). 기본 만 18세, 학업·직업교육 중인 경우 만 25세까지 지급됩니다."
   },
   {
     term: "Elterngeld",

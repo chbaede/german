@@ -1895,12 +1895,16 @@ const App = {
               <span id="res-kg-2025-echo" class="breakdown-value">€ 0,00</span>
             </div>
             <div class="breakdown-row" style="font-weight:700; color:var(--success-color);">
-              <span class="breakdown-label">2026 Current Payout (259 €/child)</span>
+              <span class="breakdown-label">${currentLang === 'ko' ? '2026년 법정 확정 수령액 (259 €/인)' : '2026 Current Enacted Rate (259 €/child)'}</span>
               <span id="res-kg-curr-echo" class="breakdown-value positive">€ 0,00</span>
             </div>
-            <div class="breakdown-row total-row" style="color:var(--accent-primary);">
-              <span class="breakdown-label">From 2027 Projected (263 €/child)</span>
+            <div class="breakdown-row" style="color:var(--accent-primary);">
+              <span class="breakdown-label">${t('kindergeldAnnounced2027Label')}</span>
               <span id="res-kg-2027-echo" class="breakdown-value" style="color:var(--accent-primary);">€ 0,00</span>
+            </div>
+            <div class="breakdown-row total-row" style="color:var(--accent-primary);">
+              <span class="breakdown-label">${t('kindergeldAnnounced2028Label')}</span>
+              <span id="res-kg-2028-echo" class="breakdown-value" style="color:var(--accent-primary);">€ 0,00</span>
             </div>
           </div>
         </div>
@@ -1909,9 +1913,17 @@ const App = {
         <div class="info-section">
           <div class="info-panel" style="margin-bottom:1.5rem;">
             <h3 class="panel-title">📈 ${t('kindergeldTimelineTitle')}</h3>
-            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:1rem;">
-              독일 연방정부(Bundeskabinett)의 세법 개정안(Steuerfortentwicklungsgesetz)에 따라 아동수당(Kindergeld)은 2025년 월 255유로, <b>2026년 기준 월 259유로</b>로 인상되었습니다. <b>2027년부터는 월 263유로</b>로 추가 인상될 예정입니다.
+            <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin-bottom:0.75rem;">
+              ${currentLang === 'ko'
+                ? '독일 연방정부(BMF / Familienkasse)에 따른 아동수당(Kindergeld)은 <b>2026년 기준 법정 확정 월 259유로</b>입니다. 향후 일정에 대해 <b>2027년 월 267유로</b> 및 <b>2028년 월 272유로</b> 인상안이 공식 발표/추진 중입니다.'
+                : 'According to official guidelines (BMF / Familienkasse), German child benefit (Kindergeld) is legally enacted at <b>€259 per month per child for 2026</b>. Government proposals have announced planned increases to <b>€267/month for 2027</b> and <b>€272/month for 2028</b>.'}
             </p>
+            <div class="notice-box" style="margin-bottom:1rem; font-size:0.8125rem;">
+              <strong>🏛️ Legal Status & Source (BMF / Familienkasse):</strong>
+              ${currentLang === 'ko'
+                ? '과거 및 2026년 수령액(259 €)은 법률로 확정된(Enacted) 기준입니다. 2027년(267 €) 및 2028년(272 €) 금액은 정부 발표/법안 기준 추진안(announced / proposed)이며, 최종 의회 입법 절차 완료 전까지는 법적 확정 수치가 아닙니다.'
+                : 'Past rates and the 2026 rate (€259) are legally enacted. Future rates for 2027 (€267) and 2028 (€272) are announced / proposed figures subject to final parliamentary enactment.'}
+            </div>
             <div class="data-table-wrapper">
               <table class="data-table">
                 <thead>
@@ -1919,7 +1931,7 @@ const App = {
                     <th>연도 / 기간 (Period)</th>
                     <th>자녀 1인당 월 지급액</th>
                     <th id="th-kg-family-col">우리가구 월 수령액</th>
-                    <th>구분 (Status)</th>
+                    <th>법적 상태 (Status)</th>
                   </tr>
                 </thead>
                 <tbody id="kg-timeline-tbody"></tbody>
@@ -1952,7 +1964,8 @@ const App = {
       document.getElementById('res-kg-past-echo').textContent = `${GLTUtils.formatEuro(count * 250)} / mo`;
       document.getElementById('res-kg-2025-echo').textContent = `${GLTUtils.formatEuro(count * 255)} / mo`;
       document.getElementById('res-kg-curr-echo').textContent = `${GLTUtils.formatEuro(res.monthlyTotal)} / mo`;
-      document.getElementById('res-kg-2027-echo').textContent = `${GLTUtils.formatEuro(count * 263)} / mo (+${GLTUtils.formatEuro(count * 4)}/mo)`;
+      document.getElementById('res-kg-2027-echo').textContent = `${GLTUtils.formatEuro(count * 267)} / mo (+${GLTUtils.formatEuro(count * 8)}/mo)`;
+      document.getElementById('res-kg-2028-echo').textContent = `${GLTUtils.formatEuro(count * 272)} / mo (+${GLTUtils.formatEuro(count * 13)}/mo)`;
 
       const thFam = document.getElementById('th-kg-family-col');
       if (thFam) {
@@ -1961,21 +1974,39 @@ const App = {
 
       const tbody = document.getElementById('kg-timeline-tbody');
       if (tbody) {
-        tbody.innerHTML = res.timelineComparison.map(item => {
+        let lastCategory = null;
+        let rowsHtml = '';
+
+        res.timelineComparison.forEach(item => {
+          // Insert category separator row if transitioning between enacted and announced
+          if (item.statusCategory !== lastCategory) {
+            lastCategory = item.statusCategory;
+            const categoryTitle = item.statusCategory === 'enacted'
+              ? (lang === 'ko' ? '📌 법정 확정 지급액 (Enacted / Current Rates)' : '📌 Enacted / Current Rates')
+              : (lang === 'ko' ? '📢 향후 인상 발표/추진안 (Announced Future Changes — Pending Enactment)' : '📢 Announced Future Changes (Pending Enactment)');
+            rowsHtml += `
+              <tr style="background-color:var(--bg-secondary); border-top:2px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
+                <td colspan="4" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:0.5rem 0.75rem;">
+                  ${categoryTitle}
+                </td>
+              </tr>
+            `;
+          }
+
           let rowStyle = "";
           let badge = "";
 
           if (item.isCurrent) {
             rowStyle = "background-color: rgba(16, 185, 129, 0.08); font-weight:700;";
-            badge = `<span class="badge" style="background-color:var(--success-light); color:var(--success-color); font-weight:700;">${lang === 'ko' ? '★ 현재 수령액 (2026)' : '★ Current Rate (2026)'}</span>`;
-          } else if (item.isFuture) {
+            badge = `<span class="badge" style="background-color:var(--success-light); color:var(--success-color); font-weight:700;">${lang === 'ko' ? '★ 법정 확정 / 현재 (2026)' : '★ Enacted / Current Rate (2026)'}</span>`;
+          } else if (item.statusCategory === 'announced') {
             rowStyle = "background-color: rgba(99, 102, 241, 0.08); font-weight:600;";
-            badge = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:700;">${lang === 'ko' ? '🚀 2027년 인상 예정' : '🚀 2027 Upcoming Increase'}</span>`;
+            badge = `<span class="badge" style="background-color:var(--accent-light); color:var(--accent-primary); font-weight:600;">${lang === 'ko' ? item.statusKo : item.statusEn}</span>`;
           } else {
-            badge = `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${lang === 'ko' ? '이전 (과거)' : 'Past'}</span>`;
+            badge = `<span class="badge" style="background-color:var(--bg-secondary); color:var(--text-muted);">${lang === 'ko' ? '이전 확정' : 'Past Enacted'}</span>`;
           }
 
-          return `
+          rowsHtml += `
             <tr style="${rowStyle}">
               <td style="font-weight:600;">${lang === 'ko' ? item.periodKo : item.periodEn}</td>
               <td style="font-family:var(--font-mono);">${lang === 'ko' ? item.rateDescKo : item.rateDescEn}</td>
@@ -1985,7 +2016,9 @@ const App = {
               <td>${badge}</td>
             </tr>
           `;
-        }).join('');
+        });
+
+        tbody.innerHTML = rowsHtml;
       }
     };
 
