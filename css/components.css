@@ -592,7 +592,8 @@
 }
 
 .result-panel {
-  position: static;
+  position: static !important;
+  top: auto !important;
 }
 
 .panel-title {

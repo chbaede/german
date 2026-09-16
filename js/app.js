@@ -785,9 +785,6 @@ const App = {
             </div>
           </div>
 
-          <div class="form-actions">
-            <button id="btn-rev-calc" class="btn-primary">⚡ ${t('calculate')}</button>
-          </div>
           <div class="notice-box">
             <strong>⚠️ ${t('estimatedNotice')}:</strong> ${t('estimatedDisclaimerText')}
           </div>
@@ -887,7 +884,10 @@ const App = {
       }
     });
 
-    document.getElementById('btn-rev-calc').addEventListener('click', updateRev);
+    const revBtn = document.getElementById('btn-rev-calc');
+    if (revBtn) {
+      revBtn.addEventListener('click', updateRev);
+    }
 
     updateRevSyncInfo();
     updateRev();
