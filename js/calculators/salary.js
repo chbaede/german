@@ -232,6 +232,109 @@ const SalaryCalculator = {
   },
 
   /**
+   * Official Statutory Solidarity Surcharge (Solidaritätszuschlag - SolZ) Calculation for 2025
+   * Statutory Basis: §§ 3, 4 SolZG (Solidaritätszuschlaggesetz 1995 as amended for 2025)
+   *
+   * @param {number|object} paramsOrTax - Income tax liability in Euro, or params object
+   * @param {boolean|string|number} [isSplittingOrClass] - Splitting flag or tax class (e.g. "3")
+   * @param {object} [options] - Additional options (e.g. { raw: boolean, details: boolean })
+   * @returns {number|object} Annual Solidarity Surcharge in Euro
+   */
+  calculateSolidaritySurcharge2025(paramsOrTax, isSplittingOrClass, options = {}) {
+    if (typeof GERMAN_TAX_CONFIG !== 'undefined' && GERMAN_TAX_CONFIG.calculateSolidaritySurcharge2025) {
+      return GERMAN_TAX_CONFIG.calculateSolidaritySurcharge2025(paramsOrTax, isSplittingOrClass, options);
+    }
+    let incomeTax = 0;
+    let isSplitting = false;
+    let opt = options;
+
+    if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      isSplitting = Boolean(
+        paramsOrTax.isSplitting ??
+        (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
+      );
+      opt = paramsOrTax;
+    } else {
+      incomeTax = Number(paramsOrTax || 0);
+      if (typeof isSplittingOrClass === 'boolean') {
+        isSplitting = isSplittingOrClass;
+      } else if (typeof isSplittingOrClass === 'string' || typeof isSplittingOrClass === 'number') {
+        isSplitting = (String(isSplittingOrClass) === '3');
+      } else if (typeof isSplittingOrClass === 'object' && isSplittingOrClass !== null) {
+        opt = isSplittingOrClass;
+        isSplitting = Boolean(opt.isSplitting ?? (opt.taxClass === '3' || opt.isMarried));
+      }
+    }
+
+    const threshold = isSplitting ? 39900 : 19950;
+    const standardRate = 0.055;
+    const milderungRate = 0.119;
+
+    if (incomeTax <= threshold) {
+      if (opt && opt.details) {
+        return {
+          solz: 0,
+          threshold,
+          inTransitionZone: false,
+          isExempt: true,
+          isFullRate: false,
+          excess: 0,
+          milderungAmount: 0,
+          fullAmount: Number((incomeTax * standardRate).toFixed(2))
+        };
+      }
+      return 0;
+    }
+
+    const excess = incomeTax - threshold;
+    const milderungAmount = excess * milderungRate;
+    const fullAmount = incomeTax * standardRate;
+    const rawSolz = Math.min(fullAmount, milderungAmount);
+    const roundedSolz = Number(rawSolz.toFixed(2));
+
+    if (opt && opt.details) {
+      return {
+        solz: roundedSolz,
+        threshold,
+        inTransitionZone: milderungAmount < fullAmount,
+        isExempt: false,
+        isFullRate: milderungAmount >= fullAmount,
+        excess,
+        milderungAmount: Number(milderungAmount.toFixed(2)),
+        fullAmount: Number(fullAmount.toFixed(2))
+      };
+    }
+
+    if (opt && (opt.raw === true || opt.round === false)) {
+      return rawSolz;
+    }
+
+    return roundedSolz;
+  },
+
+  /**
+   * General Solidarity Surcharge Calculation for Supported Years (2025, 2026)
+   *
+   * @param {number|object} paramsOrTax - Income tax liability or parameter object
+   * @param {boolean|string|number} [isSplittingOrClass] - Splitting flag or tax class
+   * @param {object} [options] - Additional options ({ taxYear, year, raw, details })
+   * @returns {number|object} Annual Solidarity Surcharge
+   */
+  calculateSolidaritySurcharge(paramsOrTax, isSplittingOrClass, options = {}) {
+    let year = 2026;
+    if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
+      year = parseInt(paramsOrTax.taxYear ?? paramsOrTax.year ?? 2026, 10);
+    } else if (typeof options === 'object' && options !== null) {
+      year = parseInt(options.taxYear ?? options.year ?? 2026, 10);
+    }
+    if (year === 2025) {
+      return this.calculateSolidaritySurcharge2025(paramsOrTax, isSplittingOrClass, options);
+    }
+    return this.calculateSolidaritySurcharge2026(paramsOrTax, isSplittingOrClass, options);
+  },
+
+  /**
    * Statutory Health Insurance (GKV) Rate Calculation for 2026
    * Statutory Basis: § 241, § 242, § 242a SGB V; BMG Bekanntmachung 2026
    *
@@ -392,7 +495,7 @@ const SalaryCalculator = {
     const taxClass = String(params.taxClass || "1");
     const stateCode = params.stateCode || "BE";
     const hasChurchTax = Boolean(params.hasChurchTax);
-    const numChildren = Math.max(0, parseInt(params.numChildren || 0, 10));
+    const numChildren = Math.max(0, parseInt(params.numChildren ?? params.numberOfQualifyingChildren ?? 0, 10));
     const healthType = params.healthType || "gkv";
 
     // ========================================================================
@@ -586,6 +689,11 @@ const SalaryCalculator = {
 
     if (taxYear === 2026) {
       solzAnnual = this.calculateSolidaritySurcharge2026({
+        incomeTax: incomeTaxAnnual,
+        isSplitting
+      });
+    } else if (taxYear === 2025) {
+      solzAnnual = this.calculateSolidaritySurcharge2025({
         incomeTax: incomeTaxAnnual,
         isSplitting
       });

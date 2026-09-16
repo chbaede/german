@@ -686,6 +686,126 @@ assert.ok(res2026.netMonthly > 0);
 assert.strictEqual(res2026.taxYear, 2026);
 console.log("[PASS] Enacted official years (2025 & 2026) calculate accurately without regressions.");
 
-console.log("\n🎉 ALL 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");
+// === 12. AUDIT AND CORRECTION OF ALL 2025 PARAMETERS (CARE & SOLZ) ===
+console.log("\n=== 12. AUDIT AND CORRECTION OF ALL 2025 PARAMETERS ===");
+
+const cfg2025 = GERMAN_TAX_CONFIG.years[2025];
+
+// A. 2025 Pflegeversicherung Statutory Verification
+assert.strictEqual(cfg2025.care.baseRate, 0.036, "2025 PV total general base rate must be 3.6%");
+assert.strictEqual(cfg2025.care.childlessTotalRate, 0.042, "2025 PV childless total rate must be 4.2%");
+assert.strictEqual(cfg2025.care.employeeBaseRate, 0.018, "2025 PV employee base outside Saxony must be 1.8%");
+assert.strictEqual(cfg2025.care.childlessEmployeeRate, 0.024, "2025 PV childless employee rate outside Saxony must be 2.4%");
+assert.strictEqual(cfg2025.care.employeeBaseRateSachsen, 0.023, "2025 PV Saxony employee base must be 2.3%");
+assert.strictEqual(cfg2025.care.childlessEmployeeRateSachsen, 0.029, "2025 PV Saxony childless employee rate must be 2.9%");
+
+// Child-dependent employee rates mapping (Outside Saxony)
+const expectedRatesOutsideSaxony = {
+  0: 0.0240,
+  1: 0.0180,
+  2: 0.0155,
+  3: 0.0130,
+  4: 0.0105,
+  5: 0.0080
+};
+assert.deepStrictEqual(cfg2025.care.ratesOutsideSaxony, expectedRatesOutsideSaxony);
+
+// Verify Saxony employee surcharge (+0.50%)
+assert.strictEqual(cfg2025.care.saxonyAdditionalEmployeeShare, 0.0050);
+
+// B. Negative check: verify NO outdated 2024 Pflegeversicherung values remain in 2025
+assert.notStrictEqual(cfg2025.care.baseRate, 0.040, "2025 PV must NOT contain 2024/temporary 4.0% rate");
+assert.notStrictEqual(cfg2025.care.employeeBaseRate, 0.022, "2025 PV must NOT contain 2024/temporary 2.2% rate");
+assert.notStrictEqual(cfg2025.care.employeeBaseRateSachsen, 0.027, "2025 PV Saxony must NOT contain 2024/temporary 2.7% rate");
+console.log("[PASS] 2025 Pflegeversicherung: All rates (3.6% base, 4.2% childless, 1.8% employee, 2.3% Saxony, graduated child rates) verified with zero 2024 values remaining.");
+
+// C. 2025 Solidarity Surcharge (SolZ) Statutory Verification
+assert.strictEqual(cfg2025.solz.thresholdSingle, 19950, "2025 SolZ single threshold must be €19,950");
+assert.strictEqual(cfg2025.solz.thresholdMarried, 39900, "2025 SolZ married threshold must be €39,900");
+assert.strictEqual(cfg2025.solz.rate, 0.055, "2025 SolZ rate must be 5.5%");
+assert.strictEqual(cfg2025.solz.milderungRate, 0.119, "2025 SolZ milderung rate must be 11.9%");
+assert.strictEqual(cfg2025.solz.capThresholdSingle, 37094.53, "2025 SolZ single cap threshold must be €37,094.53");
+assert.strictEqual(cfg2025.solz.capThresholdMarried, 74189.06, "2025 SolZ married cap threshold must be €74,189.06");
+
+// D. Negative check: verify NO outdated 2024 SolZ values remain in 2025
+assert.notStrictEqual(cfg2025.solz.thresholdSingle, 18130, "2025 SolZ single must NOT use 2024 €18,130");
+assert.notStrictEqual(cfg2025.solz.thresholdMarried, 36260, "2025 SolZ married must NOT use 2024 €36,260");
+console.log("[PASS] 2025 Solidarity Surcharge: Statutory thresholds (€19,950 single / €39,900 married, 5.5%, 11.9%) verified with zero 2024 values remaining.");
+
+// E. 2025 SolZ Functional Calculation Tests
+// Single / Class I tests:
+// 1. Below or equal to €19,950 -> SolZ = 0
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(19000, false), 0);
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(19950, false), 0);
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge({ taxYear: 2025, incomeTax: 19950, isSplitting: false }), 0);
+
+// 2. 1€ above threshold in Milderungszone: (19,951 - 19,950) * 0.119 = 0.119 -> 0.12 €
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(19951, false), 0.12);
+
+// 3. Middle transition zone: €25,000 tax -> (25,000 - 19,950) * 0.119 = 5,050 * 0.119 = 600.95 €
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(25000, false), 600.95);
+
+// 4. Above transition cap (€37,094.53): standard 5.5% applies -> €40,000 * 0.055 = 2,200.00 €
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(40000, false), 2200.00);
+
+// Married Splitting / Class III tests:
+// 1. Below or equal to €39,900 -> SolZ = 0
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(39000, true), 0);
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(39900, true), 0);
+
+// 2. 1€ above splitting threshold: (39,901 - 39,900) * 0.119 = 0.12 €
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(39901, true), 0.12);
+
+// 3. Middle splitting transition: €50,000 tax -> (50,000 - 39,900) * 0.119 = 10,100 * 0.119 = 1,201.90 €
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(50000, true), 1201.90);
+
+// 4. Above splitting cap (€74,189.06): standard 5.5% applies -> €80,000 * 0.055 = 4,400.00 €
+assert.strictEqual(SalaryCalculator.calculateSolidaritySurcharge2025(80000, true), 4400.00);
+console.log("[PASS] 2025 SolZ functional calculation verified across all exemption, transition, and capped zones.");
+
+// F. Full Payroll Integration for 2025
+const payroll2025_single = SalaryCalculator.calculateNetSalary({
+  grossMonthly: 5000,
+  taxYear: 2025,
+  taxClass: "1",
+  stateCode: "NW",
+  numberOfQualifyingChildren: 0
+});
+assert.strictEqual(payroll2025_single.taxYear, 2025);
+assert.strictEqual(payroll2025_single.pvEmployeeRate, 0.024);
+assert.strictEqual(payroll2025_single.pvMonthly, Number((5000 * 0.024).toFixed(2))); // €120.00
+assert.strictEqual(payroll2025_single.solzMonthly, 0); // Single income tax is below €19,950
+
+const payroll2025_sn = SalaryCalculator.calculateNetSalary({
+  grossMonthly: 5000,
+  taxYear: 2025,
+  taxClass: "1",
+  stateCode: "SN",
+  numberOfQualifyingChildren: 0
+});
+assert.strictEqual(payroll2025_sn.pvEmployeeRate, 0.029);
+assert.strictEqual(payroll2025_sn.pvMonthly, Number((5000 * 0.029).toFixed(2))); // €145.00
+
+// Child discount check for 2025 (2 children in NW -> 1.55%, 2 children in SN -> 2.05%)
+const payroll2025_kids_nw = SalaryCalculator.calculateNetSalary({
+  grossMonthly: 5000,
+  taxYear: 2025,
+  taxClass: "1",
+  stateCode: "NW",
+  numberOfQualifyingChildren: 2
+});
+assert.strictEqual(payroll2025_kids_nw.pvEmployeeRate, 0.0155);
+
+const payroll2025_kids_sn = SalaryCalculator.calculateNetSalary({
+  grossMonthly: 5000,
+  taxYear: 2025,
+  taxClass: "1",
+  stateCode: "SN",
+  numberOfQualifyingChildren: 2
+});
+assert.strictEqual(payroll2025_kids_sn.pvEmployeeRate, 0.0205);
+console.log("[PASS] 2025 Full payroll integration verified (Care insurance child tiers & Saxony differential, SolZ).");
+
+console.log("\n🎉 ALL 2025 & 2026 STATUTORY AUDIT TESTS PASSED WITHOUT EXCEPTION!");
 
 

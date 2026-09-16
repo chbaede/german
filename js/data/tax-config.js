@@ -127,22 +127,40 @@ const GERMAN_TAX_CONFIG = {
         jaegAnnual: 73800
       },
       care: {
-        baseRate: 0.040,
-        employeeBaseRate: 0.022,
-        employeeBaseRateSachsen: 0.027,
-        childlessSurcharge: 0.006,
-        childDiscountPerChild: 0.0025,
-        maxChildDiscount: 0.010,
-        minEmployeeRate: 0.012,
-        minEmployeeRateSachsen: 0.017,
-        bbgMonthly: 5512.50,
-        bbgAnnual: 66150
+        baseRate: 0.036,         // 3.6% total statutory base
+        childlessTotalRate: 0.042,// 4.2% childless total rate (3.6% + 0.6%)
+        employeeBaseRate: 0.018, // 1.8% employee base outside Saxony (3.6% / 2)
+        employeeBaseRateSachsen: 0.023, // 2.3% employee base in Saxony (+0.50 percentage points)
+        childlessSurcharge: 0.006,      // +0.6% childless surcharge
+        childlessEmployeeRate: 0.0240,  // 2.40% childless employee rate outside Saxony
+        childlessEmployeeRateSachsen: 0.0290, // 2.90% childless in Saxony
+        bbgMonthly: 5512.50,            // 2025 Pflegeversicherung ceiling (€5,512.50/mo)
+        bbgAnnual: 66150,
+        // Statutory employee rate mapping (Outside Saxony):
+        // 0 kids (childless): 2.40%
+        // 1 kid: 1.80%
+        // 2 kids: 1.55%
+        // 3 kids: 1.30%
+        // 4 kids: 1.05%
+        // 5+ kids: 0.80%
+        // In Saxony (SN): Add +0.50 percentage points across all tiers
+        ratesOutsideSaxony: {
+          0: 0.0240,
+          1: 0.0180,
+          2: 0.0155,
+          3: 0.0130,
+          4: 0.0105,
+          5: 0.0080
+        },
+        saxonyAdditionalEmployeeShare: 0.0050
       },
       solz: {
-        thresholdSingle: 18130,
-        thresholdMarried: 36260,
-        rate: 0.055,
-        milderungRate: 0.119
+        thresholdSingle: 19950,  // Freigrenze 2025 (Single / non-splitting): €19,950
+        thresholdMarried: 39900, // Freigrenze 2025 (Joint splitting / Class III): €39,900
+        rate: 0.055,             // 5.5% standard statutory SolZ rate (§ 3 Abs. 1 SolZG)
+        milderungRate: 0.119,    // 11.9% transition zone multiplier (§ 4 Satz 2 SolZG)
+        capThresholdSingle: 37094.53, // Transition zone upper limit for single: 19,950 * (0.119 / 0.064)
+        capThresholdMarried: 74189.06 // Transition zone upper limit for married splitting: 39,900 * (0.119 / 0.064)
       },
       lumpSums: {
         werbungskosten: 1230,
@@ -512,6 +530,123 @@ const GERMAN_TAX_CONFIG = {
     }
 
     return roundedSolz;
+  },
+
+  /**
+   * Official Statutory Solidarity Surcharge (Solidaritätszuschlag - SolZ) Calculation for 2025
+   * Statutory Basis: §§ 3, 4 SolZG (Solidaritätszuschlaggesetz 1995 as amended for 2025)
+   *
+   * 1. Freigrenze (§ 3 Abs. 3 SolZG 2025):
+   *    - Single / non-splitting cases (Tax Classes I, II, IV, VI): €19,950 annual income tax liability
+   *    - Joint splitting cases (Tax Class III / married filing jointly): €39,900 annual income tax liability
+   *    If incomeTax <= threshold, SolZ = 0.
+   *
+   * 2. Milderungszone (§ 4 Satz 2 SolZG):
+   *    milderungAmount = (incomeTax - threshold) * 0.119
+   *
+   * 3. Statutory Cap (§ 3 Abs. 1 SolZG):
+   *    The surcharge cannot exceed standard 5.5% of the total income tax liability:
+   *    fullAmount = incomeTax * 0.055
+   *    solz = Math.min(fullAmount, milderungAmount)
+   *
+   * Upper transition boundary where 11.9% excess matches 5.5% of total tax:
+   * - Single: €19,950 * (0.119 / 0.064) = €37,094.53
+   * - Splitting: €39,900 * (0.119 / 0.064) = €74,189.06
+   *
+   * @param {number|object} paramsOrTax - Income tax liability in Euro, or params object
+   * @param {boolean|string|number} [isSplittingOrClass] - Splitting flag or tax class (e.g. "3")
+   * @param {object} [options] - Additional options (e.g. { raw: boolean, details: boolean })
+   * @returns {number|object} Annual Solidarity Surcharge in Euro
+   */
+  calculateSolidaritySurcharge2025(paramsOrTax, isSplittingOrClass, options = {}) {
+    let incomeTax = 0;
+    let isSplitting = false;
+    let opt = options;
+
+    if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
+      incomeTax = Number(paramsOrTax.incomeTax ?? paramsOrTax.taxLiability ?? paramsOrTax.incomeTaxAnnual ?? 0);
+      isSplitting = Boolean(
+        paramsOrTax.isSplitting ??
+        (paramsOrTax.taxClass === '3' || paramsOrTax.taxClass === 3 || paramsOrTax.isMarried)
+      );
+      opt = paramsOrTax;
+    } else {
+      incomeTax = Number(paramsOrTax || 0);
+      if (typeof isSplittingOrClass === 'boolean') {
+        isSplitting = isSplittingOrClass;
+      } else if (typeof isSplittingOrClass === 'string' || typeof isSplittingOrClass === 'number') {
+        isSplitting = (String(isSplittingOrClass) === '3');
+      } else if (typeof isSplittingOrClass === 'object' && isSplittingOrClass !== null) {
+        opt = isSplittingOrClass;
+        isSplitting = Boolean(opt.isSplitting ?? (opt.taxClass === '3' || opt.isMarried));
+      }
+    }
+
+    const threshold = isSplitting ? 39900 : 19950;
+    const standardRate = 0.055;
+    const milderungRate = 0.119;
+
+    if (incomeTax <= threshold) {
+      if (opt && opt.details) {
+        return {
+          solz: 0,
+          threshold,
+          inTransitionZone: false,
+          isExempt: true,
+          isFullRate: false,
+          excess: 0,
+          milderungAmount: 0,
+          fullAmount: Number((incomeTax * standardRate).toFixed(2))
+        };
+      }
+      return 0;
+    }
+
+    const excess = incomeTax - threshold;
+    const milderungAmount = excess * milderungRate;
+    const fullAmount = incomeTax * standardRate;
+    const rawSolz = Math.min(fullAmount, milderungAmount);
+    const roundedSolz = Number(rawSolz.toFixed(2));
+
+    if (opt && opt.details) {
+      return {
+        solz: roundedSolz,
+        threshold,
+        inTransitionZone: milderungAmount < fullAmount,
+        isExempt: false,
+        isFullRate: milderungAmount >= fullAmount,
+        excess,
+        milderungAmount: Number(milderungAmount.toFixed(2)),
+        fullAmount: Number(fullAmount.toFixed(2))
+      };
+    }
+
+    if (opt && (opt.raw === true || opt.round === false)) {
+      return rawSolz;
+    }
+
+    return roundedSolz;
+  },
+
+  /**
+   * General Solidarity Surcharge Calculation for Supported Years (2025, 2026)
+   *
+   * @param {number|object} paramsOrTax - Income tax liability or parameter object
+   * @param {boolean|string|number} [isSplittingOrClass] - Splitting flag or tax class
+   * @param {object} [options] - Additional options ({ taxYear, year, raw, details })
+   * @returns {number|object} Annual Solidarity Surcharge
+   */
+  calculateSolidaritySurcharge(paramsOrTax, isSplittingOrClass, options = {}) {
+    let year = 2026;
+    if (typeof paramsOrTax === 'object' && paramsOrTax !== null) {
+      year = parseInt(paramsOrTax.taxYear ?? paramsOrTax.year ?? 2026, 10);
+    } else if (typeof options === 'object' && options !== null) {
+      year = parseInt(options.taxYear ?? options.year ?? 2026, 10);
+    }
+    if (year === 2025) {
+      return this.calculateSolidaritySurcharge2025(paramsOrTax, isSplittingOrClass, options);
+    }
+    return this.calculateSolidaritySurcharge2026(paramsOrTax, isSplittingOrClass, options);
   },
 
   // Comprehensive Tax Class Guidance
