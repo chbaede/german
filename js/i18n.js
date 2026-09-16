@@ -408,13 +408,13 @@ const I18N = {
   appTitle: "German Life Toolkit",
   appSubtitle: "Smarte Tools für Alltag und Beruf in Deutschland",
   navHome: "Startseite",
-  navMoney: "Gehalt & Steuern",
-  navHousing: "Wohnen & Miete",
-  navTransport: "Verkehr & Auto",
-  navCalendar: "Kalender & Arbeit",
-  navFamily: "Familie & Schule",
-  navEveryday: "Alltagstools",
-  navReference: "Nachschlagewerk",
+  navMoney: "Finanzen",
+  navHousing: "Wohnen",
+  navTransport: "Verkehr",
+  navCalendar: "Kalender",
+  navFamily: "Familie",
+  navEveryday: "Alltag",
+  navReference: "Wissen",
   toggleTheme: "Dunkelmodus umschalten",
   toggleLanguage: "Sprache wechseln",
   yoctoPortal: "Yocto Portal",
@@ -815,7 +815,7 @@ const I18N = {
     navEveryday: "일상도구",
     navReference: "독일백과",
     toggleTheme: "다크 모드 전환",
-    toggleLanguage: "언어 변경 (EN/KO)",
+    toggleLanguage: "언어 전환",
     yoctoPortal: "Yocto 포털",
     backToDashboard: "← 툴 목록으로 돌아가기",
     privacyBanner: "100% 클라이언트 사이드. 입력하신 금융 정보와 개인정보는 브라우저 외부로 절대 전송되지 않습니다.",
@@ -1249,8 +1249,13 @@ function setLanguage(lang) {
     window.currentLang = lang;
   }
   
-  // Update toggle button text if exists
+  // Update language select dropdown and toggle button if present
   if (typeof document !== 'undefined') {
+    const langSelect = document.getElementById('lang-select');
+    if (langSelect && langSelect.value !== lang) {
+      langSelect.value = lang;
+    }
+
     const langToggleBtn = document.getElementById('lang-toggle');
     if (langToggleBtn) {
       langToggleBtn.textContent = lang.toUpperCase();
@@ -1278,6 +1283,17 @@ function setLanguage(lang) {
   // Trigger app re-render for dynamic content
   if (typeof window !== 'undefined' && window.onLanguageChanged) {
     window.onLanguageChanged(lang);
+  }
+}
+
+// Auto-initialize language state on document ready
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setLanguage(currentLang);
+    });
+  } else {
+    setLanguage(currentLang);
   }
 }
 

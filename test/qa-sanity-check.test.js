@@ -733,7 +733,23 @@ for (const tool of TOOLS_DATA) {
   assert.ok(Array.isArray(tool.tags.ko) && tool.tags.ko.length > 0);
 }
 
-console.log(`[PASS] Tri-lingual localization verified: 100% parity across ${enKeys.length} keys (EN, DE, KO); categories, tools, and cycle logic verified.`);
+// 8. Language Dropdown Selector in index.html & Concise German Navigation
+const indexHtmlContent = fs.readFileSync(require('path').join(__dirname, '../index.html'), 'utf8');
+assert.ok(indexHtmlContent.includes('id="lang-select"'), 'index.html must include id="lang-select"');
+assert.ok(indexHtmlContent.includes('value="ko"'), 'index.html must include option value="ko"');
+assert.ok(indexHtmlContent.includes('value="en"'), 'index.html must include option value="en"');
+assert.ok(indexHtmlContent.includes('value="de"'), 'index.html must include option value="de"');
+
+assert.strictEqual(I18N.de.navMoney, "Finanzen");
+assert.strictEqual(I18N.de.navHousing, "Wohnen");
+assert.strictEqual(I18N.de.navTransport, "Verkehr");
+assert.strictEqual(I18N.de.navCalendar, "Kalender");
+assert.strictEqual(I18N.de.navFamily, "Familie");
+assert.strictEqual(I18N.de.navEveryday, "Alltag");
+assert.strictEqual(I18N.de.navReference, "Wissen");
+totalScenariosExecuted += 2;
+
+console.log(`[PASS] Tri-lingual localization verified: 100% parity across ${enKeys.length} keys (EN, DE, KO); dropdown selector, concise German nav, and switching verified.`);
 
 console.log("\n================================================================");
 console.log(`🎉 ALL ${totalScenariosExecuted} QA / SANITY SCENARIOS COMPLETED AND PASSED WITHOUT EXCEPTION!`);

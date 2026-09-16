@@ -193,10 +193,21 @@
           <span>yocto.co.kr</span>
         </a>
 
-        <!-- Language Switcher -->
-        <button id="lang-toggle" class="btn-icon" onclick="cycleLanguage()" title="Sprache wechseln / Switch Language / 언어 전환">
-          EN
-        </button>
+        <!-- Language Dropdown Selector -->
+        <div class="lang-dropdown-wrapper">
+          <label for="lang-select" class="visually-hidden" data-i18n="toggleLanguage">Language</label>
+          <div class="lang-select-box">
+            <span class="lang-select-icon" aria-hidden="true">🌐</span>
+            <select id="lang-select" class="lang-select" onchange="setLanguage(this.value)" aria-label="Select Language">
+              <option value="ko">한국어</option>
+              <option value="en">English</option>
+              <option value="de">Deutsch</option>
+            </select>
+            <svg class="lang-select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
 
         <!-- Dark Mode Toggle -->
         <button id="theme-toggle" class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle theme">

@@ -2,6 +2,17 @@
    German Life Toolkit — Responsive Breakpoints & Mobile Optimization
    ========================================================================== */
 
+/* Medium Desktop & Small Laptops (<= 1200px) */
+@media (max-width: 1200px) {
+  .brand-subtitle {
+    display: none;
+  }
+  .nav-link {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.75rem;
+  }
+}
+
 /* Laptop & Tablet Landscape (<= 1024px) */
 @media (max-width: 1024px) {
   .header-nav {
@@ -16,6 +27,48 @@
 
 /* Tablet Portrait & Large Phones (<= 768px) */
 @media (max-width: 768px) {
+  .yocto-pill {
+    display: none;
+  }
+
+  .header-container {
+    height: 3.75rem;
+  }
+
+  .brand-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .brand-icon img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-title {
+    font-size: 0.9375rem;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .lang-select-box {
+    height: 2.125rem;
+    padding: 0 0.45rem 0 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .lang-select {
+    font-size: 0.75rem;
+    padding-right: 1.05rem;
+  }
+
+  .btn-icon {
+    width: 2.125rem;
+    height: 2.125rem;
+  }
+
   .hero-title {
     font-size: 1.875rem;
   }
@@ -59,6 +112,22 @@
 
 /* Small Mobile Phones (<= 390px iPhone mini / SE) */
 @media (max-width: 390px) {
+  .header-container {
+    gap: 0.35rem;
+  }
+
+  .brand-wrapper {
+    gap: 0.4rem;
+  }
+
+  .brand-title {
+    font-size: 0.84375rem;
+  }
+
+  .lang-select-box {
+    padding: 0 0.35rem 0 0.4rem;
+  }
+
   .container {
     padding-left: 0.875rem;
     padding-right: 0.875rem;
