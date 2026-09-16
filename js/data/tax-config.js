@@ -338,6 +338,69 @@ const GERMAN_TAX_CONFIG = {
   },
 
   /**
+   * Private Health & Care Insurance (PKV & PPV) Cost & Subsidy Calculator
+   *
+   * Statutory & Contractual Principles:
+   * 1. Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.
+   * 2. Premiums depend on entry age, underwriting, chosen tariffs, and deductibles (not statutory gross salary).
+   * 3. Employers pay a tax-free subsidy (§ 257 SGB V, § 61 SGB XI) up to 50% of the premium, capped at the statutory GKV/PV ceiling.
+   *
+   * @param {object} params
+   * @param {number|string} [params.pkvMonthlyPremium=0] - Monthly PKV health insurance premium
+   * @param {number|string} [params.ppvMonthlyPremium=0] - Monthly private Pflegepflichtversicherung premium
+   * @param {boolean} [params.hasEmployerSubsidy=true] - Whether employer subsidy is included/applicable
+   * @param {number|string} [params.employerSubsidy] - Explicit monthly employer subsidy (or auto 50% up to statutory cap)
+   * @returns {object} PKV breakdown: { pkvMonthlyPremium, ppvMonthlyPremium, totalPremium, hasEmployerSubsidy, employerSubsidy, employeeCost, pkvEmployeeCost, ppvEmployeeCost, notice }
+   */
+  calculatePkvCost({
+    pkvMonthlyPremium = 0,
+    ppvMonthlyPremium = 0,
+    hasEmployerSubsidy = true,
+    employerSubsidy = null
+  } = {}) {
+    const pkvPremium = Math.max(0, typeof GLTUtils !== 'undefined' ? GLTUtils.parseNumber(pkvMonthlyPremium, 0) : (parseFloat(pkvMonthlyPremium) || 0));
+    const ppvPremium = Math.max(0, typeof GLTUtils !== 'undefined' ? GLTUtils.parseNumber(ppvMonthlyPremium, 0) : (parseFloat(ppvMonthlyPremium) || 0));
+    const totalPremium = pkvPremium + ppvPremium;
+    const subsidyIncluded = (hasEmployerSubsidy !== false && String(hasEmployerSubsidy) !== 'false');
+
+    let finalSubsidy = 0;
+    if (subsidyIncluded) {
+      if (employerSubsidy !== null && employerSubsidy !== undefined && String(employerSubsidy).trim() !== '') {
+        const customSub = typeof GLTUtils !== 'undefined' ? GLTUtils.parseNumber(employerSubsidy, 0) : (parseFloat(employerSubsidy) || 0);
+        finalSubsidy = Math.max(0, customSub);
+      } else {
+        // Statutory 50% rule under § 257 SGB V and § 61 SGB XI (2026 maximum: ~€613.22/mo)
+        const maxStatutorySubsidy2026 = 613.22;
+        finalSubsidy = Math.min(totalPremium / 2, maxStatutorySubsidy2026);
+      }
+    }
+
+    // Employer subsidy cannot exceed the total premium
+    finalSubsidy = Math.min(finalSubsidy, totalPremium);
+    const employeeCost = Math.max(0, totalPremium - finalSubsidy);
+
+    // Proportionate allocation of subsidy to PKV and PPV for line-item reporting
+    const pkvShare = totalPremium > 0 ? (pkvPremium / totalPremium) : 1;
+    const ppvShare = totalPremium > 0 ? (ppvPremium / totalPremium) : 0;
+    const pkvSubsidy = finalSubsidy * pkvShare;
+    const ppvSubsidy = finalSubsidy * ppvShare;
+    const pkvEmployeeCost = Math.max(0, pkvPremium - pkvSubsidy);
+    const ppvEmployeeCost = Math.max(0, ppvPremium - ppvSubsidy);
+
+    return {
+      pkvMonthlyPremium: Number(pkvPremium.toFixed(2)),
+      ppvMonthlyPremium: Number(ppvPremium.toFixed(2)),
+      totalPremium: Number(totalPremium.toFixed(2)),
+      hasEmployerSubsidy: subsidyIncluded,
+      employerSubsidy: Number(finalSubsidy.toFixed(2)),
+      employeeCost: Number(employeeCost.toFixed(2)),
+      pkvEmployeeCost: Number(pkvEmployeeCost.toFixed(2)),
+      ppvEmployeeCost: Number(ppvEmployeeCost.toFixed(2)),
+      notice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone."
+    };
+  },
+
+  /**
    * Official Statutory Pflegeversicherung (Long-Term Care Insurance) Employee Rate Scale
    * Implements exact statutory rates for 2026:
    * Outside Saxony:

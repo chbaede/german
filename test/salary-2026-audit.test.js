@@ -229,20 +229,78 @@ if (voluntaryMember.gkvMembershipStatus !== "voluntary") throw new Error("Gross 
 if (voluntaryMember.gkvAssessmentMonthly !== 5812.50) throw new Error("Voluntary GKV assessment must be capped at €5,812.50 BBG");
 console.log(`[PASS] Membership Status: €5,000/mo => ${mandatoryMember.gkvMembershipStatus}, €7,000/mo => ${voluntaryMember.gkvMembershipStatus} (capped at €${voluntaryMember.gkvAssessmentMonthly})`);
 
-// E. PKV Estimator Mode (Non-statutory contract rate, monthly input & optional employer subsidy)
-const pkvDirect = SalaryCalculator.calculateNetSalary({ grossMonthly: 6000, taxYear: 2026, healthType: "pkv", pkvAmount: 450 });
-if (pkvDirect.gkvAssessmentMonthly !== 0) throw new Error("PKV must not have statutory GKV assessment");
-if (pkvDirect.gkvMonthly !== 450) throw new Error("PKV employee cost must equal inputted €450");
+// E. PKV & PPV Estimator Mode Verification
+// 1. Direct function calculatePkvCost tests
+// Case 1a: Default auto 50% subsidy with PKV €550 and PPV €80 (Total €630, 50% = €315, employee €315)
+const pkvRes1 = SalaryCalculator.calculatePkvCost({
+  pkvMonthlyPremium: 550,
+  ppvMonthlyPremium: 80,
+  hasEmployerSubsidy: true
+});
+if (pkvRes1.totalPremium !== 630) throw new Error(`Total premium mismatch: expected 630, got ${pkvRes1.totalPremium}`);
+if (pkvRes1.employerSubsidy !== 315) throw new Error(`Employer subsidy mismatch: expected 315, got ${pkvRes1.employerSubsidy}`);
+if (pkvRes1.employeeCost !== 315) throw new Error(`Employee cost mismatch: expected 315, got ${pkvRes1.employeeCost}`);
+if (pkvRes1.notice !== "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.") {
+  throw new Error("calculatePkvCost must contain exact required statutory notice wording");
+}
 
-const pkvWithSubsidy = SalaryCalculator.calculateNetSalary({
+// Case 1b: No employer subsidy (self-employed or not eligible): employee pays 100%
+const pkvResNoSub = SalaryCalculator.calculatePkvCost({
+  pkvMonthlyPremium: 600,
+  ppvMonthlyPremium: 100,
+  hasEmployerSubsidy: false
+});
+if (pkvResNoSub.employerSubsidy !== 0) throw new Error("Employer subsidy must be 0 when hasEmployerSubsidy is false");
+if (pkvResNoSub.employeeCost !== 700) throw new Error("Employee cost must be 100% of premium when no subsidy");
+
+// Case 1c: Custom employer subsidy amount
+const pkvResCustomSub = SalaryCalculator.calculatePkvCost({
+  pkvMonthlyPremium: 700,
+  ppvMonthlyPremium: 100,
+  hasEmployerSubsidy: true,
+  employerSubsidy: 350
+});
+if (pkvResCustomSub.employerSubsidy !== 350) throw new Error("Custom subsidy amount should be respected");
+if (pkvResCustomSub.employeeCost !== 450) throw new Error("Employee cost should be 800 - 350 = 450");
+
+// Case 1d: Global function availability
+if (typeof calculatePkvCost !== 'function') throw new Error("calculatePkvCost must be globally exported");
+const globalPkv = calculatePkvCost({ pkvMonthlyPremium: 500, ppvMonthlyPremium: 50 });
+if (globalPkv.totalPremium !== 550) throw new Error("Global calculatePkvCost failed");
+
+// 2. Integration in calculateNetSalary
+// Must not use statutory GKV/PV percentages from salary
+const pkvSalaryRun = SalaryCalculator.calculateNetSalary({
+  grossMonthly: 8000,
+  taxYear: 2026,
+  healthType: "pkv",
+  pkvMonthlyPremium: 550,
+  ppvMonthlyPremium: 80,
+  hasEmployerSubsidy: true
+});
+
+if (pkvSalaryRun.gkvAssessmentMonthly !== 0) throw new Error("PKV must have 0 GKV assessment from salary");
+if (pkvSalaryRun.pvAssessmentMonthly !== 0) throw new Error("PPV must have 0 PV assessment from salary");
+if (pkvSalaryRun.gkvEmployeeRate !== 0) throw new Error("PKV must have 0 statutory GKV employee rate");
+if (pkvSalaryRun.pvEmployeeRate !== 0) throw new Error("PPV must have 0 statutory PV employee rate");
+if (Math.abs(pkvSalaryRun.gkvMonthly + pkvSalaryRun.pvMonthly - 315) > 0.01) {
+  throw new Error(`Total PKV+PPV employee cost in salary calculator must equal €315, got €${pkvSalaryRun.gkvMonthly + pkvSalaryRun.pvMonthly}`);
+}
+if (!pkvSalaryRun.parameters.pkvNotice.includes("Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.")) {
+  throw new Error("Salary parameters must include exact required PKV notice");
+}
+
+// Case 2b: Backward compatibility with legacy pkvAmount
+const pkvLegacy = SalaryCalculator.calculateNetSalary({
   grossMonthly: 6000,
   taxYear: 2026,
   healthType: "pkv",
-  pkvTotalPremium: 800,
-  pkvEmployerSubsidy: 400
+  pkvAmount: 450
 });
-if (pkvWithSubsidy.gkvMonthly !== 400) throw new Error("PKV net cost must equal total premium - employer subsidy (800 - 400 = 400)");
-console.log(`[PASS] PKV Estimator Mode: Direct Cost=€${pkvDirect.gkvMonthly}, Total €800 - Subsidy €400 = €${pkvWithSubsidy.gkvMonthly}`);
+if (pkvLegacy.gkvAssessmentMonthly !== 0) throw new Error("Legacy PKV must not assess from salary");
+if (pkvLegacy.gkvMonthly !== 450) throw new Error("Legacy PKV amount should be honored");
+
+console.log(`[PASS] PKV & PPV Estimator Mode Verified: Premium=€630, Subsidy=€315, Employee Out-of-Pocket=€315, GKV/PV Assessment=€0 (No GKV rates used)`);
 
 // F. BMG Official Source Reference Verification
 const bmgSource = GERMAN_TAX_CONFIG.officialSources.find(s => s.institution.includes("Gesundheit"));

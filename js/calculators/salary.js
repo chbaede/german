@@ -277,6 +277,68 @@ const SalaryCalculator = {
   },
 
   /**
+   * Private Health & Care Insurance (PKV & PPV) Cost & Subsidy Calculator
+   *
+   * Statutory & Contractual Principles:
+   * 1. Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.
+   * 2. Premiums depend on entry age, underwriting, chosen tariffs, and deductibles (not statutory gross salary).
+   * 3. Employers pay a tax-free subsidy (§ 257 SGB V, § 61 SGB XI) up to 50% of the premium, capped at the statutory GKV/PV ceiling.
+   *
+   * @param {object} params
+   * @param {number|string} [params.pkvMonthlyPremium=0] - Monthly PKV health insurance premium
+   * @param {number|string} [params.ppvMonthlyPremium=0] - Monthly private Pflegepflichtversicherung premium
+   * @param {boolean} [params.hasEmployerSubsidy=true] - Whether employer subsidy is included/applicable
+   * @param {number|string} [params.employerSubsidy] - Explicit monthly employer subsidy (or auto 50% up to statutory cap)
+   * @returns {object} PKV breakdown: { pkvMonthlyPremium, ppvMonthlyPremium, totalPremium, hasEmployerSubsidy, employerSubsidy, employeeCost, pkvEmployeeCost, ppvEmployeeCost, notice }
+   */
+  calculatePkvCost({
+    pkvMonthlyPremium = 0,
+    ppvMonthlyPremium = 0,
+    hasEmployerSubsidy = true,
+    employerSubsidy = null
+  } = {}) {
+    const pkvPremium = Math.max(0, GLTUtils.parseNumber(pkvMonthlyPremium, 0));
+    const ppvPremium = Math.max(0, GLTUtils.parseNumber(ppvMonthlyPremium, 0));
+    const totalPremium = pkvPremium + ppvPremium;
+    const subsidyIncluded = (hasEmployerSubsidy !== false && String(hasEmployerSubsidy) !== 'false');
+
+    let finalSubsidy = 0;
+    if (subsidyIncluded) {
+      if (employerSubsidy !== null && employerSubsidy !== undefined && String(employerSubsidy).trim() !== '') {
+        finalSubsidy = Math.max(0, GLTUtils.parseNumber(employerSubsidy, 0));
+      } else {
+        // Statutory 50% rule under § 257 SGB V and § 61 SGB XI (2026 maximum: ~€613.22/mo)
+        const maxStatutorySubsidy2026 = 613.22;
+        finalSubsidy = Math.min(totalPremium / 2, maxStatutorySubsidy2026);
+      }
+    }
+
+    // Employer subsidy cannot exceed the total premium
+    finalSubsidy = Math.min(finalSubsidy, totalPremium);
+    const employeeCost = Math.max(0, totalPremium - finalSubsidy);
+
+    // Proportionate allocation of subsidy to PKV and PPV for line-item reporting
+    const pkvShare = totalPremium > 0 ? (pkvPremium / totalPremium) : 1;
+    const ppvShare = totalPremium > 0 ? (ppvPremium / totalPremium) : 0;
+    const pkvSubsidy = finalSubsidy * pkvShare;
+    const ppvSubsidy = finalSubsidy * ppvShare;
+    const pkvEmployeeCost = Math.max(0, pkvPremium - pkvSubsidy);
+    const ppvEmployeeCost = Math.max(0, ppvPremium - ppvSubsidy);
+
+    return {
+      pkvMonthlyPremium: Number(pkvPremium.toFixed(2)),
+      ppvMonthlyPremium: Number(ppvPremium.toFixed(2)),
+      totalPremium: Number(totalPremium.toFixed(2)),
+      hasEmployerSubsidy: subsidyIncluded,
+      employerSubsidy: Number(finalSubsidy.toFixed(2)),
+      employeeCost: Number(employeeCost.toFixed(2)),
+      pkvEmployeeCost: Number(pkvEmployeeCost.toFixed(2)),
+      ppvEmployeeCost: Number(ppvEmployeeCost.toFixed(2)),
+      notice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone."
+    };
+  },
+
+  /**
    * Main Gross to Net Calculator
    * Computes social insurances, statutory taxable income, wage tax, SolZ, and church tax.
    *
@@ -335,6 +397,7 @@ const SalaryCalculator = {
     let gkvMonthly = 0;
     let gkvEmployeeRate = 0;
     let healthRateDetails = null;
+    let pkvDetails = null;
     const gkvMembershipStatus = (grossAnnual > yCfg.health.jaegAnnual) ? "voluntary" : "mandatory";
 
     if (healthType === "gkv") {
@@ -345,23 +408,43 @@ const SalaryCalculator = {
       gkvEmployeeRate = healthRateDetails.totalEmployeeRate;
       gkvMonthly = gkvAssessmentMonthly * gkvEmployeeRate;
     } else {
-      // PKV Estimator Mode:
-      // Private health insurance is NOT calculated as a statutory percentage of gross salary.
-      // Requires monthly employee cost input and optionally employer subsidy.
+      // PKV & PPV Estimator Mode:
+      // Private health insurance and private Pflegepflichtversicherung premiums are contract-specific
+      // and cannot be reliably calculated from salary alone.
+      // Gross salary has no bearing on private insurance rates.
       gkvAssessmentMonthly = 0;
       gkvEmployeeRate = 0;
-      const pkvEmployerSubsidy = Math.max(0, GLTUtils.parseNumber(params.pkvEmployerSubsidy, 0));
-      const pkvTotalPremium = GLTUtils.parseNumber(params.pkvTotalPremium, null);
 
-      if (pkvTotalPremium !== null && pkvTotalPremium > 0) {
-        gkvMonthly = Math.max(0, pkvTotalPremium - pkvEmployerSubsidy);
+      const hasExplicitPremium = (params.pkvMonthlyPremium !== undefined && params.pkvMonthlyPremium !== null) ||
+                                 (params.pkvTotalPremium !== undefined && params.pkvTotalPremium !== null);
+
+      if (!hasExplicitPremium && params.pkvAmount !== undefined && params.pkvAmount !== null) {
+        // Legacy compatibility: pkvAmount was entered directly as employee out-of-pocket
+        const directCost = Math.max(0, GLTUtils.parseNumber(params.pkvAmount, 0));
+        pkvDetails = {
+          pkvMonthlyPremium: directCost,
+          ppvMonthlyPremium: 0,
+          totalPremium: directCost,
+          hasEmployerSubsidy: false,
+          employerSubsidy: 0,
+          employeeCost: directCost,
+          pkvEmployeeCost: directCost,
+          ppvEmployeeCost: 0,
+          notice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone."
+        };
       } else {
-        gkvMonthly = Math.max(0, GLTUtils.parseNumber(params.pkvAmount, 0));
+        pkvDetails = this.calculatePkvCost({
+          pkvMonthlyPremium: params.pkvMonthlyPremium ?? params.pkvTotalPremium ?? 0,
+          ppvMonthlyPremium: params.ppvMonthlyPremium ?? params.ppvAmount ?? 0,
+          hasEmployerSubsidy: (params.hasEmployerSubsidy !== undefined) ? Boolean(params.hasEmployerSubsidy) : true,
+          employerSubsidy: params.employerSubsidy ?? params.pkvEmployerSubsidy
+        });
       }
+      gkvMonthly = pkvDetails.pkvEmployeeCost;
     }
     const gkvAnnual = gkvMonthly * 12;
 
-    // D. Long-Term Care Insurance (Soziale Pflegeversicherung - PV)
+    // D. Long-Term Care Insurance (Soziale Pflegeversicherung - PV) vs Private PPV
     // Contribution assessment ceiling: €5,812.50/month in 2026 (€69,750/year)
     // PUEG Reform child-dependent rate scale:
     // - 0 children: Base employee rate + 0.6% childless surcharge (2.40% non-SN / 2.90% SN)
@@ -379,6 +462,11 @@ const SalaryCalculator = {
         isChildless: (numChildren === 0)
       });
       pvMonthly = pvAssessmentMonthly * pvEmployeeRate;
+    } else {
+      // Private Pflegepflichtversicherung (PPV): employee out-of-pocket cost
+      pvAssessmentMonthly = 0;
+      pvEmployeeRate = 0;
+      pvMonthly = pkvDetails ? pkvDetails.ppvEmployeeCost : 0;
     }
     const pvAnnual = pvMonthly * 12;
 
@@ -406,11 +494,23 @@ const SalaryCalculator = {
       werbungskosten = yCfg.lumpSums.werbungskosten;
       sonderausgaben = (taxClass === "3") ? yCfg.lumpSums.sonderausgabenMarried : yCfg.lumpSums.sonderausgabenSingle;
 
-      // Statutory Vorsorgepauschale
+      // Statutory Vorsorgepauschale (§ 39b Abs. 2 Satz 5 Nr. 3 EStG)
       const deductibleRvAnnual = Math.min(grossAnnual, yCfg.pension.bbgAnnual) * yCfg.pension.employeeRate;
-      const gkvDeductibleRate = (healthType === "gkv" && gkvEmployeeRate > 0) ? (gkvEmployeeRate * 0.96) : (yCfg.health.totalEmployeeRate * 0.96);
-      const deductibleGkvAnnual = Math.min(grossAnnual, yCfg.health.bbgAnnual) * gkvDeductibleRate;
-      const deductiblePvAnnual = Math.min(grossAnnual, yCfg.care.bbgAnnual) * pvEmployeeRate;
+      let deductibleGkvAnnual = 0;
+      let deductiblePvAnnual = 0;
+
+      if (healthType === "gkv") {
+        const gkvDeductibleRate = (gkvEmployeeRate > 0) ? (gkvEmployeeRate * 0.96) : (yCfg.health.totalEmployeeRate * 0.96);
+        deductibleGkvAnnual = Math.min(grossAnnual, yCfg.health.bbgAnnual) * gkvDeductibleRate;
+        deductiblePvAnnual = Math.min(grossAnnual, yCfg.care.bbgAnnual) * pvEmployeeRate;
+      } else {
+        // PKV / PPV: Do not use GKV statutory rates.
+        // Basic coverage portion deductible under § 39b Abs. 2 Satz 5 Nr. 3 Buchst. d EStG:
+        // Standard statutory payroll model: ~80% of PKV employee share constitutes basic coverage,
+        // and 100% of PPV employee share constitutes basic mandatory care coverage.
+        deductibleGkvAnnual = (pkvDetails ? pkvDetails.pkvEmployeeCost : gkvMonthly) * 12 * 0.80;
+        deductiblePvAnnual = (pkvDetails ? pkvDetails.ppvEmployeeCost : pvMonthly) * 12;
+      }
       annualVorsorge = deductibleRvAnnual + deductibleGkvAnnual + deductiblePvAnnual;
 
       if (taxClass === "2") {
@@ -531,6 +631,18 @@ const SalaryCalculator = {
       isCustomZusatzbeitrag: healthRateDetails ? healthRateDetails.isCustom : false,
       effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : null,
       usingAvgZusatzbeitragNote: "Using the 2026 average Zusatzbeitrag of 2.9%",
+
+      // Private Health & Care Insurance (PKV & PPV) Line Items
+      pkvDetails: pkvDetails || (healthType === 'pkv' ? this.calculatePkvCost({
+        pkvMonthlyPremium: params.pkvMonthlyPremium ?? params.pkvTotalPremium ?? params.pkvAmount,
+        ppvMonthlyPremium: params.ppvMonthlyPremium ?? params.ppvAmount ?? 0,
+        hasEmployerSubsidy: (params.hasEmployerSubsidy !== undefined) ? Boolean(params.hasEmployerSubsidy) : true,
+        employerSubsidy: params.employerSubsidy ?? params.pkvEmployerSubsidy
+      }) : null),
+      pkvMonthlyPremium: pkvDetails ? pkvDetails.pkvMonthlyPremium : 0,
+      ppvMonthlyPremium: pkvDetails ? pkvDetails.ppvMonthlyPremium : 0,
+      pkvEmployerSubsidy: pkvDetails ? pkvDetails.employerSubsidy : 0,
+      pkvEmployeeCost: pkvDetails ? pkvDetails.employeeCost : 0,
       totalSocialMonthly,
       totalSocialAnnual,
 
@@ -557,6 +669,7 @@ const SalaryCalculator = {
         effectiveZusatzbeitrag: healthRateDetails ? healthRateDetails.effectiveZusatzbeitrag : yCfg.health.avgZusatzbeitrag,
         usingAvgZusatzbeitragWording: "Using the 2026 average Zusatzbeitrag of 2.9%",
         solzThreshold: solzThreshold,
+        pkvNotice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.",
         modelDescription: "Statutory estimation model based on BMF Lohnsteuer-Handbuch and § 32a EStG",
         disclaimerEn: "Estimated result. Actual payroll withholding may differ based on individual health insurance additional contribution and employer parameters.",
         disclaimerKo: "추정 계산 결과입니다. 실제 급여 명세서 원천징수액은 가입 건강보험사 추가보험료 및 사업장 설정에 따라 약간의 차이가 있을 수 있습니다."
@@ -624,7 +737,9 @@ const SalaryCalculator = {
 if (typeof globalThis !== 'undefined') {
   globalThis.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
   globalThis.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
+  globalThis.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
 } else if (typeof window !== 'undefined') {
   window.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
   window.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
+  window.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
 }

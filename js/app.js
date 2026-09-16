@@ -340,28 +340,53 @@ const App = {
             </div>
           </div>
 
-          <div id="pkv-row" class="form-group" style="display:none; background:var(--bg-secondary); padding:1rem; border-radius:8px; border:1px solid var(--border-subtle);">
-            <div style="font-size:0.8125rem; font-weight:600; margin-bottom:0.35rem; color:var(--accent-primary);">
-              🛡️ ${t('pkvEstimatorTitle')}
+          <div id="pkv-row" class="form-group" style="display:none; background:var(--bg-secondary); padding:1rem; border-radius:8px; border:1px solid var(--border-subtle); margin-bottom:1rem;">
+            <div style="font-size:0.875rem; font-weight:600; margin-bottom:0.35rem; color:var(--accent-primary); display:flex; align-items:center; justify-content:space-between;">
+              <span>🛡️ ${t('pkvEstimatorTitle')}</span>
+              <span id="pkv-live-cost-badge" class="badge badge-outline" style="font-size:0.75rem; font-weight:600;"></span>
             </div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">
-              ${t('pkvEstimatorNotice')}
-            </p>
-            <div class="form-row">
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">${t('pkvMonthlyAmount')}</label>
+            <div style="font-size:0.75rem; color:var(--text-secondary); background:rgba(255,193,7,0.1); border-left:3px solid #f59e0b; padding:0.5rem 0.75rem; margin-bottom:0.75rem; border-radius:4px; line-height:1.45;">
+              <strong>⚠️ Notice:</strong> ${t('pkvEstimatorNotice')}
+            </div>
+            <div class="form-row" style="margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0; flex:1;">
+                <label class="form-label" for="salary-pkv-premium">${t('pkvMonthlyPremiumLabel')}</label>
                 <div class="input-with-affix">
                   <span class="affix affix-left">€</span>
-                  <input type="number" id="salary-pkv-val" class="form-input input-prefix" value="450" min="0">
+                  <input type="number" id="salary-pkv-premium" class="form-input input-prefix" value="550" min="0" step="10">
                 </div>
               </div>
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">${t('pkvEmployerSubsidyLabel')}</label>
+              <div class="form-group" style="margin-bottom:0; flex:1;">
+                <label class="form-label" for="salary-ppv-premium">${t('ppvMonthlyPremiumLabel')}</label>
                 <div class="input-with-affix">
                   <span class="affix affix-left">€</span>
-                  <input type="number" id="salary-pkv-subsidy" class="form-input input-prefix" value="0" min="0" placeholder="0">
+                  <input type="number" id="salary-ppv-premium" class="form-input input-prefix" value="80" min="0" step="5">
                 </div>
               </div>
+            </div>
+
+            <div style="margin-bottom:0.75rem; padding:0.5rem 0; border-top:1px dashed var(--border-subtle);">
+              <label class="checkbox-label" style="font-size:0.8125rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; user-select:none;">
+                <input type="checkbox" id="salary-pkv-has-subsidy" checked>
+                <strong>${t('pkvHasSubsidyLabel')}</strong>
+              </label>
+            </div>
+
+            <div id="pkv-subsidy-box" class="form-group" style="margin-bottom:0.5rem;">
+              <label class="form-label" for="salary-pkv-subsidy">${t('pkvEmployerSubsidyLabel')}</label>
+              <div class="input-with-affix">
+                <span class="affix affix-left">€</span>
+                <input type="number" id="salary-pkv-subsidy" class="form-input input-prefix" value="" min="0" placeholder="Auto 50% split (capped at ~€613.22/mo)">
+              </div>
+              <span class="form-hint" style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:0.25rem;">
+                ${t('pkvSubsidyAutoNote')}
+              </span>
+            </div>
+
+            <div id="pkv-breakdown-card" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.75rem; border:1px solid var(--border-subtle); margin-top:0.5rem;">
+              <div><span>Total: </span><strong id="pkv-total-val">€ 630,00</strong></div>
+              <div><span>Employer Subsidy: </span><strong id="pkv-subsidy-val" style="color:var(--success, #10b981);">- € 315,00</strong></div>
+              <div><span>Employee Cost: </span><strong id="pkv-employee-val" style="color:var(--accent-primary);">€ 315,00</strong></div>
             </div>
           </div>
 
@@ -421,7 +446,10 @@ const App = {
               <span id="res-gkv" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('careContribution')}</span>
+              <span class="breakdown-label">
+                <span id="label-care-name">${t('careContribution')}</span>
+                <span id="badge-care-status" style="display:block; font-size:0.7rem; color:var(--text-muted); font-weight:normal;"></span>
+              </span>
               <span id="res-pv" class="breakdown-value negative">- € 0,00</span>
             </div>
             <div class="breakdown-row total-row">
@@ -506,8 +534,11 @@ const App = {
     const gkvZusatzRow = document.getElementById('gkv-zusatz-row');
     const zusatzbeitragEl = document.getElementById('salary-zusatzbeitrag');
     const pkvRow = document.getElementById('pkv-row');
-    const pkvValEl = document.getElementById('salary-pkv-val');
+    const pkvPremiumEl = document.getElementById('salary-pkv-premium');
+    const ppvPremiumEl = document.getElementById('salary-ppv-premium');
+    const pkvHasSubsidyEl = document.getElementById('salary-pkv-has-subsidy');
     const pkvSubsidyEl = document.getElementById('salary-pkv-subsidy');
+    const pkvSubsidyBox = document.getElementById('pkv-subsidy-box');
     const yearBadgeEl = document.getElementById('salary-active-year-badge');
 
     const updateSyncInfo = () => {
@@ -527,6 +558,10 @@ const App = {
         gkvZusatzRow.style.display = isPkv ? 'none' : 'block';
       }
 
+      if (pkvSubsidyBox && pkvHasSubsidyEl) {
+        pkvSubsidyBox.style.display = pkvHasSubsidyEl.checked ? 'block' : 'none';
+      }
+
       const res = SalaryCalculator.calculateNetSalary({
         grossMonthly: grossEl.value,
         taxYear: taxYearEl.value,
@@ -536,17 +571,33 @@ const App = {
         numChildren: childrenEl.value,
         healthType: healthEl.value,
         kasseZusatzbeitrag: zusatzbeitragEl ? zusatzbeitragEl.value : null,
-        pkvAmount: pkvValEl ? pkvValEl.value : 0,
-        pkvEmployerSubsidy: pkvSubsidyEl ? pkvSubsidyEl.value : 0
+        pkvMonthlyPremium: pkvPremiumEl ? pkvPremiumEl.value : 550,
+        ppvMonthlyPremium: ppvPremiumEl ? ppvPremiumEl.value : 80,
+        hasEmployerSubsidy: pkvHasSubsidyEl ? pkvHasSubsidyEl.checked : true,
+        employerSubsidy: (pkvSubsidyEl && pkvSubsidyEl.value.trim() !== '') ? pkvSubsidyEl.value : null
       });
 
       if (yearBadgeEl) {
         yearBadgeEl.textContent = `${currentLang === 'ko' ? '세무 연도' : 'Tax year'}: ${res.taxYear}`;
       }
 
-      // Dynamic Health Insurance labels & membership badges
+      // Update PKV live breakdown card
+      if (isPkv && res.pkvDetails) {
+        const totalValEl = document.getElementById('pkv-total-val');
+        const subValEl = document.getElementById('pkv-subsidy-val');
+        const empValEl = document.getElementById('pkv-employee-val');
+        const liveBadge = document.getElementById('pkv-live-cost-badge');
+        if (totalValEl) totalValEl.textContent = GLTUtils.formatEuro(res.pkvDetails.totalPremium);
+        if (subValEl) subValEl.textContent = `- ${GLTUtils.formatEuro(res.pkvDetails.employerSubsidy)}`;
+        if (empValEl) empValEl.textContent = GLTUtils.formatEuro(res.pkvDetails.employeeCost);
+        if (liveBadge) liveBadge.textContent = `${t('pkvEmployeeCostLabel')}: ${GLTUtils.formatEuro(res.pkvDetails.employeeCost)} / mo`;
+      }
+
+      // Dynamic Health Insurance & Care Insurance labels and badges
       const labelHealthEl = document.getElementById('label-health-name');
       const badgeHealthEl = document.getElementById('badge-health-status');
+      const labelCareEl = document.getElementById('label-care-name');
+      const badgeCareEl = document.getElementById('badge-care-status');
 
       if (res.healthType === 'gkv') {
         const ratePct = (res.gkvEmployeeRate * 100).toFixed(2);
@@ -564,16 +615,34 @@ const App = {
             : t('usingAvgZusatzbeitrag2026');
           badgeHealthEl.textContent = `${statusText} • ${noteText}`;
         }
+        if (labelCareEl) {
+          labelCareEl.textContent = t('careContribution');
+        }
+        if (badgeCareEl) {
+          badgeCareEl.textContent = `Rate: ${(res.pvEmployeeRate * 100).toFixed(2)}%`;
+        }
       } else {
         if (labelHealthEl) {
           labelHealthEl.textContent = currentLang === 'ko'
-            ? '민간 건강보험 (PKV)'
-            : 'Private Health Insurance (PKV)';
+            ? '민간 건강보험 (PKV 본인부담)'
+            : 'Private Health Insurance (PKV Out-of-Pocket)';
         }
         if (badgeHealthEl) {
+          const pkvPre = res.pkvDetails ? res.pkvDetails.pkvMonthlyPremium : 0;
           badgeHealthEl.textContent = currentLang === 'ko'
-            ? '개인별 고정 계약 보험료 (소득 무관 견적)'
-            : 'Contract-based individual premium (non-statutory)';
+            ? `총 계약보험료 ${GLTUtils.formatEuro(pkvPre)} (지원금 차감 후)`
+            : `Gross premium ${GLTUtils.formatEuro(pkvPre)} (net of subsidy)`;
+        }
+        if (labelCareEl) {
+          labelCareEl.textContent = currentLang === 'ko'
+            ? '민간 요양의무보험 (PPV 본인부담)'
+            : 'Private Care Insurance (PPV Out-of-Pocket)';
+        }
+        if (badgeCareEl) {
+          const ppvPre = res.pkvDetails ? res.pkvDetails.ppvMonthlyPremium : 0;
+          badgeCareEl.textContent = currentLang === 'ko'
+            ? `총 계약보험료 ${GLTUtils.formatEuro(ppvPre)} (지원금 차감 후)`
+            : `Gross premium ${GLTUtils.formatEuro(ppvPre)} (net of subsidy)`;
         }
       }
 
@@ -605,7 +674,7 @@ const App = {
       updateCalc();
     });
 
-    [taxYearEl, taxClassEl, stateEl, churchEl, childrenEl, healthEl, zusatzbeitragEl, pkvValEl, pkvSubsidyEl].filter(Boolean).forEach(el => {
+    [taxYearEl, taxClassEl, stateEl, churchEl, childrenEl, healthEl, zusatzbeitragEl, pkvPremiumEl, ppvPremiumEl, pkvHasSubsidyEl, pkvSubsidyEl].filter(Boolean).forEach(el => {
       el.addEventListener('input', updateCalc);
       el.addEventListener('change', updateCalc);
     });
@@ -621,8 +690,10 @@ const App = {
       childrenEl.value = "0";
       healthEl.value = "gkv";
       if (zusatzbeitragEl) zusatzbeitragEl.value = "";
-      if (pkvValEl) pkvValEl.value = "450";
-      if (pkvSubsidyEl) pkvSubsidyEl.value = "0";
+      if (pkvPremiumEl) pkvPremiumEl.value = "550";
+      if (ppvPremiumEl) ppvPremiumEl.value = "80";
+      if (pkvHasSubsidyEl) pkvHasSubsidyEl.checked = true;
+      if (pkvSubsidyEl) pkvSubsidyEl.value = "";
       updateSyncInfo();
       updateCalc();
     });
