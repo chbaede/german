@@ -66,7 +66,16 @@ const CalendarTools = {
   },
 
   /**
-   * Calculate working days between two dates
+   * Calculate working days between two dates with explicit distinction:
+   * - calendarDays
+   * - saturdayDays
+   * - sundayDays
+   * - weekendDays (saturdays + sundays)
+   * - publicHolidayDays (all statutory public holidays within the date range)
+   * - weekdayHolidayDays (statutory holidays falling on Monday–Friday)
+   * - weekendHolidayDays (statutory holidays falling on Saturday/Sunday)
+   * - workingDays (effective contractual Monday–Friday working days, never double-deducting weekend holidays)
+   * 
    * @param {string} startDateStr - YYYY-MM-DD
    * @param {string} endDateStr - YYYY-MM-DD
    * @param {string} stateCode - e.g. "BE", "BY", "BY-AUG", "NW"
@@ -75,7 +84,18 @@ const CalendarTools = {
    */
   calculateWorkingDays(startDateStr, endDateStr, stateCode, excludeHolidays = true, options = {}) {
     if (!startDateStr || !endDateStr) {
-      return { calendarDays: 0, weekendDays: 0, holidayDays: 0, netWorkingDays: 0 };
+      return {
+        calendarDays: 0,
+        saturdayDays: 0,
+        sundayDays: 0,
+        weekendDays: 0,
+        publicHolidayDays: 0,
+        weekdayHolidayDays: 0,
+        weekendHolidayDays: 0,
+        workingDays: 0,
+        netWorkingDays: 0,
+        holidayDays: 0
+      };
     }
 
     let start = new Date(startDateStr + "T00:00:00Z");
@@ -91,44 +111,62 @@ const CalendarTools = {
     const endYear = end.getUTCFullYear();
 
     // Collect holiday dates set for relevant years
-    const holidayDatesSet = new Set();
+    const holidaysMap = new Map();
     for (let y = startYear; y <= endYear; y++) {
       const holidays = GERMAN_HOLIDAYS.getHolidaysForYear(y, stateCode, options);
-      holidays.forEach(h => holidayDatesSet.add(h.date));
+      holidays.forEach(h => holidaysMap.set(h.date, h));
     }
 
     let calendarDays = 0;
-    let weekendDays = 0;
-    let holidayDays = 0;
-    let netWorkingDays = 0;
+    let saturdayDays = 0;
+    let sundayDays = 0;
+    let publicHolidayDays = 0;
+    let weekdayHolidayDays = 0;
+    let weekendHolidayDays = 0;
 
     let cur = new Date(start.getTime());
     while (cur <= end) {
       calendarDays++;
-      const dayOfWeek = cur.getUTCDay(); // 0 = Sun, 6 = Sat
-      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-      const dateStr = GERMAN_HOLIDAYS.formatDate(cur);
-      const isHoliday = holidayDatesSet.has(dateStr);
+      const dayOfWeek = cur.getUTCDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+      const isSaturday = (dayOfWeek === 6);
+      const isSunday = (dayOfWeek === 0);
+      const isWeekend = isSaturday || isSunday;
+      const isWeekday = !isWeekend;
 
-      if (isWeekend) {
-        weekendDays++;
-      } else if (isHoliday) {
-        holidayDays++;
-        if (!excludeHolidays) {
-          netWorkingDays++;
+      const dateStr = GERMAN_HOLIDAYS.formatDate(cur);
+      const isHoliday = holidaysMap.has(dateStr);
+
+      if (isSaturday) saturdayDays++;
+      if (isSunday) sundayDays++;
+
+      if (isHoliday) {
+        publicHolidayDays++;
+        if (isWeekday) {
+          weekdayHolidayDays++;
+        } else {
+          weekendHolidayDays++;
         }
-      } else {
-        netWorkingDays++;
       }
 
       cur.setUTCDate(cur.getUTCDate() + 1);
     }
 
+    const weekendDays = saturdayDays + sundayDays;
+    const totalWeekdays = calendarDays - weekendDays;
+    const workingDays = totalWeekdays - (excludeHolidays ? weekdayHolidayDays : 0);
+
     return {
       calendarDays,
+      saturdayDays,
+      sundayDays,
       weekendDays,
-      holidayDays,
-      netWorkingDays
+      publicHolidayDays,
+      weekdayHolidayDays,
+      weekendHolidayDays,
+      workingDays,
+      // Backward compatibility aliases
+      netWorkingDays: workingDays,
+      holidayDays: weekdayHolidayDays
     };
   },
 
@@ -142,7 +180,7 @@ const CalendarTools = {
     let neededForTrip = 0;
     if (startDateStr && endDateStr) {
       const workDaysRes = this.calculateWorkingDays(startDateStr, endDateStr, stateCode, true, options);
-      neededForTrip = workDaysRes.netWorkingDays;
+      neededForTrip = workDaysRes.workingDays;
     }
 
     const remaining = Math.max(0, annualTotal - alreadyTaken - neededForTrip);

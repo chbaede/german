@@ -188,57 +188,145 @@ easterTests.forEach(t => {
 console.log('[PASS] Dynamic Easter algorithm and Buß- und Bettag verified across 2024-2028.');
 
 // 10. Working Days Calculation Integration with Regional Scopes
-console.log('\n--- 10. Working Days Integration ---');
-// In 2026:
-// Aug 8, 2026 is Saturday.
-// Aug 15, 2026 is Saturday.
-// Let's test a period covering Fronleichnam (Thu 2026-06-04):
-// 2026-06-01 (Mon) to 2026-06-05 (Fri): 5 calendar days, 0 weekend days.
-// In BE: Fronleichnam is not a holiday -> 5 working days, 0 holiday days.
-const workBE = CalendarTools.calculateWorkingDays('2026-06-01', '2026-06-05', 'BE');
-assert.strictEqual(workBE.holidayDays, 0, 'Fronleichnam is not a holiday in Berlin');
-assert.strictEqual(workBE.netWorkingDays, 5);
-
-// In BY: Fronleichnam is a holiday -> 4 working days, 1 holiday day.
-const workBY = CalendarTools.calculateWorkingDays('2026-06-01', '2026-06-05', 'BY');
-assert.strictEqual(workBY.holidayDays, 1, 'Fronleichnam is a holiday in Bavaria');
-assert.strictEqual(workBY.netWorkingDays, 4);
-
-// In SN: Fronleichnam is regional (LK Bautzen only), so statewide SN has 0 holiday days!
-const workSN = CalendarTools.calculateWorkingDays('2026-06-01', '2026-06-05', 'SN');
-assert.strictEqual(workSN.holidayDays, 0, 'Fronleichnam is NOT a statewide holiday in Saxony');
-assert.strictEqual(workSN.netWorkingDays, 5);
-
-// In 2025:
-// Aug 8, 2025 is Friday!
-// Aug 15, 2025 is Friday!
-// In 2025, 2025-08-08 (Fri):
-// In standard BY: Aug 8 is NOT a statewide holiday -> 1 net working day, 0 holidays.
+console.log('\n--- 10. Working Days Integration with Regional Scopes ---');
+// In 2025, Aug 8 was Friday and Aug 15 was Friday:
 const workBYAug8_2025 = CalendarTools.calculateWorkingDays('2025-08-08', '2025-08-08', 'BY');
-assert.strictEqual(workBYAug8_2025.holidayDays, 0, 'Augsburg Friedensfest is NOT a statewide holiday in BY');
-assert.strictEqual(workBYAug8_2025.netWorkingDays, 1);
+assert.strictEqual(workBYAug8_2025.weekdayHolidayDays, 0, 'Augsburg Friedensfest is NOT a statewide holiday in BY');
+assert.strictEqual(workBYAug8_2025.workingDays, 1);
 
-// In Augsburg (BY-AUG): Aug 8 IS a municipal holiday -> 0 net working days, 1 holiday!
 const workAugsburgAug8_2025 = CalendarTools.calculateWorkingDays('2025-08-08', '2025-08-08', 'BY-AUG');
-assert.strictEqual(workAugsburgAug8_2025.holidayDays, 1, 'Augsburg Friedensfest IS a municipal holiday in Augsburg');
-assert.strictEqual(workAugsburgAug8_2025.netWorkingDays, 0);
+assert.strictEqual(workAugsburgAug8_2025.weekdayHolidayDays, 1, 'Augsburg Friedensfest IS a municipal holiday in Augsburg');
+assert.strictEqual(workAugsburgAug8_2025.workingDays, 0);
 
-// In 2025, 2025-08-15 (Fri):
-// In standard BY: Mariä Himmelfahrt is NOT in statewide total -> 1 net working day, 0 holidays.
 const workBYAug15_2025 = CalendarTools.calculateWorkingDays('2025-08-15', '2025-08-15', 'BY');
-assert.strictEqual(workBYAug15_2025.holidayDays, 0, 'Mariä Himmelfahrt is NOT a statewide holiday in BY');
-assert.strictEqual(workBYAug15_2025.netWorkingDays, 1);
+assert.strictEqual(workBYAug15_2025.weekdayHolidayDays, 0, 'Mariä Himmelfahrt is NOT a statewide holiday in BY');
+assert.strictEqual(workBYAug15_2025.workingDays, 1);
 
-// In Saarland (SL): Mariä Himmelfahrt IS statewide -> 0 net working days, 1 holiday!
 const workSLAug15_2025 = CalendarTools.calculateWorkingDays('2025-08-15', '2025-08-15', 'SL');
-assert.strictEqual(workSLAug15_2025.holidayDays, 1, 'Mariä Himmelfahrt IS a statewide holiday in Saarland');
-assert.strictEqual(workSLAug15_2025.netWorkingDays, 0);
+assert.strictEqual(workSLAug15_2025.weekdayHolidayDays, 1, 'Mariä Himmelfahrt IS a statewide holiday in Saarland');
+assert.strictEqual(workSLAug15_2025.workingDays, 0);
 
-// In Augsburg (BY-AUG): Mariä Himmelfahrt applies -> 0 net working days, 1 holiday!
-const workAugsburgAug15_2025 = CalendarTools.calculateWorkingDays('2025-08-15', '2025-08-15', 'BY-AUG');
-assert.strictEqual(workAugsburgAug15_2025.holidayDays, 1, 'Mariä Himmelfahrt applies in Augsburg');
-assert.strictEqual(workAugsburgAug15_2025.netWorkingDays, 0);
+console.log('[PASS] Regional and municipal working days adjustments verified for 2025 baseline.');
 
-console.log('[PASS] Working days calculation correctly respects state, regional, and municipal scopes.');
+// 11. Rigorous 2026 Working Days Separation & Double-Deduction Audit
+console.log('\n--- 11. Known 2026 Working Days & Separate Concepts Audit ---');
 
-console.log('\n🎉 ALL GERMAN PUBLIC HOLIDAYS AUDIT TESTS PASSED WITHOUT EXCEPTION!');
+// A. Full Year 2026 across German States:
+// 2026: 365 calendar days, 52 Saturdays, 52 Sundays, 104 weekend days, 261 total weekdays (Mon-Fri)
+const full2026_BE = CalendarTools.calculateWorkingDays('2026-01-01', '2026-12-31', 'BE');
+assert.strictEqual(full2026_BE.calendarDays, 365);
+assert.strictEqual(full2026_BE.saturdayDays, 52);
+assert.strictEqual(full2026_BE.sundayDays, 52);
+assert.strictEqual(full2026_BE.weekendDays, 104);
+assert.strictEqual(full2026_BE.publicHolidayDays, 10);
+assert.strictEqual(full2026_BE.weekdayHolidayDays, 7); // Jan 1, Apr 3, Apr 6, May 1, May 14, May 25, Dec 25
+assert.strictEqual(full2026_BE.weekendHolidayDays, 3); // Mar 8 (Sun), Oct 3 (Sat), Dec 26 (Sat)
+assert.strictEqual(full2026_BE.workingDays, 254); // 261 weekdays - 7 weekday holidays = 254
+// Verify that naive formula (365 - (104 + 10) = 251) was NOT used!
+assert(full2026_BE.workingDays > 251, 'Weekend holidays must not be double deducted');
+console.log('[PASS] Berlin 2026: 365 cal, 52 Sat, 52 Sun, 10 pub holidays (7 weekday, 3 weekend), exactly 254 working days.');
+
+const full2026_BY = CalendarTools.calculateWorkingDays('2026-01-01', '2026-12-31', 'BY');
+assert.strictEqual(full2026_BY.calendarDays, 365);
+assert.strictEqual(full2026_BY.saturdayDays, 52);
+assert.strictEqual(full2026_BY.sundayDays, 52);
+assert.strictEqual(full2026_BY.weekendDays, 104);
+assert.strictEqual(full2026_BY.publicHolidayDays, 12);
+assert.strictEqual(full2026_BY.weekdayHolidayDays, 9); // Jan 1, Jan 6, Apr 3, Apr 6, May 1, May 14, May 25, Jun 4, Dec 25
+assert.strictEqual(full2026_BY.weekendHolidayDays, 3); // Oct 3 (Sat), Nov 1 (Sun), Dec 26 (Sat)
+assert.strictEqual(full2026_BY.workingDays, 252); // 261 - 9 = 252
+console.log('[PASS] Bavaria 2026: 365 cal, 52 Sat, 52 Sun, 12 pub holidays (9 weekday, 3 weekend), exactly 252 working days.');
+
+const full2026_AUG = CalendarTools.calculateWorkingDays('2026-01-01', '2026-12-31', 'BY-AUG');
+assert.strictEqual(full2026_AUG.calendarDays, 365);
+assert.strictEqual(full2026_AUG.publicHolidayDays, 14); // 14 statutory holidays in Augsburg!
+assert.strictEqual(full2026_AUG.weekdayHolidayDays, 9);
+assert.strictEqual(full2026_AUG.weekendHolidayDays, 5); // Aug 8 (Sat), Aug 15 (Sat), Oct 3 (Sat), Nov 1 (Sun), Dec 26 (Sat)
+assert.strictEqual(full2026_AUG.workingDays, 252);
+console.log('[PASS] Augsburg 2026: 14 public holidays (5 on weekend: Aug 8 Sat, Aug 15 Sat, Oct 3 Sat, Nov 1 Sun, Dec 26 Sat).');
+
+const full2026_SN = CalendarTools.calculateWorkingDays('2026-01-01', '2026-12-31', 'SN');
+assert.strictEqual(full2026_SN.publicHolidayDays, 11);
+assert.strictEqual(full2026_SN.weekdayHolidayDays, 8); // Jan 1, Apr 3, Apr 6, May 1, May 14, May 25, Nov 18, Dec 25
+assert.strictEqual(full2026_SN.weekendHolidayDays, 3); // Oct 3 (Sat), Oct 31 (Sat), Dec 26 (Sat)
+assert.strictEqual(full2026_SN.workingDays, 253); // 261 - 8 = 253
+console.log('[PASS] Saxony 2026: 11 public holidays (8 weekday, 3 weekend), exactly 253 working days.');
+
+const full2026_NW = CalendarTools.calculateWorkingDays('2026-01-01', '2026-12-31', 'NW');
+assert.strictEqual(full2026_NW.publicHolidayDays, 11);
+assert.strictEqual(full2026_NW.weekdayHolidayDays, 8); // Jan 1, Apr 3, Apr 6, May 1, May 14, May 25, Jun 4, Dec 25
+assert.strictEqual(full2026_NW.weekendHolidayDays, 3); // Oct 3 (Sat), Nov 1 (Sun), Dec 26 (Sat)
+assert.strictEqual(full2026_NW.workingDays, 253);
+console.log('[PASS] NRW 2026: 11 public holidays (8 weekday, 3 weekend), exactly 253 working days.');
+
+// B. October 2026 (Tag der Deutschen Einheit on Saturday Oct 3):
+// 2026-10-01 (Thu) to 2026-10-31 (Sat): 31 calendar days, 5 Saturdays, 4 Sundays = 9 weekend days, 22 weekdays
+const oct2026_NW = CalendarTools.calculateWorkingDays('2026-10-01', '2026-10-31', 'NW');
+assert.strictEqual(oct2026_NW.calendarDays, 31);
+assert.strictEqual(oct2026_NW.saturdayDays, 5);
+assert.strictEqual(oct2026_NW.sundayDays, 4);
+assert.strictEqual(oct2026_NW.weekendDays, 9);
+assert.strictEqual(oct2026_NW.publicHolidayDays, 1); // Oct 3
+assert.strictEqual(oct2026_NW.weekdayHolidayDays, 0); // Oct 3 is Saturday!
+assert.strictEqual(oct2026_NW.weekendHolidayDays, 1);
+assert.strictEqual(oct2026_NW.workingDays, 22, 'Oct 2026 in NRW must have 22 working days (Oct 3 Sat does NOT reduce working days)');
+
+// In Saxony, Reformationstag (Oct 31) is ALSO a Saturday:
+const oct2026_SN = CalendarTools.calculateWorkingDays('2026-10-01', '2026-10-31', 'SN');
+assert.strictEqual(oct2026_SN.publicHolidayDays, 2); // Oct 3 (Sat) & Oct 31 (Sat)
+assert.strictEqual(oct2026_SN.weekdayHolidayDays, 0);
+assert.strictEqual(oct2026_SN.weekendHolidayDays, 2);
+assert.strictEqual(oct2026_SN.workingDays, 22, 'Oct 2026 in SN must have 22 working days (both holidays fall on Saturdays)');
+console.log('[PASS] October 2026: Saturday holidays (Oct 3 & Oct 31) verified not reducing working days.');
+
+// C. March 2026 in Berlin (Frauentag on Sunday Mar 8):
+// 2026-03-01 (Sun) to 2026-03-31 (Tue): 31 calendar days, 4 Saturdays, 5 Sundays = 9 weekend days, 22 weekdays
+const mar2026_BE = CalendarTools.calculateWorkingDays('2026-03-01', '2026-03-31', 'BE');
+assert.strictEqual(mar2026_BE.calendarDays, 31);
+assert.strictEqual(mar2026_BE.saturdayDays, 4);
+assert.strictEqual(mar2026_BE.sundayDays, 5);
+assert.strictEqual(mar2026_BE.weekendDays, 9);
+assert.strictEqual(mar2026_BE.publicHolidayDays, 1); // Mar 8 (Sunday)
+assert.strictEqual(mar2026_BE.weekdayHolidayDays, 0); // None on weekdays!
+assert.strictEqual(mar2026_BE.weekendHolidayDays, 1);
+assert.strictEqual(mar2026_BE.workingDays, 22, 'March 2026 in Berlin has 22 working days (Mar 8 is Sunday)');
+console.log('[PASS] March 2026: Sunday holiday (Frauentag Mar 8) in Berlin verified not reducing working days.');
+
+// D. December 2026 (Dec 25 is Friday, Dec 26 is Saturday):
+// 2026-12-01 (Tue) to 2026-12-31 (Thu): 31 calendar days, 4 Saturdays, 4 Sundays = 8 weekend days, 23 weekdays
+const dec2026 = CalendarTools.calculateWorkingDays('2026-12-01', '2026-12-31', 'NW');
+assert.strictEqual(dec2026.calendarDays, 31);
+assert.strictEqual(dec2026.saturdayDays, 4);
+assert.strictEqual(dec2026.sundayDays, 4);
+assert.strictEqual(dec2026.weekendDays, 8);
+assert.strictEqual(dec2026.publicHolidayDays, 2); // Dec 25 & Dec 26
+assert.strictEqual(dec2026.weekdayHolidayDays, 1); // Only Dec 25 (Friday)
+assert.strictEqual(dec2026.weekendHolidayDays, 1); // Dec 26 (Saturday)
+assert.strictEqual(dec2026.workingDays, 22); // 23 weekdays - 1 weekday holiday = 22 working days
+console.log('[PASS] December 2026: Dec 25 (Friday) deducted, Dec 26 (Saturday) not double-deducted (22 working days).');
+
+// E. Single-day boundary tests:
+const satHol = CalendarTools.calculateWorkingDays('2026-10-03', '2026-10-03', 'BE');
+assert.strictEqual(satHol.calendarDays, 1);
+assert.strictEqual(satHol.saturdayDays, 1);
+assert.strictEqual(satHol.sundayDays, 0);
+assert.strictEqual(satHol.weekendDays, 1);
+assert.strictEqual(satHol.publicHolidayDays, 1);
+assert.strictEqual(satHol.weekdayHolidayDays, 0);
+assert.strictEqual(satHol.workingDays, 0);
+
+const friHol = CalendarTools.calculateWorkingDays('2026-05-01', '2026-05-01', 'BE');
+assert.strictEqual(friHol.calendarDays, 1);
+assert.strictEqual(friHol.saturdayDays, 0);
+assert.strictEqual(friHol.weekendDays, 0);
+assert.strictEqual(friHol.publicHolidayDays, 1);
+assert.strictEqual(friHol.weekdayHolidayDays, 1);
+assert.strictEqual(friHol.workingDays, 0);
+
+const friHolIncluded = CalendarTools.calculateWorkingDays('2026-05-01', '2026-05-01', 'BE', false);
+assert.strictEqual(friHolIncluded.workingDays, 1, 'When excludeHolidays is false, workingDays includes the weekday holiday');
+console.log('[PASS] Single-day boundary conditions and excludeHolidays flag verified.');
+
+console.log('\n🎉 ALL GERMAN PUBLIC HOLIDAYS & WORKING DAYS AUDIT TESTS PASSED WITHOUT EXCEPTION!');
+
+

@@ -1835,7 +1835,7 @@ const App = {
 
       <div class="tool-layout">
         <div class="input-panel">
-          <h2 class="panel-title"><span>📅 Date Range</span></h2>
+          <h2 class="panel-title"><span>📅 Date Range & Location</span></h2>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">${t('startDate')}</label>
@@ -1863,7 +1863,7 @@ const App = {
           <div class="result-hero">
             <div class="result-hero-label">${t('netWorkingDays')}</div>
             <div id="res-work-net" class="result-hero-amount">0</div>
-            <div id="res-work-sub" class="result-hero-sub">Days</div>
+            <div id="res-work-sub" class="result-hero-sub">${t('workingDaysHeroSub') || 'Contractual Working Days (Mo–Fr)'}</div>
           </div>
           <div class="breakdown-list">
             <div class="breakdown-row">
@@ -1874,12 +1874,32 @@ const App = {
               <span class="breakdown-label">${t('weekendDays')}</span>
               <span id="res-work-weekends" class="breakdown-value negative">- 0</span>
             </div>
+            <div class="breakdown-row" style="font-size:0.85rem; padding-left:1rem; opacity:0.85;">
+              <span class="breakdown-label">↳ ${t('saturdaysCount')}</span>
+              <span id="res-work-saturdays" class="breakdown-value">0</span>
+            </div>
+            <div class="breakdown-row" style="font-size:0.85rem; padding-left:1rem; opacity:0.85;">
+              <span class="breakdown-label">↳ ${t('sundaysCount')}</span>
+              <span id="res-work-sundays" class="breakdown-value">0</span>
+            </div>
             <div class="breakdown-row">
-              <span class="breakdown-label">${t('holidaysCount')}</span>
-              <span id="res-work-hol" class="breakdown-value negative">- 0</span>
+              <span class="breakdown-label">${t('weekdayHolidaysCount')}</span>
+              <span id="res-work-hol-weekday" class="breakdown-value negative">- 0</span>
+            </div>
+            <div class="breakdown-row" style="font-size:0.85rem; padding-left:1rem; opacity:0.85;">
+              <span class="breakdown-label">↳ ${t('publicHolidaysTotal')}</span>
+              <span id="res-work-hol-total" class="breakdown-value">0</span>
+            </div>
+            <div class="breakdown-row" style="font-size:0.85rem; padding-left:1rem; opacity:0.85;">
+              <span class="breakdown-label">↳ ${t('weekendHolidaysCount')}</span>
+              <span id="res-work-hol-weekend" class="breakdown-value" style="color:var(--text-muted);">0</span>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="info-box" style="margin-top:1.5rem; font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+        ⚖️ <strong>${t('workingDaysLegalNote')}</strong>
       </div>
     `;
 
@@ -1890,10 +1910,14 @@ const App = {
 
     const updateWork = () => {
       const res = CalendarTools.calculateWorkingDays(startIn.value, endIn.value, stateIn.value, exclIn.checked);
-      document.getElementById('res-work-net').textContent = res.netWorkingDays;
+      document.getElementById('res-work-net').textContent = res.workingDays;
       document.getElementById('res-work-cal').textContent = res.calendarDays;
       document.getElementById('res-work-weekends').textContent = `- ${res.weekendDays}`;
-      document.getElementById('res-work-hol').textContent = `- ${res.holidayDays}`;
+      document.getElementById('res-work-saturdays').textContent = res.saturdayDays;
+      document.getElementById('res-work-sundays').textContent = res.sundayDays;
+      document.getElementById('res-work-hol-weekday').textContent = exclIn.checked ? `- ${res.weekdayHolidayDays}` : '0';
+      document.getElementById('res-work-hol-total').textContent = res.publicHolidayDays;
+      document.getElementById('res-work-hol-weekend').textContent = `${res.weekendHolidayDays} (no double deduction)`;
     };
 
     [startIn, endIn, stateIn, exclIn].forEach(el => {
