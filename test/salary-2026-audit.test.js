@@ -383,6 +383,23 @@ if (kg2026.source !== "BMF / Familienkasse" || FamilyTools.source.institution !=
 }
 console.log(`[PASS] Kindergeld: 2026 Enacted=€${kg2026.ratePerChild}, 2027 Announced=€${kg2027.ratePerChild}, 2028 Announced=€${kg2028.ratePerChild}, Source: ${kg2026.source}`);
 
+// Enacted 2025 rate check (€255)
+const kg2025 = FamilyTools.calculateKindergeld(1, 2025);
+assert.strictEqual(kg2025.ratePerChild, 255, "2025 Kindergeld rate must be €255");
+assert.strictEqual(kg2025.isEnacted, true, "2025 rate must be marked enacted");
+
+// Critical: Unsupported years must NOT return fake / guessed numbers (e.g. 2029, 2030, 2018)
+const kg2029 = FamilyTools.calculateKindergeld(1, 2029);
+assert.strictEqual(kg2029.unavailable, true, "2029 Kindergeld must return unavailable");
+assert.strictEqual(kg2029.error, "KINDERGELD_DATA_UNAVAILABLE");
+
+const kg2030 = FamilyTools.calculateKindergeld(1, 2030);
+assert.strictEqual(kg2030.unavailable, true, "2030 Kindergeld must return unavailable");
+
+const kg2018 = FamilyTools.calculateKindergeld(1, 2018);
+assert.strictEqual(kg2018.unavailable, true, "2018 Kindergeld must return unavailable");
+console.log("[PASS] Kindergeld: Verified enacted 2025 (€255) and strict rejection of unsupported years (2018, 2029, 2030).");
+
 // F. Glossary Entry Verification
 const kgGlossary = GERMAN_GLOSSARY.find(t => t.term === "Kindergeld");
 if (!kgGlossary) throw new Error("Kindergeld glossary entry missing");
@@ -601,10 +618,15 @@ const rentWithRundfunk = RentCalculator.calculateRent({
 });
 assert.strictEqual(rentWithRundfunk.warmmiete, 1200);
 assert.strictEqual(rentWithRundfunk.rundfunkbeitrag, 18.36);
+assert.strictEqual(rentWithRundfunk.rundfunkbeitragQuarterly, 55.08);
+assert.strictEqual(rentWithRundfunk.rundfunkbeitragAnnual, 220.32);
+assert.strictEqual(RentCalculator.RUNDFUNKBEITRAG_STATUTORY.monthly, 18.36);
+assert.strictEqual(RentCalculator.RUNDFUNKBEITRAG_STATUTORY.quarterly, 55.08);
+assert.strictEqual(RentCalculator.RUNDFUNKBEITRAG_STATUTORY.annual, 220.32);
 assert.strictEqual(rentWithRundfunk.gezFee, 18.36); // backward compatibility
 assert.strictEqual(rentWithRundfunk.totalHousingMonthly, 1318.36);
 assert.strictEqual(rentWithRundfunk.totalHousingAnnual, 1318.36 * 12);
-console.log("[PASS] Rent with direct dwelling Rundfunkbeitrag: €1,318.36/mo (Warmmiete €1,200 + €100 utils + €18.36)");
+console.log("[PASS] Rent with direct dwelling Rundfunkbeitrag: €1,318.36/mo (Warmmiete €1,200 + €100 utils + €18.36; €55.08/quarter; €220.32/year)");
 
 // B. Shared flat (WG) or spouse/partner covered / statutory exemption: Rundfunkbeitrag = €0
 const rentWithoutRundfunk = RentCalculator.calculateRent({
@@ -866,19 +888,22 @@ assert.strictEqual(resEstimator.isEstimate, true, "isEstimate flag must be true"
 assert.strictEqual(resEstimator.taxCalculationType, "Estimated Lohnsteuer", "taxCalculationType must be 'Estimated Lohnsteuer'");
 assert.strictEqual(resEstimator.estimatedLohnsteuerMonthly, resEstimator.incomeTaxMonthly, "estimatedLohnsteuerMonthly must match incomeTaxMonthly");
 assert.strictEqual(resEstimator.estimatedLohnsteuerAnnual, resEstimator.incomeTaxAnnual, "estimatedLohnsteuerAnnual must match incomeTaxAnnual");
-console.log("[PASS] Output object contains estimatedLohnsteuerMonthly/Annual, isEstimate: true, and taxCalculationType: 'Estimated Lohnsteuer'.");
+assert.strictEqual(typeof resEstimator.estimatedTaxableIncome, "number", "estimatedTaxableIncome must be exposed as number");
+assert.strictEqual(resEstimator.estimatedTaxBase, resEstimator.estimatedTaxableIncome, "estimatedTaxBase must match estimatedTaxableIncome");
+assert.strictEqual(resEstimator.zvE, resEstimator.estimatedTaxableIncome, "legacy zvE alias must match estimatedTaxableIncome");
+console.log("[PASS] Output object contains estimatedLohnsteuerMonthly/Annual, estimatedTaxableIncome, isEstimate: true, and taxCalculationType: 'Estimated Lohnsteuer'.");
 
 // B. Verify visible disclaimer
-assert.strictEqual(
-  resEstimator.parameters.disclaimerEn,
-  "This is an estimate. Actual employer payroll withholding may differ.",
-  "Exact English disclaimer required"
+assert.ok(
+  resEstimator.parameters.disclaimerEn.includes("This is an estimation model and is NOT the official BMF Lohnsteuer calculation engine") ||
+  resEstimator.parameters.disclaimerEn.includes("This is an estimate. Actual employer payroll withholding may differ."),
+  "Estimation disclaimer required"
 );
 assert.ok(
-  resEstimator.parameters.disclaimerKo.includes("본 계산 결과는 추정치입니다"),
+  resEstimator.parameters.disclaimerKo.includes("추정 모델") || resEstimator.parameters.disclaimerKo.includes("추정치"),
   "Korean disclaimer required"
 );
-console.log("[PASS] Visible disclaimer verified: 'This is an estimate. Actual employer payroll withholding may differ.'");
+console.log("[PASS] Visible disclaimer verified: 'This is an estimation model and is NOT the official BMF Lohnsteuer calculation engine. Actual employer payroll withholding may differ.'");
 
 // C. Verify Class III metadata: no "60/40" ratio requirement
 const class3Meta = GERMAN_TAX_CONFIG.taxClasses.find(c => c.id === "3");
@@ -1012,7 +1037,14 @@ assert.strictEqual(p2_3.zvE - p2_4.zvE, 120, "zvE difference between 3 and 4 chi
 assert.ok(p2_2.netMonthly > p2_1.netMonthly, "Net monthly must increase with 2nd child");
 assert.ok(p2_3.netMonthly > p2_2.netMonthly, "Net monthly must increase with 3rd child");
 assert.ok(p2_4.netMonthly > p2_3.netMonthly, "Net monthly must increase with 4th child");
-console.log("[PASS] Class II full payroll integration verified with exact statutory relief delta of €240 per additional child.");
+
+// Verification of § 24b Abs. 1 EStG eligibility condition:
+// Single-parent relief requires at least 1 qualifying child belonging to household; numChildren=0 yields €0 relief.
+const p2_noKids = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, taxClass: "2", numChildren: 0, stateCode: "BE" });
+assert.strictEqual(p2_noKids.singleParentRelief, 0, "Single parent relief must be €0 if numChildren is 0 (§ 24b Abs. 1 EStG eligibility requirement)");
+const p1_noKids = SalaryCalculator.calculateNetSalary({ grossMonthly: 4000, taxYear: 2026, taxClass: "1", numChildren: 0, stateCode: "BE" });
+assert.strictEqual(p2_noKids.estimatedTaxableIncome, p1_noKids.estimatedTaxableIncome, "Class II with 0 kids has same tax base as Class I");
+console.log("[PASS] Class II full payroll integration verified with exact statutory relief delta of €240 per additional child and strict § 24b Abs. 1 eligibility requirement (0 kids -> €0 relief).");
 
 // D. Statutory sources and metadata
 const s24b = GERMAN_TAX_CONFIG.officialSources.find(s => s.reference.includes("§ 24b EStG"));

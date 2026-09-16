@@ -167,16 +167,6 @@ const GERMAN_SCHOOL_HOLIDAYS = {
         },
         {
           "type": "summer",
-          "nameDe": "Sommerferien (Schulfreier Tag)",
-          "nameEn": "Summer Holidays (School-Free Day)",
-          "nameKo": "여름 방학 (단일 휴교일)",
-          "start": "2025-08-01",
-          "end": "2025-08-01",
-          "isSingleDay": true,
-          "rawKmk": "01.08."
-        },
-        {
-          "type": "summer",
           "nameDe": "Sommerferien",
           "nameEn": "Summer Holidays",
           "nameKo": "여름 방학",

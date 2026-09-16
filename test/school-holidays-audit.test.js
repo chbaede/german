@@ -177,6 +177,16 @@ const invalidState = SH.getSchoolHolidays(2026, "XX");
 if (!invalidState || !invalidState.unavailable || invalidState.error !== "INVALID_STATE") {
   throw new Error("Invalid state 'XX' must return invalid state error");
 }
-console.log(`[PASS] Invalid State 'XX' rejected: "${invalidState.messageEn}"`);
+// 10. Test Bavaria (BY) 2025 Summer Holiday Integrity (KMK canonical interval: 04.08.2025 - 15.09.2025)
+const by24_25 = SH.bySchoolYear["2024/2025"]["BY"];
+const bySummer25 = by24_25.periods.find(p => p.type === "summer");
+if (!bySummer25 || bySummer25.start !== "2025-08-04" || bySummer25.end !== "2025-09-15") {
+  throw new Error(`Bavaria 2025 summer holiday must be exactly 2025-08-04 - 2025-09-15, got: ${JSON.stringify(bySummer25)}`);
+}
+const standaloneAug1 = by24_25.periods.find(p => p.start === "2025-08-01" || p.end === "2025-08-01");
+if (standaloneAug1) {
+  throw new Error(`Erroneous standalone 2025-08-01 entry detected in Bavaria 2025 summer holidays: ${JSON.stringify(standaloneAug1)}`);
+}
+console.log(`[PASS] Bavaria 2025 Summer Holiday Integrity Verified: 2025-08-04 to 2025-09-15 (erroneous 2025-08-01 eliminated).`);
 
 console.log("\n🎉 ALL KMK SCHOOL HOLIDAYS AUDIT TESTS PASSED WITHOUT EXCEPTION!");

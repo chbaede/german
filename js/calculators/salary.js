@@ -639,8 +639,10 @@ const SalaryCalculator = {
     const totalSocialAnnual = totalSocialMonthly * 12;
 
     // ========================================================================
-    // 2. STATUTORY TAXABLE INCOME (Zu versteuerndes Einkommen - zvE)
+    // 2. ESTIMATED TAXABLE INCOME (Estimated Tax Base - estimatedTaxableIncome)
     // ========================================================================
+    // Note: This is a simplified estimated tax base and is NOT the full statutory
+    // BMF Programmablaufplan (PAP) definition of zvE (zu versteuerndes Einkommen).
     // Computed in accordance with § 39b EStG (Lohnsteuer-Berechnungsgrundlagen):
     // Deductions from annual gross:
     // - Arbeitnehmer-Pauschbetrag (§ 9a EStG): €1,230/yr (Classes I–V; €0 for VI)
@@ -679,45 +681,48 @@ const SalaryCalculator = {
       annualVorsorge = deductibleRvAnnual + deductibleGkvAnnual + deductiblePvAnnual;
 
       if (taxClass === "2") {
-        const effectiveChildren = Math.max(1, numChildren);
-        singleParentRelief = this.calculateSingleParentRelief(effectiveChildren, taxYear);
+        // Statutory eligibility under § 24b Abs. 1 EStG:
+        // Requires at least one qualifying child belonging to the taxpayer's single household.
+        // If numChildren is 0, relief cannot be legally claimed.
+        singleParentRelief = (numChildren >= 1) ? this.calculateSingleParentRelief(numChildren, taxYear) : 0;
       }
     }
 
     const totalStatutoryDeductions = werbungskosten + sonderausgaben + singleParentRelief + annualVorsorge;
-    const approximateZvE = Math.max(0, grossAnnual - totalStatutoryDeductions);
+    const estimatedTaxableIncome = Math.max(0, grossAnnual - totalStatutoryDeductions);
+    const estimatedTaxBase = estimatedTaxableIncome;
+    const approximateZvE = estimatedTaxableIncome; // Backward compatibility alias
 
     // ========================================================================
     // 3. ESTIMATED WAGE TAX (Estimated Lohnsteuer)
     // ========================================================================
-    // Note on Lohnsteuer Methodology vs. Official BMF PAP 2026:
-    // This calculator provides an estimation model based on § 32a EStG and the BMF
-    // Lohnsteuer-Handbuch. In official employer payroll withholding, wage tax is computed
-    // via the official BMF Programmablaufplan (PAP 2026) containing hundreds of procedural
-    // steps, integer rounding, and specialized subroutines for Classes III, V, and VI.
+    // Transparency & Statutory Disclaimer:
+    // This is an estimation model and is NOT the official BMF Lohnsteuer calculation engine.
+    // In official employer payroll withholding, wage tax is computed via the official BMF
+    // Programmablaufplan (PAP 2026) containing hundreds of procedural steps, integer rounding,
+    // and specialized subroutines for Classes III, V, and VI.
     // The formulas below for Class III, V, and VI are estimation approximations:
-    // - Class III: Approximates withholding using the splitting tariff on single earner zvE.
+    // - Class III: Approximates withholding using the splitting tariff on single earner estimated taxable income.
     //   (Note: Official BMF PAP uses specialized procedural steps; mandatory annual tax return
     //   reconciles actual joint liability on combined income under § 46 Abs. 2 Nr. 3a EStG).
-    // - Class V: Approximates withholding without Grundfreibetrag and accelerated progression.
+    // - Class V: Simplified progressive estimation approximation without Grundfreibetrag.
     //   (Note: Official BMF PAP uses subroutine MST5_6 rather than a simple bracket shift).
-    // - Class VI: Approximates secondary employment taxation where second and subsequent
-    //   employment relationships are taxed without basic personal allowances.
+    // - Class VI: Simplified secondary employment estimation approximation without personal allowances.
     // They are ESTIMATES and must NOT be described as exact statutory payroll results.
     let incomeTaxAnnual = 0;
 
     if (taxClass === "3") {
       // Class III (Splitting estimation approximation):
-      incomeTaxAnnual = this.calcStatutoryTariff(approximateZvE / 2, yCfg) * 2;
+      incomeTaxAnnual = this.calcStatutoryTariff(estimatedTaxableIncome / 2, yCfg) * 2;
     } else if (taxClass === "5") {
-      // Class V (Progressive estimation approximation without basic allowance):
-      incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(approximateZvE, yCfg);
+      // Class V (Simplified progressive estimation approximation without basic allowance):
+      incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(estimatedTaxableIncome, yCfg);
     } else if (taxClass === "6") {
-      // Class VI (Secondary employment estimation approximation without personal allowances):
+      // Class VI (Simplified secondary employment estimation approximation without personal allowances):
       incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(grossAnnual, yCfg);
     } else {
-      // Class I, II, IV (Standard statutory tariff estimation applied to estimated zvE):
-      incomeTaxAnnual = this.calcStatutoryTariff(approximateZvE, yCfg);
+      // Class I, II, IV (Standard statutory tariff estimation applied to estimated taxable income):
+      incomeTaxAnnual = this.calcStatutoryTariff(estimatedTaxableIncome, yCfg);
     }
 
     const incomeTaxMonthly = Math.max(0, incomeTaxAnnual / 12);
@@ -834,7 +839,9 @@ const SalaryCalculator = {
       effectiveDeductionRate,
 
       // Calculation Internals & Transparency
-      zvE: approximateZvE,
+      estimatedTaxableIncome,
+      estimatedTaxBase,
+      zvE: approximateZvE, // Preserved as backward compatibility alias
       annualVorsorge,
       singleParentRelief,
       rvAssessmentMonthly,
@@ -854,9 +861,9 @@ const SalaryCalculator = {
         solzThreshold: solzThreshold,
         singleParentRelief,
         pkvNotice: "Private insurance premiums are contract-specific and cannot be reliably calculated from salary alone.",
-        modelDescription: "Estimated Lohnsteuer model based on § 32a EStG and BMF Lohnsteuer principles (Approximating official BMF PAP 2026 payroll withholding)",
-        disclaimerEn: "This is an estimate. Actual employer payroll withholding may differ.",
-        disclaimerKo: "본 계산 결과는 추정치입니다. 실제 고용주의 급여 원천징수액은 다를 수 있습니다."
+        modelDescription: "Estimated Lohnsteuer model based on § 32a EStG and BMF principles (This is an estimation model and is NOT the official BMF Lohnsteuer calculation engine)",
+        disclaimerEn: "This is an estimation model and is NOT the official BMF Lohnsteuer calculation engine. Actual employer payroll withholding may differ.",
+        disclaimerKo: "본 계산기는 추정 모델이며 공식 BMF 급여원천징수(Lohnsteuer PAP) 계산 엔진이 아닙니다. 실제 고용주의 급여 원천징수액은 다를 수 있습니다."
       }
     };
   },

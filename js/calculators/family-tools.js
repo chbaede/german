@@ -99,11 +99,41 @@ const FamilyTools = {
 
   calculateKindergeld(numChildren, year = 2026) {
     const count = Math.max(0, parseInt(numChildren || 1, 10));
-    let rate = this.KINDERGELD_PER_CHILD;
-    if (year === 2025) rate = 255;
-    else if (year === 2027) rate = 267;
-    else if (year >= 2028) rate = 272;
-    else if (year <= 2024 && year >= 2023) rate = 250;
+    const targetYear = parseInt(year, 10);
+
+    let rate = null;
+    let isEnacted = false;
+    let isProposal = false;
+
+    if (targetYear === 2026) {
+      rate = 259;
+      isEnacted = true;
+    } else if (targetYear === 2025) {
+      rate = 255;
+      isEnacted = true;
+    } else if (targetYear === 2023 || targetYear === 2024) {
+      rate = 250;
+      isEnacted = true;
+    } else if (targetYear === 2021 || targetYear === 2022) {
+      rate = 219;
+      isEnacted = true;
+    } else if (targetYear === 2027) {
+      rate = 267;
+      isProposal = true;
+    } else if (targetYear === 2028) {
+      rate = 272;
+      isProposal = true;
+    } else {
+      // Unsupported / unverified year: Return clear structured unavailable result
+      return {
+        unavailable: true,
+        error: "KINDERGELD_DATA_UNAVAILABLE",
+        year: targetYear,
+        numChildren: count,
+        messageEn: `Official Kindergeld benefit rate is not available for ${targetYear}. Verified enacted years: 2021–2026 (with 2027–2028 announced government proposals).`,
+        messageKo: `${targetYear}년도 아동수당(Kindergeld) 데이터가 제공되지 않습니다. 공식 지원/검증 연도: 2021년~2026년 (2027~2028년은 정부 발표안).`
+      };
+    }
 
     const monthlyTotal = count * rate;
     const annualTotal = monthlyTotal * 12;
@@ -119,17 +149,24 @@ const FamilyTools = {
     const announcedRates = timelineComparison.filter(item => item.statusCategory === "announced");
 
     return {
-      year,
+      year: targetYear,
       numChildren: count,
       ratePerChild: rate,
       monthlyTotal,
       annualTotal,
+      isEnacted,
+      isProposal,
+      status: isEnacted ? "enacted" : "announced_proposal",
       timelineComparison,
       enactedRates,
       announcedRates,
       source: "BMF / Familienkasse",
-      disclaimerEn: "Future values for 2027 and 2028 are announced / proposed and not legally final until parliamentary enactment.",
-      disclaimerKo: "2027년 및 2028년 금액은 정부 발표/법안 기준 추진안이며 최종 입법 완료 전까지는 법적 확정 수치가 아닙니다."
+      disclaimerEn: isProposal
+        ? `Future values for ${targetYear} (€${rate}/child) are announced government proposals and not legally final until parliamentary enactment.`
+        : "Past and 2026 rates are legally enacted by the German Federal Ministry of Finance (BMF) and Familienkasse.",
+      disclaimerKo: isProposal
+        ? `${targetYear}년 금액(${rate} €)은 정부 발표/법안 기준 추진안이며 최종 입법 완료 전까지는 법적 확정 수치가 아닙니다.`
+        : "과거 및 2026년 금액은 독일 연방재무부(BMF) 및 연방고용청(Familienkasse) 법령으로 확정된 수치입니다."
     };
   },
 

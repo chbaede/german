@@ -2,6 +2,17 @@
  * German Housing, Rent & Rental Deposit (Mietkaution) Calculator Engine
  */
 const RentCalculator = {
+  RUNDFUNKBEITRAG_STATUTORY: {
+    monthly: 18.36,
+    quarterly: 55.08,
+    annual: 220.32,
+    legalBasis: "Rundfunkbeitragsstaatsvertrag (RBStV) § 2, § 8",
+    leviedPer: "dwelling (Wohnung), not per person",
+    source: "ARD ZDF Deutschlandradio Beitragsservice",
+    sourceUrl: "https://www.rundfunkbeitrag.de/",
+    lastVerified: "2026-09-16"
+  },
+
   /**
    * Calculate Warmmiete & Total Monthly Housing Costs
    */
@@ -18,6 +29,8 @@ const RentCalculator = {
       ? Boolean(params.includeRundfunkbeitrag)
       : (params.includeGez !== false);
     const rundfunkbeitrag = includeRundfunk ? 18.36 : 0;
+    const rundfunkbeitragQuarterly = includeRundfunk ? 55.08 : 0;
+    const rundfunkbeitragAnnual = includeRundfunk ? 220.32 : 0;
     const gezFee = rundfunkbeitrag; // preserved for backward compatibility
     const otherCosts = Math.max(0, GLTUtils.parseNumber(params.otherCosts, 0));
     const netIncome = Math.max(0, GLTUtils.parseNumber(params.netIncome, 0));
@@ -36,6 +49,8 @@ const RentCalculator = {
       electricity,
       internet,
       rundfunkbeitrag,
+      rundfunkbeitragQuarterly,
+      rundfunkbeitragAnnual,
       gezFee, // preserved for backward compatibility
       otherCosts,
       totalHousingMonthly,

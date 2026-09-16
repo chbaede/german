@@ -190,8 +190,36 @@ Edit `js/data/tax-config.js`:
 
 ---
 
+## ⚖️ Statutory Data & Estimation Model Principles
+
+### 1. Officially Supported Tax & Payroll Years
+- **Enacted Statutory Years**: **2025** and **2026**.
+- **2027+ Draft Policy Notice**: The German government introduces periodic tax reform proposals (e.g. *Steuerfortentwicklungsgesetz*), but future years are NOT legally finalized until parliamentary enactment. Proposed/announced numbers are strictly marked as drafts and cannot silently calculate in the payroll engine.
+
+### 2. Salary Calculator Estimation Model Disclaimer
+- **Estimation Model**: The salary calculator implements an estimation model based on § 32a EStG and German social insurance legislation. **It is NOT the official BMF Lohnsteuer calculation engine (Programmablaufplan - PAP).**
+- **Actual Payroll Differences**: Actual employer payroll withholding may differ due to procedural integer truncation, specialized subroutines (e.g., `MST5_6` for Class V/VI, factor procedures for Class IV), and individual electronic tax card (ELStAM) allowances.
+- **Tax Base Transparency**: The internal calculation base is an `estimatedTaxableIncome` (simplified estimation base under § 39b EStG principles), not the official BMF PAP definition of `zvE`.
+
+### 3. Key Statutory Baselines Enforced
+| Area | Legal Basis | 2025 Value | 2026 Value | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **Grundfreibetrag** | § 32a Abs. 1 EStG | **€12,096** | **€12,348** | Tax-free basic personal allowance |
+| **Zone 4 Entry (42%)**| § 32a Abs. 1 EStG | **€68,480** | **€69,878** | Spitzensteuersatz threshold |
+| **Pension (RV) BBG** | SV-Rechengrößen-VO | **€8,050/mo** (€96.6k) | **€8,450/mo** (€101.4k) | Contribution assessment ceiling |
+| **Health (GKV) BBG** | § 223 SGB V | **€5,512.50/mo** (€66.15k) | **€5,812.50/mo** (€69.75k) | GKV contribution ceiling |
+| **Average Zusatzbeitrag**| § 242a SGB V | **2.50%** (1.25% employee) | **2.90%** (1.45% employee) | Statutory national average |
+| **Care (PV) Child Scale**| § 55 SGB XI | **2.40% (0) → 0.80% (5+)** | **2.40% (0) → 0.80% (5+)** | Saxony employee +0.50% |
+| **SolZ Freigrenze** | §§ 3, 4 SolZG | **€19,950** (Single) / **€39,900** | **€20,350** (Single) / **€40,700** | 11.9% Milderung; 5.5% cap |
+| **Single-Parent Relief**| § 24b EStG | **€4,260** (+€240/add'l child) | **€4,260** (+€240/add'l child) | Requires ≥1 child in household |
+| **Kindergeld** | BMF / Familienkasse | **€255/child/mo** | **€259/child/mo** | 2027 (€267) & 2028 (€272) announced |
+| **Rundfunkbeitrag** | RBStV §§ 2, 8 | **€18.36/mo** (€220.32/yr) | **€18.36/mo** (€220.32/yr) | Levied per dwelling, not per person |
+
+---
+
 ## 🔒 Privacy & Legal Disclaimer
 
 - **Privacy**: No tracking cookies, no Google Analytics, no third-party telemetry, and zero server-side transmission. All inputs stay exclusively within local browser memory.
 - **Disclaimer**: Tools are provided for informational and educational purposes only. Calculations are estimates and do not constitute certified tax, legal, or financial advice.
+
 
