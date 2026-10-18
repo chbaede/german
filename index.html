@@ -138,15 +138,55 @@
           "@type": "Answer",
           "text": "No. The German Life Toolkit is engineered with a strict 100% client-side architecture. All calculations are processed locally inside your browser memory. No data is stored, transmitted, or logged on any server."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "Which German Tax Class (Steuerklasse) combination is best for married couples: 3/5, 4/4, or 4 with Factor?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If one spouse earns significantly more (e.g. 60:40 or higher), choosing Class 3 for the higher earner and Class 5 for the lower earner maximizes monthly net take-home pay during the year. If spouses earn similar incomes, Class 4/4 is standard and fair. When using 3/5, filing an annual tax return (Steuererklärung) is mandatory, and tax back-payments (Nachzahlung) may occur. To prevent unexpected back-taxes while distributing tax allowances accurately, married couples can choose Class 4 with Factor (Faktorverfahren)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is filing an annual German tax return (Steuererklärung) mandatory, and what is the deadline?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For single employees in Tax Class 1 with one standard employment, filing a tax return is generally voluntary (Antragsveranlagung) and can be submitted retroactively for up to 4 years, yielding an average refund exceeding €1,000. However, filing is mandatory (Pflichtveranlagung) if you use Tax Class 3/5, hold multiple jobs (Class 6), or received over €410 in wage-replacement benefits (e.g., Kurzarbeitergeld, Elterngeld, Krankengeld). The statutory deadline for mandatory self-filing is July 31 of the following year (e.g., July 31, 2026 for tax year 2025), or the end of February of the second following year if prepared by a certified tax advisor (Steuerberater)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between statutory (GKV) and private health insurance (PKV) in Germany?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Employees can only opt out of statutory health insurance (GKV) into private health insurance (PKV) if their annual gross salary exceeds the compulsory insurance threshold (JAEG: €73,800 in 2025, €77,400 in 2026). Below this ceiling, GKV is legally mandatory. GKV contributions are income-dependent (base 14.6% + insurer-specific additional rate split 50:50 with your employer) and include non-earning spouses and children at zero extra premium (Familienversicherung). In PKV, premiums depend on age, health condition, and coverage tier rather than income, requiring individual premiums for each family member."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can non-EU expats claim a refund for German pension contributions (Rentenversicherung) upon leaving?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Non-EU citizens (such as South Korean, American, Canadian, or British expats) who leave Germany and the EU permanently can apply for a full refund of their employee-paid statutory pension contributions (~9.3%), provided they contributed for less than 60 months (5 years) and observed a mandatory 24-month waiting period after leaving Germany. If you contributed for 60 months or longer, contributions cannot be refunded, but you maintain the right to a monthly German pension starting at statutory retirement age (age 67), and contribution periods can be combined under bilateral social security treaties."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do municipal registration (Anmeldung) and obtaining a German Tax ID (Steuer-ID) work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Within 14 days of moving into an apartment in Germany, you must register your address (Anmeldung) at the local citizens' office (Bürgeramt / Einwohnermeldeamt) using a landlord confirmation certificate (Wohnungsgeberbestätigung). Once registered, your official registration certificate (Meldebestätigung) is issued on the spot, and the Federal Central Tax Office (BZSt) automatically generates your permanent 11-digit Tax ID (Steuer-ID / IdNr) and sends it by post within 2 to 4 weeks. Providing this Steuer-ID to your employer ensures payroll withholding under your correct tax class instead of the default highest-rate Class 6."
+        }
       }
     ]
   }
   </script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=20260916e">
-  <link rel="stylesheet" href="css/components.css?v=20260916e">
-  <link rel="stylesheet" href="css/responsive.css?v=20260916e">
+  <link rel="stylesheet" href="css/style.css?v=20261018b">
+  <link rel="stylesheet" href="css/components.css?v=20261018b">
+  <link rel="stylesheet" href="css/responsive.css?v=20261018b">
 
   <!-- Immediate Theme Initializer -->
   <script src="js/theme.js"></script>
@@ -396,13 +436,63 @@
             </div>
           </article>
 
-          <article class="faq-card" style="grid-column: 1 / -1;">
+          <article class="faq-card">
             <h3 class="faq-question">
               <span class="faq-q-icon">🛡️</span>
               <span data-i18n="faq5Q">Does the German Life Toolkit store or send my financial data?</span>
             </h3>
             <div class="faq-answer" data-i18n="faq5A">
               <b>No, never.</b> The German Life Toolkit is engineered with a strict 100% client-side, zero-server architecture. All calculations—including your salary, rent, bonuses, and family details—are computed exclusively in your browser's local memory. No databases, tracking cookies, or external analytics endpoints are used.
+            </div>
+          </article>
+
+          <article class="faq-card">
+            <h3 class="faq-question">
+              <span class="faq-q-icon">⚖️</span>
+              <span data-i18n="faq6Q">Which German Tax Class (Steuerklasse) combination is best for married couples: 3/5, 4/4, or 4 with Factor?</span>
+            </h3>
+            <div class="faq-answer" data-i18n="faq6A">
+              If one spouse earns significantly more (e.g. 60:40 or higher), choosing Class 3 for the higher earner and Class 5 for the lower earner maximizes monthly net take-home pay during the year. If spouses earn similar incomes, Class 4/4 is standard and fair. When using 3/5, filing an annual tax return (Steuererklärung) is mandatory, and tax back-payments (Nachzahlung) may occur. To prevent unexpected back-taxes while distributing tax allowances accurately, married couples can choose Class 4 with Factor (Faktorverfahren).
+            </div>
+          </article>
+
+          <article class="faq-card">
+            <h3 class="faq-question">
+              <span class="faq-q-icon">📝</span>
+              <span data-i18n="faq7Q">Is filing an annual German tax return (Steuererklärung) mandatory, and what is the deadline?</span>
+            </h3>
+            <div class="faq-answer" data-i18n="faq7A">
+              For single employees in Tax Class 1 with one standard employment, filing a tax return is generally voluntary (Antragsveranlagung) and can be submitted retroactively for up to 4 years, yielding an average refund exceeding €1,000. However, filing is mandatory (Pflichtveranlagung) if you use Tax Class 3/5, hold multiple jobs (Class 6), or received over €410 in wage-replacement benefits (e.g., Kurzarbeitergeld, Elterngeld, Krankengeld). The statutory deadline for mandatory self-filing is July 31 of the following year (e.g., July 31, 2026 for tax year 2025), or the end of February of the second following year if prepared by a certified tax advisor (Steuerberater).
+            </div>
+          </article>
+
+          <article class="faq-card">
+            <h3 class="faq-question">
+              <span class="faq-q-icon">🏥</span>
+              <span data-i18n="faq8Q">What is the difference between statutory (GKV) and private health insurance (PKV) in Germany?</span>
+            </h3>
+            <div class="faq-answer" data-i18n="faq8A">
+              Employees can only opt out of statutory health insurance (GKV) into private health insurance (PKV) if their annual gross salary exceeds the compulsory insurance threshold (<b>JAEG</b>: €73,800 in 2025, €77,400 in 2026). Below this ceiling, GKV is legally mandatory. GKV contributions are income-dependent (base 14.6% + insurer-specific additional rate split 50:50 with your employer) and include non-earning spouses and children at zero extra premium (Familienversicherung). In PKV, premiums depend on age, health condition, and coverage tier rather than income, requiring individual premiums for each family member.
+            </div>
+          </article>
+
+          <article class="faq-card">
+            <h3 class="faq-question">
+              <span class="faq-q-icon">✈️</span>
+              <span data-i18n="faq9Q">Can non-EU expats claim a refund for German pension contributions (Rentenversicherung) upon leaving?</span>
+            </h3>
+            <div class="faq-answer" data-i18n="faq9A">
+              Non-EU citizens (such as South Korean, American, Canadian, or British expats) who leave Germany and the EU permanently can apply for a full refund of their employee-paid statutory pension contributions (~9.3%), provided they contributed for **less than 60 months (5 years)** and observed a mandatory **24-month waiting period** after leaving Germany. If you contributed for 60 months or longer, contributions cannot be refunded, but you maintain the right to a monthly German pension starting at statutory retirement age (age 67), and contribution periods can be combined under bilateral social security treaties.
+            </div>
+          </article>
+
+          <article class="faq-card">
+            <h3 class="faq-question">
+              <span class="faq-q-icon">🏢</span>
+              <span data-i18n="faq10Q">How do municipal registration (Anmeldung) and obtaining a German Tax ID (Steuer-ID) work?</span>
+            </h3>
+            <div class="faq-answer" data-i18n="faq10A">
+              Within 14 days of moving into an apartment in Germany, you must register your address (Anmeldung) at the local citizens' office (Bürgeramt / Einwohnermeldeamt) using a landlord confirmation certificate (Wohnungsgeberbestätigung). Once registered, your official registration certificate (Meldebestätigung) is issued on the spot, and the Federal Central Tax Office (BZSt) automatically generates your permanent 11-digit Tax ID (Steuer-ID / IdNr) and sends it by post within 2 to 4 weeks. Providing this Steuer-ID to your employer ensures payroll withholding under your correct tax class instead of the default highest-rate Class 6.
             </div>
           </article>
         </div>
@@ -516,8 +606,8 @@
   <script src="js/data.js"></script>
 
   <!-- 2. i18n & Utilities -->
-  <script src="js/i18n.js?v=20260916e"></script>
-  <script src="js/utils.js?v=20260916e"></script>
+  <script src="js/i18n.js?v=20261018b"></script>
+  <script src="js/utils.js?v=20261018b"></script>
 
   <!-- 3. Calculator Engines -->
   <script src="js/calculators/salary.js"></script>
@@ -531,7 +621,7 @@
 
   <!-- 4. Search and App Controller -->
   <script src="js/search.js"></script>
-  <script src="js/app.js?v=20260916e"></script>
+  <script src="js/app.js?v=20261018b"></script>
 </body>
 </html>
 
