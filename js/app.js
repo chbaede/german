@@ -337,6 +337,14 @@ const App = {
               <input type="number" id="salary-zusatzbeitrag" class="form-input" placeholder="2.9" step="0.01" min="0" max="10">
               <span class="affix affix-right">%</span>
             </div>
+            <div class="zusatz-preset-chips">
+              <span style="font-size:0.7rem; color:var(--text-muted); align-self:center; margin-right:0.25rem;">${t('popularFundsTitle')}:</span>
+              <button type="button" class="zusatz-chip" data-rate="2.90">Ø 2.90% (${currentLang === 'ko' ? '법정평균' : (currentLang === 'de' ? 'Schnitt' : 'Average')})</button>
+              <button type="button" class="zusatz-chip" data-rate="2.69">TK (2.69%)</button>
+              <button type="button" class="zusatz-chip" data-rate="3.29">Barmer (3.29%)</button>
+              <button type="button" class="zusatz-chip" data-rate="3.30">DAK (3.30%)</button>
+              <button type="button" class="zusatz-chip" data-rate="2.89">AOK (2.89%)</button>
+            </div>
             <div class="form-helper" style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem; line-height:1.4;">
               💡 <strong>${t('usingAvgZusatzbeitrag2026')}</strong>. ${t('kasseZusatzbeitragNote')}
             </div>
@@ -403,67 +411,112 @@ const App = {
 
         <!-- Result Panel -->
         <div class="result-panel">
-          <div class="panel-title">
-            <span>📊 ${t('resultsHeading')}</span>
-            <button id="btn-copy-salary" class="btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.75rem;">📋 ${t('copyResult')}</button>
+          <!-- View Switcher Tabs -->
+          <div class="salary-view-tabs" role="tablist">
+            <button id="tab-salary-detail" class="salary-view-tab active" type="button" role="tab">
+              <span>📋</span> <span>${t('salaryViewDetail')}</span>
+            </button>
+            <button id="tab-salary-compare" class="salary-view-tab" type="button" role="tab">
+              <span>⚖️</span> <span>${t('salaryViewCompare')}</span>
+            </button>
           </div>
 
-          <div class="result-hero">
-            <div class="result-hero-label">${t('netMonthly')}</div>
-            <div id="res-net-monthly" class="result-hero-amount">€ 0,00</div>
-            <div id="res-net-annual" class="result-hero-sub" style="font-size:1rem; font-weight:600; color:var(--text-primary); margin-top:0.3rem;">Annual: € 0,00</div>
+          <!-- Single Class Detail View Container -->
+          <div id="salary-view-detail-container">
+            <div class="panel-title">
+              <span>📊 ${t('resultsHeading')}</span>
+              <button id="btn-copy-salary" class="btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.75rem;">📋 ${t('copyResult')}</button>
+            </div>
+
+            <div class="result-hero">
+              <div class="result-hero-label">${t('netMonthly')}</div>
+              <div id="res-net-monthly" class="result-hero-amount">€ 0,00</div>
+              <div id="res-net-annual" class="result-hero-sub" style="font-size:1rem; font-weight:600; color:var(--text-primary); margin-top:0.3rem;">Annual: € 0,00</div>
+            </div>
+
+            <div class="breakdown-list">
+              <div class="breakdown-row">
+                <span class="breakdown-label">${t('grossSalary')}</span>
+                <span id="res-gross" class="breakdown-value">€ 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">${t('incomeTax')}</span>
+                <span id="res-incometax" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">${t('solz')}</span>
+                <span id="res-solz" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row" id="row-church">
+                <span class="breakdown-label">${t('churchTaxAmount')}</span>
+                <span id="res-church" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">${t('pensionContribution')}</span>
+                <span id="res-rv" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">${t('unemploymentContribution')}</span>
+                <span id="res-av" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">
+                  <span id="label-health-name">${t('healthContribution')}</span>
+                  <span id="badge-health-status" style="display:block; font-size:0.7rem; color:var(--text-muted); font-weight:normal;"></span>
+                </span>
+                <span id="res-gkv" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">
+                  <span id="label-care-name">${t('careContribution')}</span>
+                  <span id="badge-care-status" style="display:block; font-size:0.7rem; color:var(--text-muted); font-weight:normal;"></span>
+                </span>
+                <span id="res-pv" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row total-row">
+                <span class="breakdown-label">${t('totalDeductions')}</span>
+                <span id="res-total-deductions" class="breakdown-value negative">- € 0,00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">${t('effectiveDeductionRate')}</span>
+                <span id="res-effective-rate" class="breakdown-value">0.0 %</span>
+              </div>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); padding:0.5rem 0.75rem; border-radius:6px; margin-top:0.75rem; line-height:1.45;">
+              ℹ️ <strong>${t('payrollDisclaimerTitle')}:</strong> ${t('payrollDisclaimer')}
+            </div>
           </div>
 
-          <div class="breakdown-list">
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('grossSalary')}</span>
-              <span id="res-gross" class="breakdown-value">€ 0,00</span>
+          <!-- Tax Class Comparison View Container -->
+          <div id="salary-view-compare-container" style="display:none;">
+            <div class="panel-title" style="margin-bottom:0.25rem;">
+              <span>⚖️ ${t('salaryViewCompare')}</span>
             </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('incomeTax')}</span>
-              <span id="res-incometax" class="breakdown-value negative">- € 0,00</span>
+            <p style="font-size:0.8125rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.45;">
+              ${t('salaryCompareSubtitle')}
+            </p>
+            <div id="salary-compare-cards" class="tc-compare-list"></div>
+
+            <!-- Couple Simulator -->
+            <div class="couple-sim-box">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.4rem;">
+                <h3 style="font-size:0.9375rem; font-weight:700; color:var(--text-primary); margin:0;">
+                  💑 ${t('marriedCoupleSimTitle')}
+                </h3>
+              </div>
+              <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.75rem;">
+                ${t('marriedCoupleSimDesc')}
+              </p>
+              <div class="form-group" style="margin-bottom:0.75rem;">
+                <label class="form-label" for="salary-partner-gross">${t('partnerGrossLabel')}</label>
+                <div class="input-with-affix">
+                  <span class="affix affix-left">€</span>
+                  <input type="number" id="salary-partner-gross" class="form-input input-prefix" value="3000" min="0" step="100">
+                  <span class="affix affix-right">/mo</span>
+                </div>
+              </div>
+              <div id="couple-combo-cards" class="couple-combo-grid"></div>
             </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('solz')}</span>
-              <span id="res-solz" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row" id="row-church">
-              <span class="breakdown-label">${t('churchTaxAmount')}</span>
-              <span id="res-church" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('pensionContribution')}</span>
-              <span id="res-rv" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('unemploymentContribution')}</span>
-              <span id="res-av" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">
-                <span id="label-health-name">${t('healthContribution')}</span>
-                <span id="badge-health-status" style="display:block; font-size:0.7rem; color:var(--text-muted); font-weight:normal;"></span>
-              </span>
-              <span id="res-gkv" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">
-                <span id="label-care-name">${t('careContribution')}</span>
-                <span id="badge-care-status" style="display:block; font-size:0.7rem; color:var(--text-muted); font-weight:normal;"></span>
-              </span>
-              <span id="res-pv" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row total-row">
-              <span class="breakdown-label">${t('totalDeductions')}</span>
-              <span id="res-total-deductions" class="breakdown-value negative">- € 0,00</span>
-            </div>
-            <div class="breakdown-row">
-              <span class="breakdown-label">${t('effectiveDeductionRate')}</span>
-              <span id="res-effective-rate" class="breakdown-value">0.0 %</span>
-            </div>
-          </div>
-          <div style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); padding:0.5rem 0.75rem; border-radius:6px; margin-top:0.75rem; line-height:1.45;">
-            ℹ️ <strong>${t('payrollDisclaimerTitle')}:</strong> ${t('payrollDisclaimer')}
           </div>
         </div>
 
@@ -544,6 +597,14 @@ const App = {
     const pkvSubsidyEl = document.getElementById('salary-pkv-subsidy');
     const pkvSubsidyBox = document.getElementById('pkv-subsidy-box');
     const yearBadgeEl = document.getElementById('salary-active-year-badge');
+    const tabDetailEl = document.getElementById('tab-salary-detail');
+    const tabCompareEl = document.getElementById('tab-salary-compare');
+    const viewDetailContainer = document.getElementById('salary-view-detail-container');
+    const viewCompareContainer = document.getElementById('salary-view-compare-container');
+    const compareCardsEl = document.getElementById('salary-compare-cards');
+    const partnerGrossEl = document.getElementById('salary-partner-gross');
+    const coupleComboCardsEl = document.getElementById('couple-combo-cards');
+    const zusatzChips = container.querySelectorAll('.zusatz-chip');
 
     const updateSyncInfo = () => {
       const mVal = GLTUtils.parseNumber(grossEl.value, 0);
@@ -673,7 +734,217 @@ const App = {
       document.getElementById('res-pv').textContent = `- ${GLTUtils.formatEuro(res.pvMonthly)}`;
       document.getElementById('res-total-deductions').textContent = `- ${GLTUtils.formatEuro(res.totalDeductionsMonthly)}`;
       document.getElementById('res-effective-rate').textContent = `${res.effectiveDeductionRate.toFixed(1)} %`;
+
+      updateCompareView();
     };
+
+    const updateCompareView = () => {
+      if (!compareCardsEl || !coupleComboCardsEl) return;
+      const compRes = SalaryCalculator.compareTaxClasses({
+        grossMonthly: grossEl.value,
+        taxYear: taxYearEl.value,
+        taxClass: taxClassEl.value,
+        stateCode: stateEl.value,
+        hasChurchTax: churchEl.value === 'true',
+        numChildren: childrenEl.value,
+        healthType: healthEl.value,
+        kasseZusatzbeitrag: zusatzbeitragEl ? zusatzbeitragEl.value : null,
+        pkvMonthlyPremium: pkvPremiumEl ? pkvPremiumEl.value : 550,
+        ppvMonthlyPremium: ppvPremiumEl ? ppvPremiumEl.value : 80,
+        hasEmployerSubsidy: pkvHasSubsidyEl ? pkvHasSubsidyEl.checked : true,
+        employerSubsidy: (pkvSubsidyEl && pkvSubsidyEl.value.trim() !== '') ? pkvSubsidyEl.value : null,
+        partnerGrossMonthly: partnerGrossEl ? partnerGrossEl.value : 3000
+      });
+
+      if (!compRes || compRes.unavailable) return;
+
+      const classDescriptions = {
+        '1': {
+          de: 'Ledige, Geschiedene, dauernd Getrenntlebende',
+          ko: '미혼, 독신, 이혼, 별거 (기본 1인 가구)',
+          en: 'Single, divorced, permanently separated'
+        },
+        '2': {
+          de: 'Alleinerziehende mit Entlastungsbetrag',
+          ko: '한부모 가구 (자녀 양육 소득공제 적용)',
+          en: 'Single parents with relief allowance'
+        },
+        '3': {
+          de: 'Verheiratete (Allein- / Hauptverdiener, Partner in V)',
+          ko: '기혼 외벌이 / 주소득자 (배우자가 5등급)',
+          en: 'Married (higher earner, spouse in Class V)'
+        },
+        '4': {
+          de: 'Verheiratete mit ähnlichem Einkommen (Standard)',
+          ko: '기혼 맞벌이 기본 (부부 소득 유사)',
+          en: 'Married with similar income (default)'
+        },
+        '5': {
+          de: 'Verheiratete (Zweit- / Nebenverdiener, Partner in III)',
+          ko: '기혼 부소득자 (배우자가 3등급)',
+          en: 'Married (lower earner, spouse in Class III)'
+        },
+        '6': {
+          de: 'Zweitjob / Mehrfachbeschäftigung (ohne Grundfreibetrag)',
+          ko: '부업 / 복수 직장 (기본공제 없이 전액 과세)',
+          en: 'Second job / additional employment'
+        }
+      };
+
+      compareCardsEl.innerHTML = compRes.classes.map(c => {
+        const descObj = classDescriptions[c.taxClass] || classDescriptions['1'];
+        const descText = descObj[currentLang] || descObj.en;
+        const totalSocial = c.totalSocialMonthly || (c.rvMonthly + c.avMonthly + c.gkvMonthly + c.pvMonthly);
+        const totalTax = c.incomeTaxMonthly + c.solzMonthly + c.churchTaxMonthly;
+        const netPct = Math.max(5, Math.min(100, (c.netMonthly / c.grossMonthly) * 100));
+        const taxPct = Math.max(0, Math.min(100, (totalTax / c.grossMonthly) * 100));
+        const socialPct = Math.max(0, Math.min(100, (totalSocial / c.grossMonthly) * 100));
+
+        const deltaBadge = (c.taxClass === '1')
+          ? `<span class="tc-delta-badge tc-delta-neutral">${t('diffVsClass1')}: ±0 €</span>`
+          : (c.diffMonthlyVsClass1 > 0
+            ? `<span class="tc-delta-badge tc-delta-pos">+${GLTUtils.formatEuro(c.diffMonthlyVsClass1)} ${t('diffVsClass1')}</span>`
+            : `<span class="tc-delta-badge tc-delta-neg">${GLTUtils.formatEuro(c.diffMonthlyVsClass1)} ${t('diffVsClass1')}</span>`);
+
+        return `
+          <div class="tc-compare-card ${c.isSelected ? 'active' : ''}" data-taxclass="${c.taxClass}">
+            <div class="tc-compare-top">
+              <div>
+                <div class="tc-compare-title">
+                  <span>${currentLang === 'ko' ? `세금 ${c.taxClass}등급` : (currentLang === 'de' ? `Steuerklasse ${c.taxClass}` : `Tax Class ${c.taxClass}`)}</span>
+                  ${c.isSelected ? `<span class="badge badge-popular" style="font-size:0.68rem; padding:0.15rem 0.45rem;">✓ ${t('selectedClassBadge')}</span>` : ''}
+                </div>
+                <div class="tc-compare-role">${descText}</div>
+              </div>
+              <div class="tc-compare-net-group">
+                <div class="tc-compare-net">${GLTUtils.formatEuro(c.netMonthly)} <span style="font-size:0.75rem; font-weight:normal; color:var(--text-secondary);">/ mo</span></div>
+                <div>${deltaBadge}</div>
+              </div>
+            </div>
+            <div class="tc-bar-track" title="Net / Tax / Social">
+              <div class="tc-bar-net" style="width: ${netPct}%;"></div>
+              <div class="tc-bar-tax" style="width: ${taxPct}%;"></div>
+              <div class="tc-bar-social" style="width: ${socialPct}%;"></div>
+            </div>
+            <div class="tc-compare-metrics">
+              <div class="tc-metric-item">${currentLang === 'ko' ? '소득세' : (currentLang === 'de' ? 'Lohnsteuer' : 'Income Tax')}: <strong>${GLTUtils.formatEuro(c.incomeTaxMonthly)}</strong></div>
+              <div class="tc-metric-item">${currentLang === 'ko' ? '사회보험' : (currentLang === 'de' ? 'Sozialabgaben' : 'Social Sec.')}: <strong>${GLTUtils.formatEuro(totalSocial)}</strong></div>
+              <div class="tc-metric-item" style="text-align:right;">
+                ${c.isSelected
+                  ? `<span style="font-weight:700; color:var(--accent-primary); font-size:0.75rem;">● ${t('selectedClassBadge')}</span>`
+                  : `<button type="button" class="btn-secondary btn-apply-class" data-taxclass="${c.taxClass}" style="padding:0.2rem 0.5rem; font-size:0.72rem;">${t('selectClassAction')}</button>`}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Couple simulation
+      if (compRes.coupleComparison) {
+        const cc = compRes.coupleComparison;
+        const combos = [cc.combo3_5, cc.combo4_4, cc.combo5_3];
+        const maxNet = Math.max(...combos.map(c => c.combinedNetMonthly));
+
+        coupleComboCardsEl.innerHTML = combos.map(c => {
+          const isBest = c.combinedNetMonthly === maxNet;
+          const diffBadge = (c.diffVs4_4Monthly === 0)
+            ? `<span style="color:var(--text-muted);">${currentLang === 'ko' ? '기준 조합 (4/4)' : (currentLang === 'de' ? 'Referenz (4/4)' : 'Standard (4/4)')}</span>`
+            : (c.diffVs4_4Monthly > 0
+              ? `<span style="color:#10b981; font-weight:700;">+${GLTUtils.formatEuro(c.diffVs4_4Monthly)} vs 4/4</span>`
+              : `<span style="color:#ef4444; font-weight:700;">${GLTUtils.formatEuro(c.diffVs4_4Monthly)} vs 4/4</span>`);
+
+          return `
+            <div class="couple-combo-card ${isBest ? 'best' : ''}">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                <strong style="font-size:0.875rem; color:var(--text-primary);">${currentLang === 'ko' ? '조합' : (currentLang === 'de' ? 'Kombination' : 'Combination')} ${c.label}</strong>
+                ${isBest ? `<span class="badge badge-popular" style="font-size:0.65rem; padding:0.1rem 0.4rem; background:#10b981; color:#fff;">⭐ ${t('recommendedCombo')}</span>` : ''}
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:0.35rem; line-height:1.4;">
+                <div>${currentLang === 'ko' ? '본인' : (currentLang === 'de' ? 'Hauptverdiener' : 'User')} (${c.userClass}): <strong>${GLTUtils.formatEuro(c.userNetMonthly)}</strong></div>
+                <div>${currentLang === 'ko' ? '배우자' : (currentLang === 'de' ? 'Partner' : 'Partner')} (${c.partnerClass}): <strong>${GLTUtils.formatEuro(c.partnerNetMonthly)}</strong></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:0.35rem; padding-top:0.35rem; border-top:1px dashed var(--border-subtle);">
+                <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary);">${t('householdNet')}:</span>
+                <span style="font-size:0.95rem; font-weight:800; color:var(--text-primary);">${GLTUtils.formatEuro(c.combinedNetMonthly)} / mo</span>
+              </div>
+              <div style="font-size:0.7rem; text-align:right; margin-top:0.25rem;">
+                ${diffBadge}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Wire up card clicks & apply buttons
+      compareCardsEl.querySelectorAll('.btn-apply-class').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetClass = btn.dataset.taxclass;
+          if (taxClassEl && targetClass) {
+            taxClassEl.value = targetClass;
+            updateCalc();
+          }
+        });
+      });
+
+      compareCardsEl.querySelectorAll('.tc-compare-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const targetClass = card.dataset.taxclass;
+          if (taxClassEl && targetClass && taxClassEl.value !== targetClass) {
+            taxClassEl.value = targetClass;
+            updateCalc();
+          }
+        });
+      });
+    };
+
+    if (tabDetailEl && tabCompareEl && viewDetailContainer && viewCompareContainer) {
+      tabDetailEl.addEventListener('click', () => {
+        tabDetailEl.classList.add('active');
+        tabCompareEl.classList.remove('active');
+        viewDetailContainer.style.display = 'block';
+        viewCompareContainer.style.display = 'none';
+      });
+
+      tabCompareEl.addEventListener('click', () => {
+        tabCompareEl.classList.add('active');
+        tabDetailEl.classList.remove('active');
+        viewDetailContainer.style.display = 'none';
+        viewCompareContainer.style.display = 'block';
+        updateCompareView();
+      });
+    }
+
+    if (partnerGrossEl) {
+      partnerGrossEl.addEventListener('input', () => {
+        updateCompareView();
+      });
+    }
+
+    zusatzChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const rate = chip.dataset.rate;
+        if (zusatzbeitragEl && rate) {
+          zusatzbeitragEl.value = rate;
+          zusatzChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          updateCalc();
+        }
+      });
+    });
+
+    if (zusatzbeitragEl) {
+      zusatzbeitragEl.addEventListener('input', () => {
+        const currentVal = zusatzbeitragEl.value.trim();
+        zusatzChips.forEach(chip => {
+          if (chip.dataset.rate === currentVal) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+      });
+    }
 
     grossEl.addEventListener('input', () => {
       const m = GLTUtils.parseNumber(grossEl.value, 0);
@@ -712,6 +983,8 @@ const App = {
       if (ppvPremiumEl) ppvPremiumEl.value = "80";
       if (pkvHasSubsidyEl) pkvHasSubsidyEl.checked = true;
       if (pkvSubsidyEl) pkvSubsidyEl.value = "";
+      if (partnerGrossEl) partnerGrossEl.value = "3000";
+      zusatzChips.forEach(c => c.classList.remove('active'));
       updateSyncInfo();
       updateCalc();
     });

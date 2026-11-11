@@ -213,7 +213,14 @@ const GERMAN_TAX_CONFIG = {
         sonderausgabenSingle: 36,
         sonderausgabenMarried: 72,
         singleParentRelief: 4260,
-        singleParentAdditionalChild: 240
+        singleParentAdditionalChild: 240,
+        kinderfreibetragFull: 9600, // § 32 Abs. 6 EStG 2025 (€6,672 KFB + €2,928 BEA)
+        kinderfreibetragHalf: 4800  // Class IV half-allowance per child
+      },
+      class5_6Limits: {
+        w1: 13785,  // W1STKL5 (BMF PAP 2025)
+        w2: 34240,  // W2STKL5 (BMF PAP 2025)
+        w3: 222260  // W3STKL5 (BMF PAP 2025)
       }
     },
 
@@ -305,7 +312,14 @@ const GERMAN_TAX_CONFIG = {
         sonderausgabenSingle: 36,// Special expenses lump-sum (€36/yr single)
         sonderausgabenMarried: 72,// Special expenses lump-sum (€72/yr married III)
         singleParentRelief: 4260,// Entlastungsbetrag für Alleinerziehende (§ 24b EStG: €4,260 1st child)
-        singleParentAdditionalChild: 240 // § 24b Abs. 2 Satz 2 EStG: +€240 for each additional child
+        singleParentAdditionalChild: 240, // § 24b Abs. 2 Satz 2 EStG: +€240 for each additional child
+        kinderfreibetragFull: 9756, // § 32 Abs. 6 EStG 2026 (€6,828 KFB + €2,928 BEA)
+        kinderfreibetragHalf: 4878  // Class IV half-allowance per child
+      },
+      class5_6Limits: {
+        w1: 14071,  // W1STKL5 (BMF PAP 2026)
+        w2: 34939,  // W2STKL5 (BMF PAP 2026)
+        w3: 222260  // W3STKL5 (BMF PAP 2026)
       }
     }
   },

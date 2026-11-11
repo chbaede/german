@@ -55,28 +55,70 @@ const SalaryCalculator = {
   },
 
   /**
-   * Internal Tariff Estimator without Grundfreibetrag
+   * Statutory Tax Class V & VI Tariff Subroutine (BMF PAP MST5_6 / UP5_6 under § 39b Abs. 2 Satz 7 EStG)
    *
-   * Estimation Note vs. Official BMF PAP:
-   * This function provides a simplified progressive tariff approximation for Tax Class V
-   * (where the basic tax allowance is transferred to the Class III spouse) and Tax Class VI
-   * (where second and subsequent employment relationships are taxed without personal allowances).
+   * Implements the official BMF Programmablaufplan comparative progression rules for
+   * Steuerklasse V and VI using statutory boundary thresholds (W1STKL5, W2STKL5, W3STKL5):
+   * - 2025: W1STKL5 = €13,785, W2STKL5 = €34,240, W3STKL5 = €222,260
+   * - 2026: W1STKL5 = €14,071, W2STKL5 = €34,939, W3STKL5 = €222,260
    *
-   * IMPORTANT: This is an estimation model, NOT the official BMF Programmablaufplan (PAP).
-   * In official payroll, Class V uses a specialized progressive formula (subroutine MST5_6)
-   * and Class VI uses specific withholding rules. Actual employer payroll withholding may differ.
+   * @param {number} income - Taxable income base (ZX / ZZX) in Euro
+   * @param {object} yearConfig - Year-specific tax configuration
+   * @returns {number} Annual wage tax amount in Euro
+   */
+  calcTariffClass5_6(income, yearConfig) {
+    const zzx = Math.floor(Math.max(0, income));
+    if (zzx <= 0) return 0;
+
+    const limits = (yearConfig && yearConfig.class5_6Limits) ? yearConfig.class5_6Limits : {
+      w1: (yearConfig && yearConfig.year === 2025) ? 13785 : 14071,
+      w2: (yearConfig && yearConfig.year === 2025) ? 34240 : 34939,
+      w3: 222260
+    };
+    const w1 = limits.w1;
+    const w2 = limits.w2;
+    const w3 = limits.w3;
+
+    // BMF PAP Subroutine UP5_6
+    const up5_6 = (zx) => {
+      const st1 = this.calcStatutoryTariff(Math.floor(zx * 1.25), yearConfig);
+      const st2 = this.calcStatutoryTariff(Math.floor(zx * 0.75), yearConfig);
+      const diff = (st1 - st2) * 2;
+      const mist = Math.floor(zx * 0.14);
+      return Math.max(diff, mist);
+    };
+
+    let st = 0;
+    if (zzx > w2) {
+      st = up5_6(w2);
+      if (zzx > w3) {
+        st = Math.floor(st + (w3 - w2) * 0.42);
+        st = Math.floor(st + (zzx - w3) * 0.45);
+      } else {
+        st = Math.floor(st + (zzx - w2) * 0.42);
+      }
+    } else {
+      st = up5_6(zzx);
+      if (zzx > w1) {
+        const vergl = st;
+        const stAtW1 = up5_6(w1);
+        const hoch = Math.floor(stAtW1 + (zzx - w1) * 0.42);
+        st = Math.min(hoch, vergl);
+      }
+    }
+    return st;
+  },
+
+  /**
+   * Backward-compatible alias for Tax Class V / VI tariff calculation
+   * Delegates to calcTariffClass5_6 (BMF PAP MST5_6 / UP5_6).
    *
    * @param {number} income - Income base in Euro
    * @param {object} yearConfig - Year-specific tax configuration
    * @returns {number} Estimated annual tax amount in Euro
    */
   calcTariffWithoutGrundfreibetrag(income, yearConfig) {
-    const x = Math.floor(Math.max(0, income));
-    if (x <= 0) return 0;
-    // Mathematically shifts income into the progressive curve directly above Grundfreibetrag
-    // so taxation starts immediately at the entry progressive marginal rate (~14%)
-    const shiftedX = x + yearConfig.basicAllowance;
-    return this.calcStatutoryTariff(shiftedX, yearConfig);
+    return this.calcTariffClass5_6(income, yearConfig);
   },
 
   /**
@@ -662,28 +704,29 @@ const SalaryCalculator = {
     let singleParentRelief = 0;
     let annualVorsorge = 0;
 
+    // Statutory Vorsorgepauschale (§ 39b Abs. 2 Satz 5 Nr. 3 EStG)
+    // Applies across all Tax Classes I–VI (BMF PAP MRE4ABZ / UPVSP)
+    const deductibleRvAnnual = Math.min(grossAnnual, yCfg.pension.bbgAnnual) * yCfg.pension.employeeRate;
+    let deductibleGkvAnnual = 0;
+    let deductiblePvAnnual = 0;
+
+    if (healthType === "gkv") {
+      const gkvDeductibleRate = (gkvEmployeeRate > 0) ? (gkvEmployeeRate * 0.96) : (yCfg.health.totalEmployeeRate * 0.96);
+      deductibleGkvAnnual = Math.min(grossAnnual, yCfg.health.bbgAnnual) * gkvDeductibleRate;
+      deductiblePvAnnual = Math.min(grossAnnual, yCfg.care.bbgAnnual) * pvEmployeeRate;
+    } else {
+      // PKV / PPV: Do not use GKV statutory rates.
+      // Basic coverage portion deductible under § 39b Abs. 2 Satz 5 Nr. 3 Buchst. d EStG:
+      // Standard statutory payroll model: ~80% of PKV employee share constitutes basic coverage,
+      // and 100% of PPV employee share constitutes basic mandatory care coverage.
+      deductibleGkvAnnual = (pkvDetails ? pkvDetails.pkvEmployeeCost : gkvMonthly) * 12 * 0.80;
+      deductiblePvAnnual = (pkvDetails ? pkvDetails.ppvEmployeeCost : pvMonthly) * 12;
+    }
+    annualVorsorge = deductibleRvAnnual + deductibleGkvAnnual + deductiblePvAnnual;
+
     if (taxClass !== "6") {
       werbungskosten = yCfg.lumpSums.werbungskosten;
       sonderausgaben = (taxClass === "3") ? yCfg.lumpSums.sonderausgabenMarried : yCfg.lumpSums.sonderausgabenSingle;
-
-      // Statutory Vorsorgepauschale (§ 39b Abs. 2 Satz 5 Nr. 3 EStG)
-      const deductibleRvAnnual = Math.min(grossAnnual, yCfg.pension.bbgAnnual) * yCfg.pension.employeeRate;
-      let deductibleGkvAnnual = 0;
-      let deductiblePvAnnual = 0;
-
-      if (healthType === "gkv") {
-        const gkvDeductibleRate = (gkvEmployeeRate > 0) ? (gkvEmployeeRate * 0.96) : (yCfg.health.totalEmployeeRate * 0.96);
-        deductibleGkvAnnual = Math.min(grossAnnual, yCfg.health.bbgAnnual) * gkvDeductibleRate;
-        deductiblePvAnnual = Math.min(grossAnnual, yCfg.care.bbgAnnual) * pvEmployeeRate;
-      } else {
-        // PKV / PPV: Do not use GKV statutory rates.
-        // Basic coverage portion deductible under § 39b Abs. 2 Satz 5 Nr. 3 Buchst. d EStG:
-        // Standard statutory payroll model: ~80% of PKV employee share constitutes basic coverage,
-        // and 100% of PPV employee share constitutes basic mandatory care coverage.
-        deductibleGkvAnnual = (pkvDetails ? pkvDetails.pkvEmployeeCost : gkvMonthly) * 12 * 0.80;
-        deductiblePvAnnual = (pkvDetails ? pkvDetails.ppvEmployeeCost : pvMonthly) * 12;
-      }
-      annualVorsorge = deductibleRvAnnual + deductibleGkvAnnual + deductiblePvAnnual;
 
       if (taxClass === "2") {
         // Statutory eligibility under § 24b Abs. 1 EStG:
@@ -703,60 +746,63 @@ const SalaryCalculator = {
     // ========================================================================
     // Transparency & Statutory Disclaimer:
     // This is an estimation model and is NOT the official BMF Lohnsteuer calculation engine.
-    // In official employer payroll withholding, wage tax is computed via the official BMF
-    // Programmablaufplan (PAP 2026) containing hundreds of procedural steps, integer rounding,
-    // and specialized subroutines for Classes III, V, and VI.
-    // The formulas below for Class III, V, and VI are estimation approximations:
-    // - Class III: Approximates withholding using the splitting tariff on single earner estimated taxable income.
-    //   (Note: Official BMF PAP uses specialized procedural steps; mandatory annual tax return
-    //   reconciles actual joint liability on combined income under § 46 Abs. 2 Nr. 3a EStG).
-    // - Class V: Simplified progressive estimation approximation without Grundfreibetrag.
-    //   (Note: Official BMF PAP uses subroutine MST5_6 rather than a simple bracket shift).
-    // - Class VI: Simplified secondary employment estimation approximation without personal allowances.
-    // They are ESTIMATES and must NOT be described as exact statutory payroll results.
+    // - Class III: Uses the splitting tariff on single earner estimated taxable income.
+    // - Class V & VI: Uses the BMF PAP MST5_6 / UP5_6 comparative tariff (§ 39b Abs. 2 Satz 7 EStG)
+    //   with statutory thresholds W1STKL5, W2STKL5, W3STKL5. Class VI omits personal lump-sum
+    //   allowances (Arbeitnehmer-Pauschbetrag & Sonderausgaben-Pauschbetrag) while retaining Vorsorgepauschale.
     let incomeTaxAnnual = 0;
 
     if (taxClass === "3") {
-      // Class III (Splitting estimation approximation):
+      // Class III (Splitting tariff):
       incomeTaxAnnual = this.calcStatutoryTariff(estimatedTaxableIncome / 2, yCfg) * 2;
-    } else if (taxClass === "5") {
-      // Class V (Simplified progressive estimation approximation without basic allowance):
-      incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(estimatedTaxableIncome, yCfg);
-    } else if (taxClass === "6") {
-      // Class VI (Simplified secondary employment estimation approximation without personal allowances):
-      incomeTaxAnnual = this.calcTariffWithoutGrundfreibetrag(grossAnnual, yCfg);
+    } else if (taxClass === "5" || taxClass === "6") {
+      // Class V & VI (BMF PAP MST5_6 / UP5_6 under § 39b Abs. 2 Satz 7 EStG):
+      incomeTaxAnnual = this.calcTariffClass5_6(estimatedTaxableIncome, yCfg);
     } else {
-      // Class I, II, IV (Standard statutory tariff estimation applied to estimated taxable income):
+      // Class I, II, IV (Standard statutory tariff applied to estimated taxable income):
       incomeTaxAnnual = this.calcStatutoryTariff(estimatedTaxableIncome, yCfg);
     }
 
     const incomeTaxMonthly = Math.max(0, incomeTaxAnnual / 12);
 
     // ========================================================================
-    // 4. SOLIDARITY SURCHARGE (Solidaritätszuschlag)
+    // 4. SOLIDARITY SURCHARGE & CHURCH TAX ASSESSMENT BASE (§ 51a Abs. 2a EStG)
     // ========================================================================
-    // Statutory rules under §§ 3, 4 SolZG:
-    // 2026 Freigrenze: €20,350 (Single / non-splitting) / €40,700 (Splitting / Class III)
-    // Milderungszone: max 11.9% of difference between income tax and Freigrenze
-    // Capped at standard 5.5% of total income tax liability
+    // Under § 51a Abs. 2a EStG (BMF PAP MBERECH / JBMG), Kinderfreibeträge do not reduce
+    // monthly Lohnsteuer (as Kindergeld is paid monthly), but DO reduce the fictional
+    // assessment tax (Bemessungsgrundlage - JBMG) for Solidaritätszuschlag and Kirchensteuer
+    // in Tax Classes I, II, III, and IV.
+    let jbmgTaxAnnual = incomeTaxAnnual;
+    if (numChildren > 0 && (taxClass === "1" || taxClass === "2" || taxClass === "3" || taxClass === "4")) {
+      const kfbPerChild = (taxClass === "4")
+        ? (yCfg.lumpSums.kinderfreibetragHalf || (taxYear === 2025 ? 4800 : 4878))
+        : (yCfg.lumpSums.kinderfreibetragFull || (taxYear === 2025 ? 9600 : 9756));
+      const jbmgZve = Math.max(0, estimatedTaxableIncome - (numChildren * kfbPerChild));
+      if (taxClass === "3") {
+        jbmgTaxAnnual = this.calcStatutoryTariff(jbmgZve / 2, yCfg) * 2;
+      } else {
+        jbmgTaxAnnual = this.calcStatutoryTariff(jbmgZve, yCfg);
+      }
+    }
+
     const isSplitting = (taxClass === "3");
     const solzThreshold = isSplitting ? yCfg.solz.thresholdMarried : yCfg.solz.thresholdSingle;
     let solzAnnual = 0;
 
     if (taxYear === 2026) {
       solzAnnual = this.calculateSolidaritySurcharge2026({
-        incomeTax: incomeTaxAnnual,
+        incomeTax: jbmgTaxAnnual,
         isSplitting
       });
     } else if (taxYear === 2025) {
       solzAnnual = this.calculateSolidaritySurcharge2025({
-        incomeTax: incomeTaxAnnual,
+        incomeTax: jbmgTaxAnnual,
         isSplitting
       });
     } else {
-      if (incomeTaxAnnual > solzThreshold) {
-        const excess = incomeTaxAnnual - solzThreshold;
-        solzAnnual = Math.min(incomeTaxAnnual * yCfg.solz.rate, excess * yCfg.solz.milderungRate);
+      if (jbmgTaxAnnual > solzThreshold) {
+        const excess = jbmgTaxAnnual - solzThreshold;
+        solzAnnual = Math.min(jbmgTaxAnnual * yCfg.solz.rate, excess * yCfg.solz.milderungRate);
       }
     }
     const solzMonthly = solzAnnual / 12;
@@ -766,11 +812,11 @@ const SalaryCalculator = {
     // ========================================================================
     // 8% in Bayern (BY) and Baden-Württemberg (BW); 9% in all other 14 states (including Berlin).
     let churchTaxAnnual = 0;
-    if (hasChurchTax && incomeTaxAnnual > 0) {
+    if (hasChurchTax && jbmgTaxAnnual > 0) {
       const churchRate = (stateCode === "BY" || stateCode === "BW")
         ? cfg.churchTaxRates.BY
         : cfg.churchTaxRates.DEFAULT;
-      churchTaxAnnual = incomeTaxAnnual * churchRate;
+      churchTaxAnnual = jbmgTaxAnnual * churchRate;
     }
     const churchTaxMonthly = churchTaxAnnual / 12;
 
@@ -966,6 +1012,108 @@ const SalaryCalculator = {
       bonusPerformance: performanceBonusAmount,
       note: "Additional payments are employer/contract dependent and are not statutory entitlements."
     };
+  },
+
+  /**
+   * Side-by-side comparison across all 6 German Tax Classes (Steuerklasse I to VI)
+   * and optional married couple combinations (3/5 vs 4/4 vs 5/3).
+   *
+   * @param {object} params - Standard calculateNetSalary parameters + optional partnerGrossMonthly
+   * @returns {object} { classes: Array, baseClass1: object, selectedClassResult: object, coupleComparison: object }
+   */
+  compareTaxClasses(params = {}) {
+    const checkRes = this.calculateNetSalary({ ...params, taxClass: "1" });
+    if (checkRes && checkRes.unavailable) {
+      return checkRes;
+    }
+
+    const baseNetMonthly = checkRes.netMonthly;
+    const baseNetAnnual = checkRes.netAnnual;
+    const activeClass = String(params.taxClass || "1");
+    const numKids = Math.max(0, parseInt(params.numChildren ?? params.numberOfQualifyingChildren ?? 0, 10));
+
+    const classes = ["1", "2", "3", "4", "5", "6"].map(tc => {
+      const res = (tc === "1") ? checkRes : this.calculateNetSalary({ ...params, taxClass: tc });
+      const diffMonthlyVsClass1 = Number((res.netMonthly - baseNetMonthly).toFixed(2));
+      const diffAnnualVsClass1 = Number((res.netAnnual - baseNetAnnual).toFixed(2));
+      const withOneChildPreview = (tc === "2" && numKids === 0)
+        ? this.calculateNetSalary({ ...params, taxClass: "2", numChildren: 1 })
+        : null;
+
+      return {
+        taxClass: tc,
+        isSelected: tc === activeClass,
+        ...res,
+        diffMonthlyVsClass1,
+        diffAnnualVsClass1,
+        withOneChildPreview
+      };
+    });
+
+    const selectedClassResult = classes.find(c => c.taxClass === activeClass) || classes[0];
+
+    // Optional Married Couple Combination Comparison (3/5 vs 4/4 vs 5/3)
+    const partnerGross = (params.partnerGrossMonthly !== undefined && params.partnerGrossMonthly !== null)
+      ? Math.max(0, GLTUtils.parseNumber(params.partnerGrossMonthly, 0))
+      : Math.round(checkRes.grossMonthly * 0.6);
+
+    const partnerParams = { ...params, grossMonthly: partnerGross };
+    const p1_c3 = classes[2]; // User in Class III
+    const p1_c4 = classes[3]; // User in Class IV
+    const p1_c5 = classes[4]; // User in Class V
+
+    const p2_c5 = this.calculateNetSalary({ ...partnerParams, taxClass: "5" });
+    const p2_c4 = this.calculateNetSalary({ ...partnerParams, taxClass: "4" });
+    const p2_c3 = this.calculateNetSalary({ ...partnerParams, taxClass: "3" });
+
+    const combo35NetMonthly = Number((p1_c3.netMonthly + p2_c5.netMonthly).toFixed(2));
+    const combo44NetMonthly = Number((p1_c4.netMonthly + p2_c4.netMonthly).toFixed(2));
+    const combo53NetMonthly = Number((p1_c5.netMonthly + p2_c3.netMonthly).toFixed(2));
+
+    return {
+      taxYear: checkRes.taxYear,
+      grossMonthly: checkRes.grossMonthly,
+      grossAnnual: checkRes.grossAnnual,
+      activeTaxClass: activeClass,
+      baseClass1: checkRes,
+      selectedClassResult,
+      classes,
+      coupleComparison: {
+        userGrossMonthly: checkRes.grossMonthly,
+        partnerGrossMonthly: partnerGross,
+        combinedGrossMonthly: checkRes.grossMonthly + partnerGross,
+        combo3_5: {
+          label: "III / V",
+          userClass: "3",
+          partnerClass: "5",
+          userNetMonthly: p1_c3.netMonthly,
+          partnerNetMonthly: p2_c5.netMonthly,
+          combinedNetMonthly: combo35NetMonthly,
+          combinedNetAnnual: Number((combo35NetMonthly * 12).toFixed(2)),
+          diffVs4_4Monthly: Number((combo35NetMonthly - combo44NetMonthly).toFixed(2))
+        },
+        combo4_4: {
+          label: "IV / IV",
+          userClass: "4",
+          partnerClass: "4",
+          userNetMonthly: p1_c4.netMonthly,
+          partnerNetMonthly: p2_c4.netMonthly,
+          combinedNetMonthly: combo44NetMonthly,
+          combinedNetAnnual: Number((combo44NetMonthly * 12).toFixed(2)),
+          diffVs4_4Monthly: 0
+        },
+        combo5_3: {
+          label: "V / III",
+          userClass: "5",
+          partnerClass: "3",
+          userNetMonthly: p1_c5.netMonthly,
+          partnerNetMonthly: p2_c3.netMonthly,
+          combinedNetMonthly: combo53NetMonthly,
+          combinedNetAnnual: Number((combo53NetMonthly * 12).toFixed(2)),
+          diffVs4_4Monthly: Number((combo53NetMonthly - combo44NetMonthly).toFixed(2))
+        }
+      }
+    };
   }
 };
 
@@ -976,10 +1124,12 @@ if (typeof globalThis !== 'undefined') {
   globalThis.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
   globalThis.calculateAnnualCompensation = SalaryCalculator.calculateAnnualCompensation.bind(SalaryCalculator);
   globalThis.calculateSingleParentRelief = SalaryCalculator.calculateSingleParentRelief.bind(SalaryCalculator);
+  globalThis.compareTaxClasses = SalaryCalculator.compareTaxClasses.bind(SalaryCalculator);
 } else if (typeof window !== 'undefined') {
   window.calculateSolidaritySurcharge2026 = SalaryCalculator.calculateSolidaritySurcharge2026.bind(SalaryCalculator);
   window.getEmployeeHealthInsuranceRate = SalaryCalculator.getEmployeeHealthInsuranceRate.bind(SalaryCalculator);
   window.calculatePkvCost = SalaryCalculator.calculatePkvCost.bind(SalaryCalculator);
   window.calculateAnnualCompensation = SalaryCalculator.calculateAnnualCompensation.bind(SalaryCalculator);
   window.calculateSingleParentRelief = SalaryCalculator.calculateSingleParentRelief.bind(SalaryCalculator);
+  window.compareTaxClasses = SalaryCalculator.compareTaxClasses.bind(SalaryCalculator);
 }
