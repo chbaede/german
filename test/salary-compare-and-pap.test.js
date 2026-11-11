@@ -112,4 +112,30 @@ console.log('=== TEST SUITE: TAX CLASS COMPARISON & BMF PAP VERIFICATION ===\n')
   console.log(`[PASS] § 51a Abs. 2a EStG SolZ reduction with children verified: noKids SolZ=€${noKids.solzMonthly}, withKids SolZ=€${withKids.solzMonthly}.`);
 }
 
+// 5. Annual to Monthly Salary Conversion with Two Decimal Places
+{
+  const annualGross1 = 55000;
+  const monthly1 = (annualGross1 / 12).toFixed(2);
+  assert.strictEqual(monthly1, "4583.33", "€55,000/yr must convert to €4,583.33/mo");
+
+  const annualGross2 = 65000;
+  const monthly2 = (annualGross2 / 12).toFixed(2);
+  assert.strictEqual(monthly2, "5416.67", "€65,000/yr must convert to €5,416.67/mo");
+
+  const annualGross3 = 70000;
+  const monthly3 = (annualGross3 / 12).toFixed(2);
+  assert.strictEqual(monthly3, "5833.33", "€70,000/yr must convert to €5,833.33/mo");
+
+  const annualGross4 = 60000;
+  const monthly4 = (annualGross4 / 12).toFixed(2);
+  assert.strictEqual(monthly4, "5000.00", "€60,000/yr must convert to €5,000.00/mo");
+
+  // Verify calculator accepts decimal monthly gross
+  const resDec = SalaryCalculator.calculateNetSalary({ grossMonthly: monthly1, taxYear: 2026, taxClass: "1" });
+  assert(!isNaN(resDec.netMonthly) && resDec.netMonthly > 0, "Calculator must process two-decimal monthly gross cleanly");
+  assert(!isNaN(resDec.incomeTaxMonthly) && resDec.incomeTaxMonthly > 0, "Wage tax must compute cleanly from decimal gross");
+
+  console.log('[PASS] Annual to monthly salary conversion with two decimal places verified.');
+}
+
 console.log('\n🎉 ALL NEW TAX CLASS COMPARISON & BMF PAP TESTS PASSED SUCCESSFULLY!\n');

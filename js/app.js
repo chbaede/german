@@ -264,7 +264,7 @@ const App = {
               <label class="form-label">${t('grossSalaryMonthly')}</label>
               <div class="input-with-affix">
                 <span class="affix affix-left">€</span>
-                <input type="number" id="salary-gross" class="form-input input-prefix" value="4500" step="50" min="0">
+                <input type="number" id="salary-gross" class="form-input input-prefix" value="4500" step="0.01" min="0">
                 <span class="affix affix-right">/mo</span>
               </div>
             </div>
@@ -272,7 +272,7 @@ const App = {
               <label class="form-label">${t('grossSalaryAnnual')}</label>
               <div class="input-with-affix">
                 <span class="affix affix-left">€</span>
-                <input type="number" id="salary-gross-annual" class="form-input input-prefix" value="54000" step="500" min="0">
+                <input type="number" id="salary-gross-annual" class="form-input input-prefix" value="54000" step="any" min="0">
                 <span class="affix affix-right">/yr</span>
               </div>
             </div>
@@ -947,6 +947,12 @@ const App = {
     }
 
     grossEl.addEventListener('input', () => {
+      if (grossEl.value.trim() === '') {
+        grossAnnualEl.value = '';
+        updateSyncInfo();
+        updateCalc();
+        return;
+      }
       const m = GLTUtils.parseNumber(grossEl.value, 0);
       grossAnnualEl.value = Math.round(m * 12);
       updateSyncInfo();
@@ -954,8 +960,14 @@ const App = {
     });
 
     grossAnnualEl.addEventListener('input', () => {
+      if (grossAnnualEl.value.trim() === '') {
+        grossEl.value = '';
+        updateSyncInfo();
+        updateCalc();
+        return;
+      }
       const a = GLTUtils.parseNumber(grossAnnualEl.value, 0);
-      grossEl.value = Math.round(a / 12);
+      grossEl.value = a > 0 ? (a / 12).toFixed(2) : '0';
       updateSyncInfo();
       updateCalc();
     });
@@ -1018,7 +1030,7 @@ const App = {
               <label class="form-label">${t('desiredNet')}</label>
               <div class="input-with-affix">
                 <span class="affix affix-left">€</span>
-                <input type="number" id="rev-net" class="form-input input-prefix" value="3000" step="50" min="0">
+                <input type="number" id="rev-net" class="form-input input-prefix" value="3000" step="0.01" min="0">
                 <span class="affix affix-right">/mo</span>
               </div>
             </div>
@@ -1026,7 +1038,7 @@ const App = {
               <label class="form-label">${t('desiredNetAnnual')}</label>
               <div class="input-with-affix">
                 <span class="affix affix-left">€</span>
-                <input type="number" id="rev-net-annual" class="form-input input-prefix" value="36000" step="500" min="0">
+                <input type="number" id="rev-net-annual" class="form-input input-prefix" value="36000" step="any" min="0">
                 <span class="affix affix-right">/yr</span>
               </div>
             </div>
@@ -1138,6 +1150,12 @@ const App = {
     };
 
     netIn.addEventListener('input', () => {
+      if (netIn.value.trim() === '') {
+        netAnnualIn.value = '';
+        updateRevSyncInfo();
+        updateRev();
+        return;
+      }
       const m = GLTUtils.parseNumber(netIn.value, 0);
       netAnnualIn.value = Math.round(m * 12);
       updateRevSyncInfo();
@@ -1145,8 +1163,14 @@ const App = {
     });
 
     netAnnualIn.addEventListener('input', () => {
+      if (netAnnualIn.value.trim() === '') {
+        netIn.value = '';
+        updateRevSyncInfo();
+        updateRev();
+        return;
+      }
       const a = GLTUtils.parseNumber(netAnnualIn.value, 0);
-      netIn.value = Math.round(a / 12);
+      netIn.value = a > 0 ? (a / 12).toFixed(2) : '0';
       updateRevSyncInfo();
       updateRev();
     });
